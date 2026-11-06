@@ -12,15 +12,12 @@ step
   talk Senir Whitebeard |n 1252 |fr Senir Whitebeard
   turnin 420 Senir's Observations |fr Les observations de Senir
   accept 287 Frostmane Hold |fr Le repaire des Frostmane
-step
-  goto 1426 47.2,52.2
-  talk Tannok Frosthammer |n 6806 |fr Tannok Frosthammer
-  turnin 2160 Supplies to Tannok |fr Des provisions pour Tannok
-step
   goto 1426 46.8,52.4
   talk Ragnar Thunderbrew |n 1267 |fr Ragnar Thunderbrew
   accept 384 Beer Basted Boar Ribs |fr Côtes de sanglier à la bière
-step
+  goto 1426 47.2,52.2
+  talk Tannok Frosthammer |n 6806 |fr Tannok Frosthammer
+  turnin 2160 Supplies to Tannok |fr Des provisions pour Tannok
   goto 1426 47.4,52.5
   talk Innkeeper Belm |n 1247 |fr Belm l'aubergiste
   home Kharanos
@@ -30,23 +27,20 @@ step
   talk Tharek Blackstone |n 1872 |fr Tharek Blackstone
   accept 400 Tools for Steelgrill |fr Des outils pour Steelgrill
 step
+  goto 1426 50.1,49.4
+  talk Loslor Rudge |n 1694 |fr Loslor Rudge
+  accept 5541 Ammo for Rumbleshot |fr Munitions pour Rumbleshot
   goto 1426 50.4,49.1
   talk Beldin Steelgrill |n 1376 |fr Beldin Steelgrill
   turnin 400 Tools for Steelgrill |fr Des outils pour Steelgrill
-step
+  goto 1426 49.6,48.6
+  talk Pilot Stonegear |n 1377 |fr Pilote Stonegear
+  accept 313 The Grizzled Den |fr L'antre Gris
   goto 1426 49.4,48.4
   talk Pilot Bellowfiz |n 1378 |fr Pilote Bellowfiz
   accept 317 Stocking Jetsteam |fr Ravitailler le Crache-vapeur
 step
-  goto 1426 49.6,48.6
-  talk Pilot Stonegear |n 1377 |fr Pilote Stonegear
-  accept 313 The Grizzled Den |fr L'antre Gris
-step
-  goto 1426 50.1,49.4
-  talk Loslor Rudge |n 1694 |fr Loslor Rudge
-  accept 5541 Ammo for Rumbleshot |fr Munitions pour Rumbleshot
-step
-  goto 1426 22.7,71.2
+  goto 1426 48.6,50.8
   collect Chunk of Boar Meat |q 317/1 |fr Morceau de viande de sanglier
   collect Thick Bear Fur |q 317/2 |fr Fourrure d'ours épaisse
   collect Crag Boar Rib |q 384/1 |fr Côtes de sanglier des rochers
@@ -56,17 +50,16 @@ step
   talk Ragnar Thunderbrew |n 1267 |fr Ragnar Thunderbrew
   turnin 384 Beer Basted Boar Ribs |fr Côtes de sanglier à la bière
 step
-  goto 1426 41.6,50.4
+  goto 1426 41.8,51.5
   collect Wendigo Mane |q 313/1 |fr Peau de wendigo
-step
-  goto 1426 49.6,48.6
-  talk Pilot Stonegear |n 1377 |fr Pilote Stonegear
-  turnin 313 The Grizzled Den |fr L'antre Gris
 step
   goto 1426 49.4,48.4
   talk Pilot Bellowfiz |n 1378 |fr Pilote Bellowfiz
   turnin 317 Stocking Jetsteam |fr Ravitailler le Crache-vapeur
   accept 318 Evershine |fr L’Evershine
+  goto 1426 49.6,48.6
+  talk Pilot Stonegear |n 1377 |fr Pilote Stonegear
+  turnin 313 The Grizzled Den |fr L'antre Gris
 step
   goto 1426 40.7,65.1
   talk Hegnar Rumbleshot |n 1243 |fr Hegnar Rumbleshot
@@ -77,24 +70,11 @@ step
   turnin 318 Evershine |fr L’Evershine
   accept 319 A Favor for Evershine |fr Une faveur pour un tonneau d’Evershine
   accept 315 The Perfect Stout |fr La bière parfaite
-step
   goto 1426 30.2,45.5
   talk Marleth Barleybrew |n 1375 |fr Marleth Barleybrew
   accept 310 Bitter Rivals |fr Bières rivales
 step
-  goto 1426 47.7,52.7
-  note Click on Unguarded Thunder Ale Barrel |fr Cliquez sur : Tonneau de Thunder Ale non gardé
-  turnin 310 Bitter Rivals |fr Bières rivales
-step
-  goto 1426 47.7,52.7
-  note Click on Unguarded Thunder Ale Barrel |fr Cliquez sur : Tonneau de Thunder Ale non gardé
-  accept 311 Return to Marleth |fr Retour chez Marleth
-step
-  goto 1426 30.2,45.5
-  talk Marleth Barleybrew |n 1375 |fr Marleth Barleybrew
-  turnin 311 Return to Marleth |fr Retour chez Marleth
-step
-  goto 1426 59.3,58.2
+  goto 1426 28.2,45.6
   kill Ice Claw Bear |q 319/1 |fr Ours Griffeglace
   kill Elder Crag Boar |q 319/2 |fr Ancien sanglier des rochers
   kill Snow Leopard |q 319/3 |fr Léopard des neiges
@@ -107,7 +87,7 @@ step
   turnin 315 The Perfect Stout |fr La bière parfaite
   accept 413 Shimmer Stout |fr La bière Shimmer
 step
-  goto 1426 23.6,51.7
+  goto 1426 23.7,51.6
   kill Frostmane Headhunter |q 287/1 |fr Chasseur de têtes Frostmane
 step
   goto 1426 46.7,53.8
@@ -115,26 +95,28 @@ step
   turnin 287 Frostmane Hold |fr Le repaire des Frostmane
   accept 291 The Reports |fr Les rapports
 step
+  goto 1426 47.7,52.7
+  note Click on Unguarded Thunder Ale Barrel |fr Cliquez sur : Tonneau de Thunder Ale non gardé
+  turnin 310 Bitter Rivals |fr Bières rivales
+step
   goto 1426 49.4,48.4
   talk Pilot Bellowfiz |n 1378 |fr Pilote Bellowfiz
   turnin 320 Return to Bellowfiz |fr Retour vers Bellowfiz
 step
+  goto 1426 68.7,56.0
+  talk Senator Mehr Stonehallow |n 1977 |fr Sénateur Mehr Stonehallow
+  accept 433 The Public Servant |fr Le serviteur public
   goto 1426 69.1,56.3
   talk Foreman Stonebrow |n 1254 |fr Contremaître Stonebrow
   accept 432 Those Blasted Troggs! |fr Ces satanés troggs !
 step
-  goto 1426 68.7,56.0
-  talk Senator Mehr Stonehallow |n 1977 |fr Sénateur Mehr Stonehallow
-  accept 433 The Public Servant |fr Le serviteur public
-step
-  goto 1426 70.5,55.8
+  goto 1426 69.5,57.5
   kill Rockjaw Skullthumper |q 432/1 |fr Brise-crâne Mâcheroc
   kill Rockjaw Bonesnapper |q 433/1 |fr Briseur d’os Mâcheroc
 step
   goto 1426 69.1,56.3
   talk Foreman Stonebrow |n 1254 |fr Contremaître Stonebrow
   turnin 432 Those Blasted Troggs! |fr Ces satanés troggs !
-step
   goto 1426 68.7,56.0
   talk Senator Mehr Stonehallow |n 1977 |fr Sénateur Mehr Stonehallow
   turnin 433 The Public Servant |fr Le serviteur public

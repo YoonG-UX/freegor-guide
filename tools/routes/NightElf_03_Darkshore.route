@@ -19,6 +19,10 @@ talk 3841
 fpath Auberdine
 talk 6737
 home Auberdine
+do 2118 @44.1,49.2
++ note Use Tharnariun's Trap on a Rabid Thistle Bear, then lead it back to Tharnariun in Auberdine |fr Utilisez le piège sur un Ours des chardons enragé, puis ramenez-le à Tharnariun à Auberdine
+turnin 2118
+accept 2138
 
 # North of Auberdine
 do 983
@@ -40,8 +44,6 @@ turnin 957
 
 # South: furbolgs, bears, Ameth'Aran
 do 984
-do 2118 @44.1,49.2
-+ note Use Tharnariun's Trap on a Rabid Thistle Bear, then lead it back to Tharnariun in Auberdine |fr Utilisez le piège sur un Ours des chardons enragé, puis ramenez-le à Tharnariun à Auberdine
 accept 953
 do 953
 +do 958
@@ -51,8 +53,6 @@ turnin 953
 turnin 984
 accept 985
 turnin 958
-turnin 2118
-accept 2138
 accept 4761
 turnin 4761
 accept 4762

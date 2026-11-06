@@ -12,16 +12,12 @@ step
   talk Innkeeper Keldamyr |n 6736 |fr Keldamyr l'aubergiste
   turnin 2159 Dolanaar Delivery |fr Livraison à Dolanaar
   home Dolanaar
-step
-  goto 1438 56.1,61.7
-  talk Corithras Moonrage |n 3515 |fr Corithras Moonrage
-  turnin 928 Crown of the Earth |fr La couronne de la Terre
-  accept 929 Crown of the Earth |fr La couronne de la Terre
-step
+  goto 1438 54.6,58.5
+  talk Moon Priestess Amara |n 2151 |fr Prêtresse de la lune Amara
+  accept 487 The Road to Darnassus |fr La route de Darnassus
   goto 1438 56.1,57.7
   talk Syral Bladeleaf |n 2083 |fr Syral Bladeleaf
   accept 997 Denalan's Earth |fr La terre de Denalan
-step
   goto 1438 56.0,57.3
   talk Athridas Bearmantle |n 2078 |fr Athridas Bearmantle
   accept 475 A Troubling Breeze |fr Une brise étrange
@@ -31,13 +27,14 @@ step
   accept 2438 The Emerald Dreamcatcher |fr Le Capturêve d'émeraude
   accept 932 Twisted Hatred |fr Haine folle
 step
+  goto 1438 56.1,61.7
+  talk Corithras Moonrage |n 3515 |fr Corithras Moonrage
+  turnin 928 Crown of the Earth |fr La couronne de la Terre
+  accept 929 Crown of the Earth |fr La couronne de la Terre
+step
   goto 1438 60.5,56.3
   talk Zenn Foulhoof |n 2150 |fr Zenn Foulhoof
   accept 488 Zenn's Bidding |fr Les commandements de Zenn
-step
-  goto 1438 54.6,58.5
-  talk Moon Priestess Amara |n 2151 |fr Prêtresse de la lune Amara
-  accept 487 The Road to Darnassus |fr La route de Darnassus
 step
   goto 1438 63.4,58.1
   collect Filled Jade Phial |q 929/1 |fr Fiole de jade remplie
@@ -48,10 +45,11 @@ step
   turnin 929 Crown of the Earth |fr La couronne de la Terre
   accept 933 Crown of the Earth |fr La couronne de la Terre
 step
-  goto 1438 53.0,60.0
+  goto 1438 53.0,61.9
   collect Nightsaber Fang |q 488/1 |fr Croc de Sabre-de-nuit
   collect Strigid Owl Feather |q 488/2 |fr Plume de Hibou Strigid
   collect Webwood Spider Silk |q 488/3 |fr Soie d'araignée Tissebois
+  collect Melenas' Head |q 932/1 |fr Tête de Melenas
 step
   goto 1438 60.5,56.3
   talk Zenn Foulhoof |n 2150 |fr Zenn Foulhoof
@@ -63,7 +61,7 @@ step
   accept 918 Timberling Seeds |fr Les graines de sylvain
   accept 919 Timberling Sprouts |fr Les pousses de sylvain
 step
-  goto 1438 58.1,66.2
+  goto 1438 60.7,68.7
   collect Timberling Seed |q 918/1 |fr Graine de sylvain
   collect Timberling Sprout |q 919/1 |fr Pousse de sylvain
 step
@@ -78,9 +76,6 @@ step
   turnin 475 A Troubling Breeze |fr Une brise étrange
   accept 476 Gnarlpine Corruption |fr La corruption des Pins-tordus
 step
-  goto 1438 51.8,50.4
-  collect Melenas' Head |q 932/1 |fr Tête de Melenas
-step
   goto 1438 68.0,59.6
   collect Emerald Dreamcatcher |q 2438/1 |fr Capturêve d'émeraude
 step
@@ -88,7 +83,6 @@ step
   talk Athridas Bearmantle |n 2078 |fr Athridas Bearmantle
   turnin 476 Gnarlpine Corruption |fr La corruption des Pins-tordus
   accept 483 The Relics of Wakening |fr Les Reliques d'éveil
-step
   goto 1438 55.6,57.0
   talk Tallonkai Swiftroot |n 3567 |fr Tallonkai Swiftroot
   turnin 932 Twisted Hatred |fr Haine folle
@@ -104,7 +98,7 @@ step
   turnin 933 Crown of the Earth |fr La couronne de la Terre
   accept 7383 Crown of the Earth |fr La couronne de la Terre
 step
-  goto 1438 44.6,60.4
+  goto 1438 44.6,59.8
   collect Raven Claw Talisman |q 483/1 |fr Talisman de la griffe du Corbeau
   collect Black Feather Quill |q 483/2 |fr Plume noire
   collect Sapphire of Sky |q 483/3 |fr Saphir des cieux

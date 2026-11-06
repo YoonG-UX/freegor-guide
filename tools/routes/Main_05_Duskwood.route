@@ -28,13 +28,13 @@ accept 5
 turnin 164
 accept 95
 accept 226
+do 226
++do 90
+turnin 226
 turnin 95
 accept 230
 turnin 230
 accept 262
-do 226
-+do 90
-turnin 226
 turnin 165
 accept 148
 

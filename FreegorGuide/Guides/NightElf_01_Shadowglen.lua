@@ -11,7 +11,6 @@ step
   goto 1438 58.7,44.3
   talk Conservator Ilthalaine |n 2079 |fr Conservateur Ilthalaine
   accept 456 The Balance of Nature |fr L'Equilibre de la nature
-step
   goto 1438 59.9,42.5
   talk Melithar Staghelm |n 2077 |fr Melithar Staghelm
   accept 458 The Woodland Protector |fr La Protectrice sylvestre
@@ -21,7 +20,7 @@ step
   turnin 458 The Woodland Protector |fr La Protectrice sylvestre
   accept 459 The Woodland Protector |fr La Protectrice sylvestre
 step
-  goto 1438 59.7,43.4
+  goto 1438 58.8,44.3
   kill Young Nightsaber |q 456/1 |fr Jeune sabre-de-nuit
   kill Young Thistle Boar |q 456/2 |fr Jeune sanglier des chardons
 step
@@ -29,7 +28,6 @@ step
   talk Conservator Ilthalaine |n 2079 |fr Conservateur Ilthalaine
   turnin 456 The Balance of Nature |fr L'Equilibre de la nature
   accept 457 The Balance of Nature |fr L'Equilibre de la nature
-step
   goto 1438 57.8,41.6
   talk Gilshalan Windwalker |n 2082 |fr Gilshalan Windwalker
   accept 916 Webwood Venom |fr Le venin des Tissebois
@@ -40,18 +38,16 @@ step
   kill Thistle Boar |q 457/2 |fr Sanglier des chardons
   collect Webwood Venom Sac |q 916/1 |fr Glande à venin Tissebois
 step
-  goto 1438 57.8,45.2
-  talk Tarindrella |n 1992 |fr Tarindrella
-  turnin 459 The Woodland Protector |fr La Protectrice sylvestre
-step
-  goto 1438 58.7,44.3
-  talk Conservator Ilthalaine |n 2079 |fr Conservateur Ilthalaine
-  turnin 457 The Balance of Nature |fr L'Equilibre de la nature
-step
   goto 1438 57.8,41.6
   talk Gilshalan Windwalker |n 2082 |fr Gilshalan Windwalker
   turnin 916 Webwood Venom |fr Le venin des Tissebois
   accept 917 Webwood Egg |fr L'œuf d'araignée Tissebois
+  goto 1438 58.7,44.3
+  talk Conservator Ilthalaine |n 2079 |fr Conservateur Ilthalaine
+  turnin 457 The Balance of Nature |fr L'Equilibre de la nature
+  goto 1438 57.8,45.2
+  talk Tarindrella |n 1992 |fr Tarindrella
+  turnin 459 The Woodland Protector |fr La Protectrice sylvestre
 step
   goto 1438 60.9,42.0
   talk Dirania Silvershine |n 8583 |fr Dirania Silvershine
@@ -67,7 +63,7 @@ step
   turnin 3519 A Friend in Need |fr Un ami dans le besoin
   accept 3521 Iverron's Antidote |fr Antidote d'Iverron
 step
-  goto 1438 56.9,28.9
+  goto 1438 56.8,40.9
   collect Hyacinth Mushroom |q 3521/1 |fr Champignon jacinthe
   collect Moonpetal Lily |q 3521/2 |fr Lys pétale de lune
   collect Webwood Ichor |q 3521/3 |fr Ichor d'araignée Tissebois
@@ -88,7 +84,6 @@ step
   talk Gilshalan Windwalker |n 2082 |fr Gilshalan Windwalker
   turnin 917 Webwood Egg |fr L'œuf d'araignée Tissebois
   accept 920 Tenaron's Summons |fr Les appels de Tenaron
-step
   goto 1438 59.1,39.5
   talk Tenaron Stormgrip |n 3514 |fr Tenaron Stormgrip
   turnin 920 Tenaron's Summons |fr Les appels de Tenaron

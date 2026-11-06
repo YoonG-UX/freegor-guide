@@ -201,31 +201,47 @@ local function progress(id, obj, n, need)
   fire("QUEST_LOG_UPDATE")
 end
 
+-- Helpers that follow the step content rather than hard-coded step numbers.
+local function stepHas(kind, quest)
+  local st = E:CurrentStep()
+  for _, goal in ipairs(st and st.goals or {}) do
+    if goal.type == kind and goal.quest == quest then return true end
+  end
+  return false
+end
+local function goalOf(kind, quest)
+  for _, goal in ipairs(E:CurrentStep().goals) do
+    if goal.type == kind and goal.quest == quest then return goal end
+  end
+end
+
+-- First step: Willem, McBride, Willem (5261 and 18 need 783 turned in).
+check(stepHas("accept", 783) and stepHas("turnin", 783) and stepHas("accept", 5261), "first step groups Willem and McBride")
 accept(783)
-check(E.stepIndex == 2, "accepting 783 advances to step 2 (got " .. E.stepIndex .. ")")
-turnin(783)
-check(E.stepIndex == 2, "step 2 waits for second goal")
-accept(7, 1)
-check(E.stepIndex == 3, "step 2 done -> 3")
+check(stepHas("accept", 7), "step waits for the McBride part")
+check(E.waypoint and E.waypoint.goal and math.abs(E.waypoint.x - 0.489) < 1e-9, "arrow moved on to McBride")
+turnin(783); accept(7, 1)
+check(stepHas("accept", 18), "then back to Willem")
 accept(5261); accept(18, 1)
-check(E.stepIndex == 4, "step 3 done -> 4")
+check(stepHas("turnin", 5261), "next step: Eagan")
 turnin(5261); accept(33, 1)
-check(E.stepIndex == 5, "step 4 done -> 5")
+check(stepHas("kill", 7) and stepHas("collect", 33), "kill step")
+local killStep = E.stepIndex
 
 progress(7, 1, 4, 10)
-local st, prog = E:GoalStatus(E:CurrentStep().goals[2])
+local st, prog = E:GoalStatus(goalOf("kill", 7))
 check(st == "todo" and prog == "4/10", "objective progress text")
 progress(7, 1, 10, 10)
-check(E.stepIndex == 5, "kill done but wolf meat missing")
+check(E.stepIndex == killStep, "kill done but wolf meat missing")
 progress(33, 1, 8, 8)
-check(E.stepIndex == 6, "both objectives done -> 6")
+check(E.stepIndex == killStep + 1, "both objectives done -> next step")
 
 -- Going back holds position even though the step is complete.
 E:Prev()
 fire("QUEST_LOG_UPDATE")
-check(E.stepIndex == 5, "prev holds on a completed step")
+check(E.stepIndex == killStep, "prev holds on a completed step")
 E:Next()
-check(E.stepIndex == 6, "next resumes")
+check(E.stepIndex == killStep + 1, "next resumes")
 
 -- Guide catalogue checks
 local KNOWN_MAPS = { [1426]=1, [1429]=1, [1431]=1, [1432]=1, [1433]=1, [1436]=1, [1437]=1, [1438]=1, [1439]=1, [1440]=1, [1453]=1, [1455]=1, [1457]=1 }
@@ -245,11 +261,12 @@ for _, guide in ipairs(Freegor:GetGuides()) do
     end
   end
 end
-check(nGuides >= 13 and nSteps >= 350, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
+check(nGuides >= 13 and nSteps >= 300, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
 
--- Already-completed steps are skipped when jumping forward.
+-- Turning in part of a multi-NPC step keeps the step open.
+local before = E.stepIndex
 turnin(33)
-check(E.stepIndex == 7, "turnin 33 -> 7")
+check(E.stepIndex == before, "turnin 33 alone does not finish the Eagan + McBride step")
 
 -- Arrival on a goto-only step.
 local g2 = P.Parse("guide Walk\nzone 1429\nstep\n goto 50,40\n talk Someone\nstep\n note end\n")
@@ -347,7 +364,13 @@ E:LoadGuide("Human 1-6: Northshire Valley")
 local cur = E:CurrentStep()
 local firstTodo
 for _, goal in ipairs(cur.goals) do if goal.type ~= "goto" and goal.type ~= "talk" then firstTodo = firstTodo or goal end end
-check(E.stepIndex > 6, "resume skips completed quests (step " .. E.stepIndex .. ")")
+check(E.stepIndex > 1, "resume skips completed quests (step " .. E.stepIndex .. ")")
+local allDone = true
+for i = 1, E.stepIndex - 1 do
+  local st = E.guide.steps[i]
+  if E:StepKind(st) == "primary" and not E:StepComplete(st) then allDone = false end
+end
+check(allDone, "every quest step before the resume point is finished")
 check(not E:StepComplete(cur), "resume lands on an unfinished step")
 
 -- Automatic accept / turn-in ---------------------------------------------
@@ -369,6 +392,30 @@ FreegorDB.autoQuest = false
 questDialog = nextAccept
 fire("QUEST_DETAIL")
 check(#accepted == 1, "auto-accept off by default")
+
+-- Multi-NPC step: the arrow moves to the next NPC once the first is done
+wipe(log); wipe(done)
+local mg = P.Parse([[
+guide Multi
+zone 1429
+step
+  goto 10,10
+  talk A |n 1
+  accept 501 First
+  goto 12,10
+  talk B |n 2
+  accept 502 Second
+step
+  note end
+]])
+ns.guides["Multi"] = mg
+E:LoadGuide("Multi", 1)
+check(E.waypoint and math.abs(E.waypoint.x - 0.10) < 1e-9, "arrow on the first NPC")
+check(E.waypoint.title and E.waypoint.title:find("A"), "arrow label names the first NPC")
+accept(501)
+check(E.stepIndex == 1 and math.abs(E.waypoint.x - 0.12) < 1e-9, "arrow moves to the second NPC")
+accept(502)
+check(E.stepIndex == 2, "multi-NPC step completes")
 
 -- Slash command smoke test
 SlashCmdList.FREEGOR("help")

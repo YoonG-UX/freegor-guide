@@ -36,9 +36,6 @@ accept 319
 accept 315
 lvl 8
 accept 310
-turnin 310
-accept 311
-turnin 311
 do 319
 +do 315
 turnin 319
@@ -48,6 +45,7 @@ accept 413
 do 287
 turnin 287
 accept 291
+turnin 310
 turnin 320
 
 # East: Gol'Bolar Quarry and Helm's Bed Lake

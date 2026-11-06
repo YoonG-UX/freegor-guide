@@ -10,34 +10,105 @@ step
   goto 1436 59.9,19.4
   talk Verna Furlbrow |n 238 |fr Verna Furlbrow
   accept 36 Westfall Stew |fr Le ragoût de la marche de l'Ouest
-step
+  accept 151 Poor Old Blanchy |fr Pauvre Vieille Blanchy !
   goto 1436 60.0,19.4
   talk Farmer Furlbrow |n 237 |fr Furlbrow le fermier
   accept 64 The Forgotten Heirloom |fr Le cadeau oublié
 step
+  goto 1436 57.3,18.6
+  collect Handful of Oats |q 151/1 |fr Poignée d'avoine
+step
   goto 1436 59.9,19.4
   talk Verna Furlbrow |n 238 |fr Verna Furlbrow
-  accept 151 Poor Old Blanchy |fr Pauvre Vieille Blanchy !
+  turnin 151 Poor Old Blanchy |fr Pauvre Vieille Blanchy !
 step
   goto 1436 56.4,30.5
   talk Salma Saldean |n 235 |fr Salma Saldean
   turnin 36 Westfall Stew |fr Le ragoût de la marche de l'Ouest
   accept 38 Westfall Stew |fr Le ragoût de la marche de l'Ouest
   accept 22 Goretusk Liver Pie |fr La tourte au foie de Broche-tripes
-step
   goto 1436 56.0,31.2
   talk Farmer Saldean |n 233 |fr Saldean le fermier
-  accept 9 The Killing Fields |fr Les champs de mort
   accept 109 Report to Gryan Stoutmantle |fr Aller voir Gryan Stoutmantle
 step
   goto 1436 56.3,47.5
   talk Gryan Stoutmantle |n 234 |fr Gryan Stoutmantle
   turnin 109 Report to Gryan Stoutmantle |fr Aller voir Gryan Stoutmantle
   accept 12 The People's Militia |fr La milice du peuple
-step
   goto 1436 56.4,47.6
   talk Captain Danuvin |n 821 |fr Capitaine Danuvin
   accept 102 Patrolling Westfall |fr Patrouilles dans la marche de l'Ouest
+step
+  goto 1436 56.5,52.6
+  talk Thor |n 523 |fr Thor
+  fpath Sentinel Hill |fr Colline des Sentinelles
+  goto 1436 54.0,53.0
+  talk Scout Galiaan |n 878 |fr Eclaireur Galiaan
+  accept 153 Red Leather Bandanas |fr Les masques en cuir rouge
+  goto 1436 52.9,53.7
+  talk Innkeeper Heather |n 8931 |fr Aubergiste Heather
+  home Sentinel Hill |fr Colline des Sentinelles
+step
+  goto 1436 49.0,46.3
+  kill Defias Trapper |q 12/1 |fr Trappeur défias
+  kill Defias Smuggler |q 12/2 |fr Contrebandier défias
+step
+  goto 1436 52.9,43.0
+  collect Goretusk Liver |q 22/1 |fr Foie de Broche-tripes
+  collect Stringy Vulture Meat |q 38/1 |fr Viande filandreuse de vautour
+  collect Murloc Eye |q 38/2 |fr Oeil de murloc
+  collect Goretusk Snout |q 38/3 |fr Groin de Broche-tripes
+  collect Okra |q 38/4 |fr Okra
+step
+  goto 1436 49.3,19.3
+  collect Furlbrow's Pocket Watch |q 64/1 |fr Montre de Furlbrow
+step
+  goto 1436 60.0,19.4
+  talk Farmer Furlbrow |n 237 |fr Furlbrow le fermier
+  turnin 64 The Forgotten Heirloom |fr Le cadeau oublié
+step
+  goto 1436 56.4,30.5
+  talk Salma Saldean |n 235 |fr Salma Saldean
+  turnin 22 Goretusk Liver Pie |fr La tourte au foie de Broche-tripes
+  turnin 38 Westfall Stew |fr Le ragoût de la marche de l'Ouest
+  goto 1436 56.0,31.2
+  talk Farmer Saldean |n 233 |fr Saldean le fermier
+  accept 9 The Killing Fields |fr Les champs de mort
+step
+  goto 1436 53.7,32.7
+  kill Harvest Watcher |q 9/1 |fr Gardien des moissons
+step
+  goto 1436 56.0,31.2
+  talk Farmer Saldean |n 233 |fr Saldean le fermier
+  turnin 9 The Killing Fields |fr Les champs de mort
+step
+  goto 1436 30.2,50.0
+  collect Gnoll Paw |q 102/1 |fr Patte de gnoll
+step
+  goto 1436 30.3,46.9
+  collect Red Leather Bandana |q 153/1 |fr Masque en cuir rouge
+step
+  goto 1436 54.0,53.0
+  talk Scout Galiaan |n 878 |fr Eclaireur Galiaan
+  turnin 153 Red Leather Bandanas |fr Les masques en cuir rouge
+step
+  goto 1436 56.4,47.6
+  talk Captain Danuvin |n 821 |fr Capitaine Danuvin
+  turnin 102 Patrolling Westfall |fr Patrouilles dans la marche de l'Ouest
+  goto 1436 56.3,47.5
+  talk Gryan Stoutmantle |n 234 |fr Gryan Stoutmantle
+  turnin 12 The People's Militia |fr La milice du peuple
+  accept 13 The People's Militia |fr La milice du peuple
+step
+  goto 1436 37.0,55.5
+  kill Defias Pillager |q 13/1 |fr Pilleur défias
+  kill Defias Looter |q 13/2 |fr Pillard défias
+step
+  goto 1436 56.3,47.5
+  talk Gryan Stoutmantle |n 234 |fr Gryan Stoutmantle
+  turnin 13 The People's Militia |fr La milice du peuple
+step
+  level 16
 step
   goto 1436 57.0,47.2
   talk Quartermaster Lewis |n 491 |fr Intendant Lewis
@@ -46,12 +117,7 @@ step
   goto 1436 56.5,52.6
   talk Thor |n 523 |fr Thor
   turnin 6181 A Swift Message |fr Un message rapide
-  fpath Sentinel Hill |fr Colline des Sentinelles
   accept 6281 Continue to Stormwind |fr Continuer vers Stormwind
-step
-  goto 1436 52.9,53.7
-  talk Innkeeper Heather |n 8931 |fr Aubergiste Heather
-  home Sentinel Hill |fr Colline des Sentinelles
   fly Stormwind |fr Hurlevent
 step
   goto 1453 77.2,61.0
@@ -63,80 +129,5 @@ step
   talk Dungar Longdrink |n 352 |fr Dungar Longdrink
   turnin 6261 Dungar Longdrink |fr Dungar Longdrink
   fpath Stormwind |fr Hurlevent
-  accept 6285 Return to Lewis |fr Aller voir Lewis
-  fly Sentinel Hill |fr Colline des Sentinelles
-step
-  goto 1436 57.0,47.2
-  talk Quartermaster Lewis |n 491 |fr Intendant Lewis
-  turnin 6285 Return to Lewis |fr Aller voir Lewis
-step
-  goto 1436 54.0,53.0
-  talk Scout Galiaan |n 878 |fr Eclaireur Galiaan
-  accept 153 Red Leather Bandanas |fr Les masques en cuir rouge
-step
-  goto 1436 46.0,22.2
-  kill Defias Trapper |q 12/1 |fr Trappeur défias
-  kill Defias Smuggler |q 12/2 |fr Contrebandier défias
-step
-  goto 1436 55.6,43.0
-  collect Goretusk Liver |q 22/1 |fr Foie de Broche-tripes
-  collect Stringy Vulture Meat |q 38/1 |fr Viande filandreuse de vautour
-  collect Murloc Eye |q 38/2 |fr Oeil de murloc
-  collect Goretusk Snout |q 38/3 |fr Groin de Broche-tripes
-  collect Okra |q 38/4 |fr Okra
-step
-  goto 1436 49.3,19.3
-  collect Furlbrow's Pocket Watch |q 64/1 |fr Montre de Furlbrow
-step
-  goto 1436 51.8,18.9
-  collect Handful of Oats |q 151/1 |fr Poignée d'avoine
-step
-  goto 1436 60.0,19.4
-  talk Farmer Furlbrow |n 237 |fr Furlbrow le fermier
-  turnin 64 The Forgotten Heirloom |fr Le cadeau oublié
-step
-  goto 1436 59.9,19.4
-  talk Verna Furlbrow |n 238 |fr Verna Furlbrow
-  turnin 151 Poor Old Blanchy |fr Pauvre Vieille Blanchy !
-step
-  goto 1436 56.4,30.5
-  talk Salma Saldean |n 235 |fr Salma Saldean
-  turnin 22 Goretusk Liver Pie |fr La tourte au foie de Broche-tripes
-  turnin 38 Westfall Stew |fr Le ragoût de la marche de l'Ouest
-step
-  goto 1436 38.6,51.5
-  kill Harvest Watcher |q 9/1 |fr Gardien des moissons
-step
-  goto 1436 56.0,31.2
-  talk Farmer Saldean |n 233 |fr Saldean le fermier
-  turnin 9 The Killing Fields |fr Les champs de mort
-step
-  goto 1436 61.5,74.4
-  collect Gnoll Paw |q 102/1 |fr Patte de gnoll
-step
-  goto 1436 43.3,69.1
-  collect Red Leather Bandana |q 153/1 |fr Masque en cuir rouge
-step
-  goto 1436 56.3,47.5
-  talk Gryan Stoutmantle |n 234 |fr Gryan Stoutmantle
-  turnin 12 The People's Militia |fr La milice du peuple
-  accept 13 The People's Militia |fr La milice du peuple
-step
-  goto 1436 56.4,47.6
-  talk Captain Danuvin |n 821 |fr Capitaine Danuvin
-  turnin 102 Patrolling Westfall |fr Patrouilles dans la marche de l'Ouest
-step
-  goto 1436 54.0,53.0
-  talk Scout Galiaan |n 878 |fr Eclaireur Galiaan
-  turnin 153 Red Leather Bandanas |fr Les masques en cuir rouge
-step
-  goto 1436 43.6,68.9
-  kill Defias Pillager |q 13/1 |fr Pilleur défias
-  kill Defias Looter |q 13/2 |fr Pillard défias
-step
-  goto 1436 56.3,47.5
-  talk Gryan Stoutmantle |n 234 |fr Gryan Stoutmantle
-  turnin 13 The People's Militia |fr La milice du peuple
-step
-  level 16
+  note Next: Redridge Mountains, east of Elwynn Forest. |fr Suite : Les Carmines, à l'est de la forêt d'Elwynn.
 ]])

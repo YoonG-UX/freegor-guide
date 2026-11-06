@@ -12,11 +12,22 @@ step
   goto 1439 36.6,45.6
   talk Gwennyth Bly'Leggonde |n 10219 |fr Gwennyth Bly'Leggonde
   accept 3524 Washed Ashore |fr Echouage
-step
+  goto 1439 36.3,45.6
+  talk Caylais Moonfeather |n 3841 |fr Caylais Moonfeather
+  fpath Auberdine
   goto 1439 37.0,44.1
   talk Wizbang Cranktoggle |n 3666 |fr Wizbang Cranktoggle
   accept 983 Buzzbox 827 |fr Bigobox 827
+  goto 1439 37.0,44.1
+  talk Innkeeper Shaussiy |n 6737 |fr Shaussiy l'aubergiste
+  home Auberdine
 step
+  goto 1439 37.7,43.4
+  talk Sentinel Glynda Nal'Shea |n 2930 |fr Sentinelle Glynda Nal'Shea
+  accept 4811 The Red Crystal |fr Le cristal rouge
+  goto 1439 38.8,43.4
+  talk Tharnariun Treetender |n 3701 |fr Tharnariun Treetender
+  accept 2118 Plagued Lands |fr Terres malades
   goto 1439 39.4,43.5
   talk Terenthis |n 3693 |fr Terenthis
   accept 984 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
@@ -26,23 +37,16 @@ step
   accept 954 Bashal'Aran |fr Bashal'Aran
   accept 958 Tools of the Highborne |fr Les outils des Bien-nés
 step
-  goto 1439 37.7,43.4
-  talk Sentinel Glynda Nal'Shea |n 2930 |fr Sentinelle Glynda Nal'Shea
-  accept 4811 The Red Crystal |fr Le cristal rouge
+  goto 1439 44.1,49.2
+  kill Rabid Thistle Bear Captured |q 2118/1
+  note Use Tharnariun's Trap on a Rabid Thistle Bear, then lead it back to Tharnariun in Auberdine |fr Utilisez le piège sur un Ours des chardons enragé, puis ramenez-le à Tharnariun à Auberdine
 step
   goto 1439 38.8,43.4
   talk Tharnariun Treetender |n 3701 |fr Tharnariun Treetender
-  accept 2118 Plagued Lands |fr Terres malades
+  turnin 2118 Plagued Lands |fr Terres malades
+  accept 2138 Cleansing of the Infected |fr Nettoyage de l'infection
 step
-  goto 1439 36.3,45.6
-  talk Caylais Moonfeather |n 3841 |fr Caylais Moonfeather
-  fpath Auberdine
-step
-  goto 1439 37.0,44.1
-  talk Innkeeper Shaussiy |n 6737 |fr Shaussiy l'aubergiste
-  home Auberdine
-step
-  goto 1439 35.8,50.8
+  goto 1439 36.3,40.9
   collect Crawler Leg |q 983/1 |fr Patte de clampant
 step
   goto 1439 36.4,50.9
@@ -91,10 +95,6 @@ step
   goto 1439 39.6,53.7
   do 984 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
 step
-  goto 1439 44.1,49.2
-  kill Rabid Thistle Bear Captured |q 2118/1
-  note Use Tharnariun's Trap on a Rabid Thistle Bear, then lead it back to Tharnariun in Auberdine |fr Utilisez le piège sur un Ours des chardons enragé, puis ramenez-le à Tharnariun à Auberdine
-step
   goto 1439 40.3,59.7
   talk Sentinel Tysha Moonblade |n 3639 |fr Sentinelle Tysha Moonblade
   accept 953 The Fall of Ameth'Aran |fr La chute d'Ameth'Aran
@@ -111,22 +111,11 @@ step
   talk Terenthis |n 3693 |fr Terenthis
   turnin 984 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
   accept 985 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
-step
-  goto 1439 37.4,40.1
-  talk Thundris Windweaver |n 3649 |fr Thundris Windweaver
-  turnin 958 Tools of the Highborne |fr Les outils des Bien-nés
-step
-  goto 1439 38.8,43.4
-  talk Tharnariun Treetender |n 3701 |fr Tharnariun Treetender
-  turnin 2118 Plagued Lands |fr Terres malades
-  accept 2138 Cleansing of the Infected |fr Nettoyage de l'infection
-step
-  goto 1439 39.4,43.5
-  talk Terenthis |n 3693 |fr Terenthis
   accept 4761 Thundris Windweaver |fr Thundris Windweaver
 step
   goto 1439 37.4,40.1
   talk Thundris Windweaver |n 3649 |fr Thundris Windweaver
+  turnin 958 Tools of the Highborne |fr Les outils des Bien-nés
   turnin 4761 Thundris Windweaver |fr Thundris Windweaver
   accept 4762 The Cliffspring River |fr La Bondissante
 step
@@ -134,7 +123,7 @@ step
   kill Blackwood Pathfinder |q 985/1 |fr Guide Noirbois
   kill Blackwood Windtalker |q 985/2 |fr Messager du Vent Noirbois
 step
-  goto 1439 48.6,31.4
+  goto 1439 38.9,59.5
   kill Rabid Thistle Bear |q 2138/1 |fr Ours des chardons enragé
 step
   collect Moonwell Water Tube |q 4812/1 |fr Tube d'eau du Puits de lune
@@ -146,7 +135,6 @@ step
   goto 1439 39.4,43.5
   talk Terenthis |n 3693 |fr Terenthis
   turnin 985 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
-step
   goto 1439 38.8,43.4
   talk Tharnariun Treetender |n 3701 |fr Tharnariun Treetender
   turnin 2138 Cleansing of the Infected |fr Nettoyage de l'infection

@@ -10,41 +10,38 @@ step
   goto 1432 22.1,73.1
   talk Mountaineer Cobbleflint |n 1089 |fr Montagnard Cobbleflint
   accept 224 In Defense of the King's Lands |fr À la défense des terres du roi
-step
   goto 1432 23.2,73.7
   talk Captain Rugelfuss |n 1092 |fr Capitaine Rugelfuss
   accept 267 The Trogg Threat |fr La menace trogg
 step
-  goto 1432 32.6,73.9
+  goto 1432 31.8,73.4
   kill Stonesplinter Trogg |q 224/1 |fr Trogg Brisepierre
   kill Stonesplinter Scout |q 224/2 |fr Eclaireur Brisepierre
   collect Trogg Stone Tooth |q 267/1 |fr Dent de pierre de trogg
 step
-  goto 1432 22.1,73.1
-  talk Mountaineer Cobbleflint |n 1089 |fr Montagnard Cobbleflint
-  turnin 224 In Defense of the King's Lands |fr À la défense des terres du roi
-step
   goto 1432 23.2,73.7
   talk Captain Rugelfuss |n 1092 |fr Capitaine Rugelfuss
   turnin 267 The Trogg Threat |fr La menace trogg
+  goto 1432 22.1,73.1
+  talk Mountaineer Cobbleflint |n 1089 |fr Montagnard Cobbleflint
+  turnin 224 In Defense of the King's Lands |fr À la défense des terres du roi
 step
   goto 1432 23.5,76.4
   talk Mountaineer Gravelgaw |n 1091 |fr Montagnard Gravelgaw
   accept 237 In Defense of the King's Lands |fr À la défense des terres du roi
 step
-  goto 1432 31.8,85.5
+  goto 1432 28.5,83.5
   kill Stonesplinter Skullthumper |q 237/1 |fr Brise-crâne Brisepierre
   kill Stonesplinter Seer |q 237/2 |fr Prophète Brisepierre
 step
   goto 1432 23.5,76.4
   talk Mountaineer Gravelgaw |n 1091 |fr Montagnard Gravelgaw
   turnin 237 In Defense of the King's Lands |fr À la défense des terres du roi
-step
   goto 1432 23.5,74.5
   talk Mountaineer Wallbang |n 1090 |fr Montagnard Wallbang
   accept 263 In Defense of the King's Lands |fr À la défense des terres du roi
 step
-  goto 1432 35.9,91.8
+  goto 1432 35.4,92.8
   kill Stonesplinter Shaman |q 263/1 |fr Chaman Brisepierre
   kill Stonesplinter Bonesnapper |q 263/2 |fr Briseur d’os Brisepierre
 step
@@ -52,28 +49,25 @@ step
   talk Mountaineer Wallbang |n 1090 |fr Montagnard Wallbang
   turnin 263 In Defense of the King's Lands |fr À la défense des terres du roi
 step
+  goto 1432 33.9,51.0
+  talk Thorgrum Borrelson |n 1572 |fr Thorgrum Borrelson
+  fpath Thelsamar
+  goto 1432 34.8,49.3
+  talk Vidra Hearthstove |n 1963 |fr Vidra Hearthstove
+  accept 418 Thelsamar Blood Sausages |fr Les boudins de Thelsamar
+  goto 1432 35.5,48.4
+  talk Innkeeper Hearthstove |n 6734 |fr Hearthstove l'aubergiste
+  home Thelsamar
   goto 1432 34.2,47.8
   talk Mountaineer Kadrell |n 1340 |fr Montagnard Kadrell
   turnin 414 Stout to Kadrell |fr Bière à Kadrell
   accept 416 Rat Catching |fr Chasse au rat
   accept 1339 Mountaineer Stormpike's Task |fr La mission du Montagnard Stormpike
 step
-  goto 1432 34.8,49.3
-  talk Vidra Hearthstove |n 1963 |fr Vidra Hearthstove
-  accept 418 Thelsamar Blood Sausages |fr Les boudins de Thelsamar
-step
-  goto 1432 33.9,51.0
-  talk Thorgrum Borrelson |n 1572 |fr Thorgrum Borrelson
-  fpath Thelsamar
-step
-  goto 1432 35.5,48.4
-  talk Innkeeper Hearthstove |n 6734 |fr Hearthstove l'aubergiste
-  home Thelsamar
-step
-  goto 1432 36.5,21.0
+  goto 1432 36.4,26.2
   collect Tunnel Rat Ear |q 416/1 |fr Oreille de Rat des tunnels
 step
-  goto 1432 35.9,33.4
+  goto 1432 34.6,31.4
   collect Boar Intestines |q 418/1 |fr Tripes de sanglier
   collect Bear Meat |q 418/2 |fr Viande d'ours
   collect Spider Ichor |q 418/3 |fr Ichor d'araignée
@@ -83,7 +77,7 @@ step
   turnin 1339 Mountaineer Stormpike's Task |fr La mission du Montagnard Stormpike
   accept 307 Filthy Paws |fr Bas les pattes !
 step
-  goto 1432 35.5,24.3
+  goto 1432 35.7,22.7
   collect Miners' Gear |q 307/1 |fr Equipement de mineur
 step
   goto 1432 24.8,18.4
@@ -93,7 +87,6 @@ step
   goto 1432 34.2,47.8
   talk Mountaineer Kadrell |n 1340 |fr Montagnard Kadrell
   turnin 416 Rat Catching |fr Chasse au rat
-step
   goto 1432 34.8,49.3
   talk Vidra Hearthstove |n 1963 |fr Vidra Hearthstove
   turnin 418 Thelsamar Blood Sausages |fr Les boudins de Thelsamar
@@ -110,10 +103,14 @@ step
   talk Daryl the Youngling |n 1187 |fr Daryl le Jeune
   accept 257 A Hunter's Boast |fr La fanfaronnade d'un chasseur
 step
-  goto 1432 55.8,38.1
+  goto 1432 55.1,53.9
   collect Crocolisk Meat |q 385/1 |fr Viande de crocilisque
   collect Crocolisk Skin |q 385/2 |fr Peau de crocilisque
   kill Mountain Buzzard |q 257/1 |fr Busard des montagnes
+step
+  goto 1432 37.2,47.4
+  talk Jern Hornhelm |n 1105 |fr Jern Hornhelm
+  turnin 298 Excavation Progress Report |fr Compte rendu d'avancement des fouilles
 step
   goto 1432 81.8,61.7
   talk Marek Ironheart |n 1154 |fr Marek Ironheart
@@ -122,10 +119,6 @@ step
   goto 1432 83.5,65.5
   talk Daryl the Youngling |n 1187 |fr Daryl le Jeune
   turnin 257 A Hunter's Boast |fr La fanfaronnade d'un chasseur
-step
-  goto 1432 37.2,47.4
-  talk Jern Hornhelm |n 1105 |fr Jern Hornhelm
-  turnin 298 Excavation Progress Report |fr Compte rendu d'avancement des fouilles
 step
   level 16
 step

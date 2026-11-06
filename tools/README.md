@@ -43,3 +43,18 @@ chaîne `main` reprend les quêtes de toutes les chaînes de départ.
 | `only <classes/races>` | Restreint la prochaine étape |
 | `level <n>` | Étape « atteindre le niveau n » |
 | `lvl <n>` | Niveau attendu à ce point (pour les vérifications, sans créer d'étape) |
+| `step` | Coupure : sépare deux groupes de visites de PNJ |
+
+## Regroupement automatique
+
+Les visites de PNJ qui se suivent dans un parcours (prendre ou rendre des quêtes, foyer,
+point de vol) forment un groupe. Le générateur réordonne chaque groupe : il fait tout ce qui
+est possible chez un PNJ, puis va au PNJ le plus proche qui a quelque chose de disponible,
+sans jamais prendre une quête avant son prérequis. Les PNJ proches les uns des autres sont
+réunis dans une même étape ; la flèche passe de l'un à l'autre au fil des quêtes.
+Un `fly` ou un `hearth` termine le groupe.
+
+Pour les objectifs, le générateur choisit la zone dense de monstres ou d'objets la plus proche
+de l'endroit où se trouve le joueur à ce moment du parcours. Il signale aussi les quêtes dont
+les objectifs sont à côté de leur donneur mais que le parcours ne fait qu'après un détour, et
+les PNJ revisités juste après (normalement seulement quand un prérequis l'impose).

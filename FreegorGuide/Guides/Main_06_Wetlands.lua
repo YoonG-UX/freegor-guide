@@ -12,47 +12,43 @@ step
   goto 1437 9.5,59.7
   talk Shellei Brondir |n 1571 |fr Shellei Brondir
   fpath Menethil Harbor |fr Menethil
-step
+  goto 1437 10.9,59.6
+  talk First Mate Fitzsimmons |n 1239 |fr Premier officier Fitzsimmons
+  accept 463 The Greenwarden |fr Le Gouverneur vert
+  accept 288 The Third Fleet |fr La IIIe flotte
   goto 1437 10.7,61.0
   talk Innkeeper Helbrek |n 1464 |fr Helbrek l'aubergiste
   home Menethil Harbor |fr Menethil
-step
-  goto 1437 8.3,58.6
-  talk Karl Boran |n 1242 |fr Karl Boran
-  accept 279 Claws from the Deep |fr Griffes des profondeurs
-step
-  goto 1437 8.6,55.7
-  talk James Halloran |n 2094 |fr James Halloran
-  accept 484 Young Crocolisk Skins |fr Les peaux de jeune crocilisque
 step
   goto 1437 11.8,58.0
   talk Sida |n 2111 |fr Sidonie
   accept 470 Digging Through the Ooze |fr En creusant dans la vase
 step
+  goto 1437 8.3,58.6
+  talk Karl Boran |n 1242 |fr Karl Boran
+  accept 279 Claws from the Deep |fr Griffes des profondeurs
+  goto 1437 8.6,55.7
+  talk James Halloran |n 2094 |fr James Halloran
+  accept 484 Young Crocolisk Skins |fr Les peaux de jeune crocilisque
+step
   goto 1437 11.5,52.2
   talk Tarrel Rockweaver |n 2096 |fr Tarrel Rockweaver
   accept 305 In Search of The Excavation Team |fr À la recherche de l'équipe de fouilles
 step
-  goto 1437 10.9,59.6
-  talk First Mate Fitzsimmons |n 1239 |fr Premier officier Fitzsimmons
-  accept 463 The Greenwarden |fr Le Gouverneur vert
-  accept 288 The Third Fleet |fr La IIIe flotte
-step
-  goto 1437 15.6,40.1
+  goto 1437 14.1,40.1
   kill Bluegill Murloc |q 279 |fr Murloc Branchie-bleue
   collect Gobbler's Head |q 279 |fr Tête d'Enfourneur
   collect Young Crocolisk Skin |q 484/1 |fr Peau de jeune crocilisque
   collect Sida's Bag |q 470/1 |fr Sac de Sidonie
 step
-  goto 1437 8.3,58.6
-  talk Karl Boran |n 1242 |fr Karl Boran
-  turnin 279 Claws from the Deep |fr Griffes des profondeurs
-  accept 281 Reclaiming Goods |fr Récupération de marchandises
-step
   goto 1437 8.6,55.7
   talk James Halloran |n 2094 |fr James Halloran
   turnin 484 Young Crocolisk Skins |fr Les peaux de jeune crocilisque
   accept 471 Apprentice's Duties |fr Les devoirs de l'apprenti
+  goto 1437 8.3,58.6
+  talk Karl Boran |n 1242 |fr Karl Boran
+  turnin 279 Claws from the Deep |fr Griffes des profondeurs
+  accept 281 Reclaiming Goods |fr Récupération de marchandises
 step
   goto 1437 11.8,58.0
   talk Sida |n 2111 |fr Sidonie
@@ -82,16 +78,15 @@ step
   note Click on Half-buried Barrel |fr Cliquez sur : Tonneau à moitié enseveli
   accept 286 Return the Statuette |fr Rapporter la statuette
 step
+  goto 1437 38.2,50.9
+  talk Ormer Ironbraid |n 1078 |fr Ormer Ironbraid
+  accept 294 Ormer's Revenge |fr La vengeance d'Ormer
   goto 1437 38.9,52.3
   talk Merrin Rockweaver |n 1076 |fr Merrin Rockweaver
   turnin 305 In Search of The Excavation Team |fr À la recherche de l'équipe de fouilles
   accept 306 In Search of The Excavation Team |fr À la recherche de l'équipe de fouilles
 step
-  goto 1437 38.2,50.9
-  talk Ormer Ironbraid |n 1078 |fr Ormer Ironbraid
-  accept 294 Ormer's Revenge |fr La vengeance d'Ormer
-step
-  goto 1437 23.7,50.9
+  goto 1437 28.3,45.4
   kill Mottled Raptor |q 294/1 |fr Raptor tacheté
   kill Mottled Screecher |q 294/2 |fr Hurleur tacheté
 step
@@ -105,7 +100,7 @@ step
   turnin 463 The Greenwarden |fr Le Gouverneur vert
   accept 276 Tramping Paws |fr Piétinements de pattes
 step
-  goto 1437 60.3,72.5
+  goto 1437 62.1,60.1
   kill Mosshide Gnoll |q 276/1 |fr Gnoll Poil-moussu
   kill Mosshide Mongrel |q 276/2 |fr Bâtard Poil-moussu
 step
@@ -114,7 +109,7 @@ step
   turnin 276 Tramping Paws |fr Piétinements de pattes
   accept 277 Fire Taboo |fr Feu interdit
 step
-  goto 1437 34.8,31.1
+  goto 1437 44.0,33.5
   collect Crude Flint |q 277/1 |fr Silex brut
   kill Mottled Scytheclaw |q 295/1 |fr Faucheur tacheté
   kill Mottled Razormaw |q 295/2 |fr Tranchegueule tacheté
@@ -128,28 +123,25 @@ step
   talk Ormer Ironbraid |n 1078 |fr Ormer Ironbraid
   turnin 295 Ormer's Revenge |fr La vengeance d'Ormer
 step
-  goto 1437 17.9,26.0
+  goto 1437 17.2,27.2
   collect Giant Crocolisk Skin |q 471/1 |fr Peau de crocilisque géant
 step
   goto 1437 11.5,52.2
   talk Tarrel Rockweaver |n 2096 |fr Tarrel Rockweaver
   turnin 306 In Search of The Excavation Team |fr À la recherche de l'équipe de fouilles
 step
-  goto 1437 8.3,58.6
-  talk Karl Boran |n 1242 |fr Karl Boran
-  turnin 286 Return the Statuette |fr Rapporter la statuette
-step
-  goto 1437 10.7,61.0
-  talk Innkeeper Helbrek |n 1464 |fr Helbrek l'aubergiste
-  buy Flagon of Mead |fr Cruche d'hydromiel nain
-step
-  goto 1437 10.9,59.6
-  talk First Mate Fitzsimmons |n 1239 |fr Premier officier Fitzsimmons
-  turnin 288 The Third Fleet |fr La IIIe flotte
-step
   goto 1437 8.6,55.7
   talk James Halloran |n 2094 |fr James Halloran
   turnin 471 Apprentice's Duties |fr Les devoirs de l'apprenti
+  goto 1437 8.3,58.6
+  talk Karl Boran |n 1242 |fr Karl Boran
+  turnin 286 Return the Statuette |fr Rapporter la statuette
+  goto 1437 10.9,59.6
+  talk First Mate Fitzsimmons |n 1239 |fr Premier officier Fitzsimmons
+  turnin 288 The Third Fleet |fr La IIIe flotte
+  goto 1437 10.7,61.0
+  talk Innkeeper Helbrek |n 1464 |fr Helbrek l'aubergiste
+  buy Flagon of Mead |fr Cruche d'hydromiel nain
 step
   level 28
 ]])

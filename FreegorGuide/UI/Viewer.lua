@@ -4,7 +4,7 @@ local Engine = ns.Engine
 
 -- Main guide window: current step, its goals with live progress, navigation.
 
-local WIDTH, LINE_H, MAX_LINES = 330, 20, 10
+local WIDTH, LINE_H, MAX_LINES = 330, 20, 16
 
 local backdrop = BackdropTemplateMixin and "BackdropTemplate" or nil
 local V = CreateFrame("Frame", "FreegorViewer", UIParent, backdrop)
@@ -113,7 +113,10 @@ for i = 1, MAX_LINES do
   b.prog:SetPoint("RIGHT")
   b:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
   b:SetScript("OnClick", function(self)
-    if self.goal and self.goal.type == "goto" then Engine:SetWaypointFromGoal(self.goal) end
+    if self.goal and self.goal.type == "goto" then
+      Engine.manualWaypoint = true
+      Engine:SetWaypointFromGoal(self.goal)
+    end
   end)
   b:SetScript("OnEnter", function(self)
     if not self.text:IsTruncated() then return end

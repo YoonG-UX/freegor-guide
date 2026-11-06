@@ -13,20 +13,26 @@ step
   talk Watcher Dodds |n 888 |fr Gardien Dodds
   accept 245 Eight-Legged Menaces |fr Les plaies à huit pattes
 step
-  goto 1431 10.7,55.5
+  goto 1431 11.8,68.5
   kill Pygmy Venom Web Spider |q 245/1 |fr Araignée Tisse-venin pygmée
 step
   goto 1431 45.1,67.0
   talk Watcher Dodds |n 888 |fr Gardien Dodds
   turnin 245 Eight-Legged Menaces |fr Les plaies à huit pattes
 step
-  goto 1431 77.5,44.3
-  talk Felicia Maline |n 2409 |fr Felicia Maline
-  fpath Darkshire
-step
+  goto 1431 73.5,46.8
+  talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
+  accept 56 The Night Watch |fr Les Veilleurs
   goto 1431 73.9,44.4
   talk Innkeeper Trelayne |n 6790 |fr Trelayne l'aubergiste
   home Darkshire
+  goto 1431 73.8,43.5
+  talk Chef Grual |n 272 |fr Chef Grual
+  accept 90 Seasoned Wolf Kabobs |fr Kébab de loup assaisonné
+step
+  goto 1431 77.5,44.3
+  talk Felicia Maline |n 2409 |fr Felicia Maline
+  fpath Darkshire
 step
   goto 1431 75.3,48.8
   talk Elaine Carevin |n 633 |fr Elaine Carevin
@@ -34,15 +40,7 @@ step
   accept 164 Deliveries to Sven |fr Livraison à Sven
   accept 165 The Hermit |fr L'ermite
 step
-  goto 1431 73.5,46.8
-  talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
-  accept 56 The Night Watch |fr Les Veilleurs
-step
-  goto 1431 73.8,43.5
-  talk Chef Grual |n 272 |fr Chef Grual
-  accept 90 Seasoned Wolf Kabobs |fr Kébab de loup assaisonné
-step
-  goto 1431 79.4,70.8
+  goto 1431 79.7,68.7
   kill Skeletal Warrior |q 56/1 |fr Guerrier squelette
   kill Skeletal Mage |q 56/2 |fr Mage squelette
 step
@@ -55,25 +53,11 @@ step
   talk Sven Yorgen |n 311 |fr Sven Yorgen
   turnin 164 Deliveries to Sven |fr Livraison à Sven
   accept 95 Sven's Revenge |fr La vengeance de Sven
-step
   goto 1431 7.7,33.2
   talk Lars |n 893 |fr Lars
   accept 226 Wolves at Our Heels |fr Des loups aux trousses
 step
-  goto 1431 49.9,77.7
-  note Click on Mound of loose dirt |fr Cliquez sur : Monticule de poussière
-  turnin 95 Sven's Revenge |fr La vengeance de Sven
-step
-  goto 1431 49.9,77.7
-  note Click on Mound of loose dirt |fr Cliquez sur : Monticule de poussière
-  accept 230 Sven's Camp |fr Le camp de Sven
-step
-  goto 1431 7.8,34.1
-  talk Sven Yorgen |n 311 |fr Sven Yorgen
-  turnin 230 Sven's Camp |fr Le camp de Sven
-  accept 262 The Shadowy Figure |fr L'obscure silhouette
-step
-  goto 1431 20.0,26.2
+  goto 1431 12.5,29.9
   kill Starving Dire Wolf |q 226/1 |fr Loup redoutable affamé
   kill Rabid Dire Wolf |q 226/2 |fr Loup redoutable enragé
   collect Lean Wolf Flank |q 90/1 |fr Steak de loup
@@ -83,10 +67,13 @@ step
   talk Lars |n 893 |fr Lars
   turnin 226 Wolves at Our Heels |fr Des loups aux trousses
 step
-  goto 1431 28.1,31.5
-  talk Abercrombie |n 289 |fr Abercrombie
-  turnin 165 The Hermit |fr L'ermite
-  accept 148 Supplies from Darkshire |fr Fournitures en provenance de Darkshire
+  goto 1431 49.9,77.7
+  note Click on Mound of loose dirt |fr Cliquez sur : Monticule de poussière
+  turnin 95 Sven's Revenge |fr La vengeance de Sven
+step
+  goto 1431 49.9,77.7
+  note Click on Mound of loose dirt |fr Cliquez sur : Monticule de poussière
+  accept 230 Sven's Camp |fr Le camp de Sven
 step
   goto 1431 73.5,46.8
   talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
@@ -96,6 +83,17 @@ step
   talk Chef Grual |n 272 |fr Chef Grual
   turnin 5 Jitters' Growling Gut |fr L'estomac qui gargouille
   accept 93 Dusky Crab Cakes |fr Gâteaux au crabe brun
+  turnin 90 Seasoned Wolf Kabobs |fr Kébab de loup assaisonné
+step
+  goto 1431 28.1,31.5
+  talk Abercrombie |n 289 |fr Abercrombie
+  turnin 165 The Hermit |fr L'ermite
+  accept 148 Supplies from Darkshire |fr Fournitures en provenance de Darkshire
+step
+  goto 1431 7.8,34.1
+  talk Sven Yorgen |n 311 |fr Sven Yorgen
+  turnin 230 Sven's Camp |fr Le camp de Sven
+  accept 262 The Shadowy Figure |fr L'obscure silhouette
 step
   goto 1431 75.8,45.3
   talk Madame Eva |n 265 |fr Madame Eva
@@ -108,15 +106,10 @@ step
   talk Clerk Daltry |n 267 |fr Greffier Daltry
   turnin 265 The Shadowy Search Continues |fr L'obscure recherche se poursuit
   accept 266 Inquire at the Inn |fr Une enquête à l'auberge
-step
   goto 1431 73.8,44.5
   talk Tavernkeep Smitts |n 273 |fr Smitts l'aubergiste
   turnin 266 Inquire at the Inn |fr Une enquête à l'auberge
   accept 453 Finding the Shadowy Figure |fr À la recherche de l'Obscure Silhouette
-step
-  goto 1431 73.8,43.5
-  talk Chef Grual |n 272 |fr Chef Grual
-  turnin 90 Seasoned Wolf Kabobs |fr Kébab de loup assaisonné
 step
   goto 1431 82.0,59.1
   talk Blind Mary |n 302 |fr Marie l'aveugle
@@ -128,13 +121,18 @@ step
   turnin 154 Return the Comb |fr Rendre le peigne
   accept 157 Deliver the Thread |fr Apporter la mèche
 step
-  goto 1431 30.1,51.0
+  goto 1431 83.2,53.2
   collect Gooey Spider Leg |q 93/1 |fr Patte d'araignée fondante
 step
   goto 1431 73.8,43.5
   talk Chef Grual |n 272 |fr Chef Grual
   turnin 93 Dusky Crab Cakes |fr Gâteaux au crabe brun
   accept 240 Return to Jitters |fr Retour vers la Tremblotte
+step
+  goto 1431 28.1,31.5
+  talk Abercrombie |n 289 |fr Abercrombie
+  turnin 157 Deliver the Thread |fr Apporter la mèche
+  accept 158 Zombie Juice |fr Suc de zombie
 step
   goto 1431 18.4,56.4
   talk Jitters |n 288 |fr La Tremblotte
@@ -145,11 +143,6 @@ step
   goto 1431 7.8,34.1
   talk Sven Yorgen |n 311 |fr Sven Yorgen
   turnin 268 Return to Sven |fr Retourner voir Sven
-step
-  goto 1431 28.1,31.5
-  talk Abercrombie |n 289 |fr Abercrombie
-  turnin 157 Deliver the Thread |fr Apporter la mèche
-  accept 158 Zombie Juice |fr Suc de zombie
 step
   level 25
 ]])

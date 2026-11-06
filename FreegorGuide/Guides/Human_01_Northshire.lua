@@ -11,12 +11,10 @@ step
   goto 1429 48.2,42.9
   talk Deputy Willem |n 823 |fr Adjoint Willem
   accept 783 A Threat Within |fr Menace intérieure
-step
   goto 1429 48.9,41.6
   talk Marshal McBride |n 197 |fr Maréchal McBride
   turnin 783 A Threat Within |fr Menace intérieure
   accept 7 Kobold Camp Cleanup |fr Nettoyer le camp des kobolds
-step
   goto 1429 48.2,42.9
   talk Deputy Willem |n 823 |fr Adjoint Willem
   accept 5261 Eagan Peltskinner |fr Eagan le tanneur
@@ -34,15 +32,13 @@ step
   goto 1429 48.9,40.2
   talk Eagan Peltskinner |n 196 |fr Eagan Peltskinner
   turnin 33 Wolves Across the Border |fr Les loups derrière la frontière
-step
-  goto 1429 48.2,42.9
-  talk Deputy Willem |n 823 |fr Adjoint Willem
-  accept 3903 Milly Osworth |fr Milly Osworth
-step
   goto 1429 48.9,41.6
   talk Marshal McBride |n 197 |fr Maréchal McBride
   turnin 7 Kobold Camp Cleanup |fr Nettoyer le camp des kobolds
   accept 15 Investigate Echo Ridge |fr Enquête sur la crête aux échos
+  goto 1429 48.2,42.9
+  talk Deputy Willem |n 823 |fr Adjoint Willem
+  accept 3903 Milly Osworth |fr Milly Osworth
 step
   goto 1429 50.7,39.4
   talk Milly Osworth |n 9296 |fr Milly Osworth
@@ -52,24 +48,23 @@ step
   goto 1429 54.0,48.9
   collect Milly's Harvest |q 3904/1 |fr Récolte de Milly
 step
-  goto 1429 54.0,48.2
+  goto 1429 53.8,48.7
   collect Red Burlap Bandana |q 18/1 |fr Masque rouge
-step
-  goto 1429 50.7,39.4
-  talk Milly Osworth |n 9296 |fr Milly Osworth
-  turnin 3904 Milly's Harvest |fr Les vendanges de Milly
-  accept 3905 Grape Manifest |fr Manifeste des vendanges
 step
   goto 1429 48.2,42.9
   talk Deputy Willem |n 823 |fr Adjoint Willem
   turnin 18 Brotherhood of Thieves |fr La confrérie des voleurs
   accept 6 Bounty on Garrick Padfoot |fr La prime pour Garrick Padfoot
 step
+  goto 1429 50.7,39.4
+  talk Milly Osworth |n 9296 |fr Milly Osworth
+  turnin 3904 Milly's Harvest |fr Les vendanges de Milly
+  accept 3905 Grape Manifest |fr Manifeste des vendanges
   goto 1429 49.5,41.6
   talk Brother Neals |n 952 |fr Frère Neals
   turnin 3905 Grape Manifest |fr Manifeste des vendanges
 step
-  goto 1429 48.9,34.6
+  goto 1429 49.8,35.8
   kill Kobold Worker |q 15/1 |fr Ouvrier kobold
 step
   goto 1429 57.5,48.2
@@ -78,13 +73,12 @@ step
   goto 1429 48.2,42.9
   talk Deputy Willem |n 823 |fr Adjoint Willem
   turnin 6 Bounty on Garrick Padfoot |fr La prime pour Garrick Padfoot
-step
   goto 1429 48.9,41.6
   talk Marshal McBride |n 197 |fr Maréchal McBride
   turnin 15 Investigate Echo Ridge |fr Enquête sur la crête aux échos
   accept 21 Skirmish at Echo Ridge |fr La bataille de la Crête aux échos
 step
-  goto 1429 48.9,28.3
+  goto 1429 48.5,29.3
   kill Kobold Laborer |q 21/1 |fr Travailleur kobold
 step
   goto 1429 48.9,41.6

@@ -17,58 +17,55 @@ step
   talk Deputy Feldon |n 1070 |fr Adjoint Feldon
   turnin 244 Encroaching Gnolls |fr Des gnolls encombrants
   accept 246 Assessing the Threat |fr L'appréciation du danger
-step
   goto 1433 25.5,59.4
   talk Ariena Stormfeather |n 931 |fr Ariena Stormfeather
   fpath Lakeshire
-step
-  goto 1433 27.1,48.6
-  talk Foreman Oslow |n 341 |fr Contremaître Oslow
-  accept 125 The Lost Tools |fr Les outils perdus
-step
-  goto 1433 17.6,43.8
-  talk Chef Breanna |n 343 |fr Chef Breanna
-  accept 92 Redridge Goulash |fr Goulash des Carmines
 step
   goto 1433 24.2,53.6
   talk Shawn |n 8965 |fr Shawn
   accept 3741 Hilary's Necklace |fr Le collier d'Hilary
 step
-  goto 1433 21.4,44.0
-  talk Barkeep Daniels |n 346 |fr Tavernier Daniels
-  accept 116 Dry Times |fr Régime sec
+  goto 1433 27.1,48.6
+  talk Foreman Oslow |n 341 |fr Contremaître Oslow
+  accept 125 The Lost Tools |fr Les outils perdus
 step
   goto 1433 22.6,47.4
   talk Dockmaster Baren |n 381 |fr Chef des docks Baren
   accept 127 Selling Fish |fr Criée aux poissons
-step
   goto 1433 21.9,44.8
   talk Innkeeper Brianna |n 6727 |fr Brianna l'aubergiste
   home Lakeshire
+  goto 1433 21.4,44.0
+  talk Barkeep Daniels |n 346 |fr Tavernier Daniels
+  accept 116 Dry Times |fr Régime sec
+step
+  goto 1433 17.6,43.8
+  talk Chef Breanna |n 343 |fr Chef Breanna
+  accept 92 Redridge Goulash |fr Goulash des Carmines
+step
+  goto 1433 20.4,53.3
+  collect Hilary's Necklace |q 3741/1 |fr Collier d'Hilary
 step
   goto 1433 36.4,54.7
   collect Oslow's Toolbox |q 125/1 |fr Boîte d'outils d'Oslow
 step
-  goto 1433 36.5,50.2
+  goto 1433 35.6,52.0
   collect Spotted Sunfish |q 127/1 |fr Poisson-lune
-step
-  goto 1433 20.1,53.8
-  collect Hilary's Necklace |q 3741/1 |fr Collier d'Hilary
 step
   goto 1433 27.1,48.6
   talk Foreman Oslow |n 341 |fr Contremaître Oslow
   turnin 125 The Lost Tools |fr Les outils perdus
   accept 89 The Everstill Bridge |fr Le pont sur le lac
 step
-  goto 1433 24.1,53.6
-  talk Hilary |n 8962 |fr Hilary
-  turnin 3741 Hilary's Necklace |fr Le collier d'Hilary
-step
   goto 1433 22.6,47.4
   talk Dockmaster Baren |n 381 |fr Chef des docks Baren
   turnin 127 Selling Fish |fr Criée aux poissons
 step
-  goto 1433 26.6,82.6
+  goto 1433 24.1,53.6
+  talk Hilary |n 8962 |fr Hilary
+  turnin 3741 Hilary's Necklace |fr Le collier d'Hilary
+step
+  goto 1433 10.5,62.9
   kill Redridge Mongrel |q 246/1 |fr Bâtard des Carmines
   kill Redridge Poacher |q 246/2 |fr Braconnier des Carmines
   collect Great Goretusk Snout |q 92/1 |fr Groin de grand Broche-tripes
@@ -83,15 +80,15 @@ step
   talk Deputy Feldon |n 1070 |fr Adjoint Feldon
   turnin 246 Assessing the Threat |fr L'appréciation du danger
 step
-  goto 1433 17.6,43.8
-  talk Chef Breanna |n 343 |fr Chef Breanna
-  turnin 92 Redridge Goulash |fr Goulash des Carmines
-step
   goto 1433 21.4,44.0
   talk Barkeep Daniels |n 346 |fr Tavernier Daniels
   turnin 116 Dry Times |fr Régime sec
 step
-  goto 1433 20.1,28.8
+  goto 1433 17.6,43.8
+  talk Chef Breanna |n 343 |fr Chef Breanna
+  turnin 92 Redridge Goulash |fr Goulash des Carmines
+step
+  goto 1433 17.7,36.9
   collect Iron Pike |q 89/1 |fr Clou en fer
   collect Iron Rivet |q 89/2 |fr Vis en fer
 step

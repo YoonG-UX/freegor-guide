@@ -9,38 +9,36 @@ step
   goto 1431 73.5,46.8
   talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
   accept 57 The Night Watch |fr Les Veilleurs
-step
   goto 1431 75.8,47.6
   talk Calor |n 663 |fr Calor
   accept 173 Worgen in the Woods |fr Worgens dans les bois
 step
-  goto 1431 20.6,45.9
+  goto 1431 80.7,58.6
   kill Skeletal Fiend |q 57/1 |fr Démon squelette
   kill Skeletal Horror |q 57/2 |fr Squelette infernal
   kill Nightbane Shadow Weaver |q 173/1 |fr Tisseur d'ombre Plaie-de-nuit
-step
-  goto 1431 73.5,46.8
-  talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
-  turnin 57 The Night Watch |fr Les Veilleurs
 step
   goto 1431 75.8,47.6
   talk Calor |n 663 |fr Calor
   turnin 173 Worgen in the Woods |fr Worgens dans les bois
   accept 221 Worgen in the Woods |fr Worgens dans les bois
+  goto 1431 73.5,46.8
+  talk Commander Althea Ebonlocke |n 264 |fr Commandant Althea Ebonlocke
+  turnin 57 The Night Watch |fr Les Veilleurs
 step
-  goto 1431 64.1,73.9
+  goto 1431 65.1,49.5
   kill Nightbane Dark Runner |q 221/1 |fr Messager Plaie-de-nuit
-step
-  goto 1431 75.8,47.6
-  talk Calor |n 663 |fr Calor
-  turnin 221 Worgen in the Woods |fr Worgens dans les bois
 step
   goto 1431 73.8,44.5
   talk Tavernkeep Smitts |n 273 |fr Smitts l'aubergiste
   turnin 158 Zombie Juice |fr Suc de zombie
   accept 156 Gather Rot Blossoms |fr Cueillette de Racines pourries
 step
-  goto 1431 20.6,45.9
+  goto 1431 75.8,47.6
+  talk Calor |n 663 |fr Calor
+  turnin 221 Worgen in the Woods |fr Worgens dans les bois
+step
+  goto 1431 80.7,58.6
   collect Rot Blossom |q 156/1 |fr Racine pourrie
 step
   goto 1431 73.8,44.5
@@ -53,7 +51,7 @@ step
   turnin 159 Juice Delivery |fr Livrer le Suc
   accept 133 Ghoulish Effigy |fr L'épouvantail à goules
 step
-  goto 1431 24.1,34.6
+  goto 1431 24.6,33.8
   collect Ghoul Rib |q 133/1 |fr Côte de goule
 step
   goto 1431 28.1,31.5
@@ -77,7 +75,7 @@ step
   talk Guard Howe |n 903 |fr Garde Howe
   accept 128 Blackrock Bounty |fr La prime Blackrock
 step
-  goto 1433 63.0,56.4
+  goto 1433 56.9,45.7
   collect Battleworn Axe |q 20/1 |fr Hache détériorée
   kill Blackrock Champion |q 128/1 |fr Champion Blackrock
 step
@@ -87,13 +85,18 @@ step
   accept 115 Shadow Magic |fr Magie des Ténèbres
   accept 19 Tharil'zun |fr Tharil'zun
 step
-  goto 1433 73.1,48.6
+  goto 1433 69.3,53.3
   collect Shadowhide Pendant |q 91/1 |fr Pendentif sombrepoil
   collect Bellygrub's Tusk |q 34/1 |fr Défense de Fouailleventre
 step
-  goto 1433 63.2,55.7
+  goto 1433 63.2,55.4
   collect Midnight Orb |q 115/1 |fr Orbe de minuit
   collect Tharil'zun's Head |q 19/1 |fr Tête de Tharil'zun
+step
+  goto 1433 28.4,49.0
+  talk Marshal Marris |n 382 |fr Maréchal Marris
+  turnin 115 Shadow Magic |fr Magie des Ténèbres
+  turnin 19 Tharil'zun |fr Tharil'zun
 step
   goto 1433 24.6,44.3
   talk Bailiff Conacher |n 900 |fr Bailli Conacher
@@ -102,11 +105,6 @@ step
   goto 1433 16.8,46.3
   talk Martie Jainrose |n 342 |fr Martie Jainrose
   turnin 34 An Unwelcome Guest |fr Un indésirable
-step
-  goto 1433 28.4,49.0
-  talk Marshal Marris |n 382 |fr Maréchal Marris
-  turnin 115 Shadow Magic |fr Magie des Ténèbres
-  turnin 19 Tharil'zun |fr Tharil'zun
 step
   goto 1433 26.4,57.9
   talk Guard Howe |n 903 |fr Garde Howe

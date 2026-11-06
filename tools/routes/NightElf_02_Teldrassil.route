@@ -22,6 +22,7 @@ do 929 @63.4,58.1
 turnin 929
 accept 933
 do 488
++do 932
 turnin 488
 turnin 997
 accept 918
@@ -33,7 +34,6 @@ turnin 919
 accept 922
 turnin 475
 accept 476
-do 932
 do 2438
 turnin 476
 accept 483

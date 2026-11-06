@@ -184,6 +184,27 @@ function Engine:IsManualStep(step)
   return self:StepKind(step) == "manual"
 end
 
+-- A step can hold several NPCs standing close together, each introduced by
+-- its own goto. The arrow points to the first one that still has an
+-- unfinished quest goal.
+function Engine:ActiveGoto(step)
+  local groups, cur = {}, nil
+  for _, g in ipairs(step.goals) do
+    if g.type == "goto" then
+      cur = { goto = g, goals = {} }
+      groups[#groups + 1] = cur
+    elseif cur then
+      table.insert(cur.goals, g)
+    end
+  end
+  for _, gr in ipairs(groups) do
+    for _, g in ipairs(gr.goals) do
+      if isPrimary(g) and self:GoalStatus(g) ~= "done" then return gr.goto end
+    end
+  end
+  return groups[1] and groups[1].goto
+end
+
 -- Where to resume a guide: the first unfinished quest/action step, preceded by
 -- the travel or talk steps that lead to it.
 function Engine:ResumeIndex()
@@ -252,9 +273,13 @@ function Engine:SetWaypointFromGoal(goal)
     self.waypoint = nil
   else
     local step = self:CurrentStep()
-    local label
+    local label, after = nil, false
     for _, g in ipairs(step and step.goals or {}) do
-      if g.type ~= "goto" and g.type ~= "note" then
+      if g == goal then
+        after = true
+      elseif after and g.type == "goto" then
+        break
+      elseif after and g.type ~= "note" then
         label = ns.GoalText(g)
         break
       end
@@ -274,7 +299,8 @@ function Engine:GoToStep(index, manual)
   if step then
     for _, goal in ipairs(step.goals) do arrived[goal] = nil end
   end
-  self:SetWaypointFromGoal(step and firstGoto(step))
+  self.manualWaypoint = false
+  self:SetWaypointFromGoal(step and self:ActiveGoto(step))
   ns.Fire("STEP_CHANGED", step, index)
   if not manual then self:Refresh() end
 end
@@ -342,6 +368,12 @@ function Engine:Refresh()
         self:GoToStep(nextIndex, true)
       end
     end
+  end
+  -- Move the arrow to the next NPC of a multi-NPC step.
+  local cur = self:CurrentStep()
+  if cur and not self.manualWaypoint then
+    local g = self:ActiveGoto(cur)
+    if g and not (self.waypoint and self.waypoint.goal == g) then self:SetWaypointFromGoal(g) end
   end
   ns.Fire("REFRESH")
 end

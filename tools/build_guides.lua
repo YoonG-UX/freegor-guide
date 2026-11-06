@@ -79,7 +79,16 @@ local AREA_TO_MAP = {
 -- Helpers
 ---------------------------------------------------------------------------
 
-local errors, warnings = {}, {}
+local errors, warnings, notes = {}, {}, {}
+local function lastPosOf(step)
+  local pos
+  for _, g in ipairs(step.goals) do
+    local m, x, y = g:match("^goto (%d+) ([%d%.]+),([%d%.]+)")
+    if m then pos = { tonumber(m), tonumber(x), tonumber(y) } end
+  end
+  return pos
+end
+local optimizeVisits
 local ctx = { file = "?", line = 0 }
 local function err(msg) errors[#errors + 1] = ("%s:%d: %s"):format(ctx.file, ctx.line, msg) end
 local function warn(msg) warnings[#warnings + 1] = ("%s:%d: %s"):format(ctx.file, ctx.line, msg) end
@@ -120,16 +129,32 @@ end
 
 -- Densest point of a point cloud: the point with most neighbours within r,
 -- averaged with those neighbours.
-local function hotspot(points, r)
+-- With `ref` (where the player is at that point of the route), the dense
+-- spot nearest to the player wins over the densest one far away.
+local function hotspot(points, r, ref)
   r = r or 5
-  local best, bestN = nil, -1
-  for _, p in ipairs(points) do
+  local counts, maxN = {}, 0
+  for i, p in ipairs(points) do
     local n = 0
     for _, o in ipairs(points) do
       local dx, dy = p[1] - o[1], p[2] - o[2]
       if dx * dx + dy * dy <= r * r then n = n + 1 end
     end
-    if n > bestN then best, bestN = p, n end
+    counts[i] = n
+    if n > maxN then maxN = n end
+  end
+  local best, bestKey
+  for i, p in ipairs(points) do
+    local key
+    if ref then
+      if counts[i] >= math.max(3, maxN * 0.4) or counts[i] == maxN then
+        local dx, dy = p[1] - ref[1], p[2] - ref[2]
+        key = dx * dx + dy * dy
+      end
+    else
+      key = -counts[i]
+    end
+    if key and (not bestKey or key < bestKey) then best, bestKey = p, key end
   end
   if not best then return nil end
   local sx, sy, c = 0, 0, 0
@@ -150,6 +175,213 @@ local function npcLocation(id, preferredArea)
   if #pts == 1 then return area, pts[1][1], pts[1][2] end
   local x, y = hotspot(pts, 3)
   return area, x, y
+end
+
+
+---------------------------------------------------------------------------
+-- Visit optimisation
+--
+-- Consecutive NPC visits (accept / turn in / innkeeper / flight master) are
+-- reordered so that everything possible is done with one NPC before moving
+-- on, always walking to the nearest NPC that has something available, and
+-- never taking a quest before its prerequisite is turned in. NPCs standing
+-- close to each other are then shown in a single step.
+---------------------------------------------------------------------------
+
+local MERGE_DISTANCE = 3.0  -- map units (percent of the zone map)
+local MAX_STEP_LINES = 14
+
+local function gotoPos(line)
+  local m, x, y = line:match("^goto (%d+) ([%d%.]+),([%d%.]+)")
+  if m then return { tonumber(m), tonumber(x), tonumber(y) } end
+end
+
+local function lastPos(step)
+  local pos
+  for _, g in ipairs(step.goals) do pos = gotoPos(g) or pos end
+  return pos
+end
+
+local function dist(p, q)
+  if not p or not q then return 1e9 end
+  if p[1] ~= q[1] then return 1e6 end
+  local dx, dy = p[2] - q[2], p[3] - q[3]
+  return math.sqrt(dx * dx + dy * dy)
+end
+
+-- Visits that may move: plain NPC visits. Taking a flight or using the
+-- hearthstone ends the hub, so those visits stay where they are.
+local function floating(s)
+  if s.only or not s.items or not s.head or not s.head[1] or not gotoPos(s.head[1]) then return false end
+  for _, e in ipairs(s.extra or {}) do
+    local c = e.line:match("^(%a+)")
+    if c == "fly" or c == "hearth" or c == "goto" then return false end
+  end
+  return true
+end
+
+local function questPrereqs(id)
+  local q = quests[id]
+  local out = {}
+  for _, p in ipairs(q and q[Q_PRESINGLE] or {}) do out[p] = true end
+  for _, p in ipairs(q and q[Q_PREGROUP] or {}) do out[p] = true end
+  return out
+end
+
+local function reorderRun(run, startPos)
+  -- units: quest lines and extra lines, each tied to an NPC
+  local units, npcHead, npcPos = {}, {}, {}
+  local turninUnit, acceptUnit = {}, {}
+  for _, s in ipairs(run) do
+    npcHead[s.npc] = npcHead[s.npc] or s.head
+    npcPos[s.npc] = npcPos[s.npc] or gotoPos(s.head[1])
+    local own = {}
+    for _, it in ipairs(s.items) do
+      local u = { npc = s.npc, line = it.line, verb = it.verb, id = it.id, deps = {} }
+      units[#units + 1] = u
+      own[#own + 1] = u
+      if it.verb == "turnin" then turninUnit[it.id] = u else acceptUnit[it.id] = u end
+    end
+    for _, e in ipairs(s.extra or {}) do
+      -- an extra line (home, fpath, buy...) waits for the quest lines written before it
+      local u = { npc = s.npc, line = e.line, deps = {} }
+      for k = 1, e.after do u.deps[#u.deps + 1] = own[k] end
+      units[#units + 1] = u
+    end
+  end
+  for _, u in ipairs(units) do
+    if u.verb == "accept" then
+      for pre in pairs(questPrereqs(u.id)) do
+        if turninUnit[pre] then u.deps[#u.deps + 1] = turninUnit[pre] end
+      end
+    elseif u.verb == "turnin" and acceptUnit[u.id] then
+      u.deps[#u.deps + 1] = acceptUnit[u.id]
+    end
+  end
+
+  local done, left = {}, #units
+  local function ready(u)
+    if done[u] then return false end
+    for _, d in ipairs(u.deps) do if not done[d] then return false end end
+    return true
+  end
+
+  local visits, cur, curPos = {}, nil, startPos
+  while left > 0 do
+    local progressed = false
+    if cur then
+      for _, u in ipairs(units) do
+        if u.npc == cur.npc and ready(u) then
+          cur.lines[#cur.lines + 1] = u.line
+          done[u], left, progressed = true, left - 1, true
+        end
+      end
+    end
+    if not progressed then
+      -- nearest NPC with something available (first in route order on ties)
+      local best, bestD
+      for _, u in ipairs(units) do
+        if ready(u) then
+          local d = dist(curPos, npcPos[u.npc])
+          if not bestD or d < bestD - 1e-6 then best, bestD = u, d end
+        end
+      end
+      if not best then error("visit optimisation: circular dependencies") end
+      cur = { npc = best.npc, lines = {} }
+      visits[#visits + 1] = cur
+      curPos = npcPos[best.npc]
+    end
+  end
+
+  -- one step per visit, then merge visits of NPCs standing close together
+  local out = {}
+  for _, v in ipairs(visits) do
+    local s = { kind = "npc", npc = v.npc, goals = {}, items = {} }
+    for _, g in ipairs(npcHead[v.npc]) do s.goals[#s.goals + 1] = g end
+    for _, l in ipairs(v.lines) do s.goals[#s.goals + 1] = l end
+    local prev = out[#out]
+    if prev and dist(lastPos(prev), npcPos[v.npc]) <= MERGE_DISTANCE
+      and #prev.goals + #s.goals <= MAX_STEP_LINES then
+      for _, g in ipairs(s.goals) do prev.goals[#prev.goals + 1] = g end
+    else
+      out[#out + 1] = s
+    end
+  end
+  return out
+end
+
+-- Reports NPCs visited twice in a row of NPC steps (A, B, A): with the
+-- optimisation above this only remains when a prerequisite forces it.
+local function reportRevisits(steps, path)
+  local seen = {}
+  for i, s in ipairs(steps) do
+    if s.kind == "npc" or s.kind == "talk" then
+      for _, g in ipairs(s.goals) do
+        local id = tonumber(g:match("^talk .- |n (%d+)") or "")
+        if id then
+          if seen[id] and seen[id] >= i - 2 and seen[id] < i then
+            notes[#notes + 1] = ("%s: NPC %d visited again at step %d (prerequisite)"):format(path, id, i)
+          end
+          seen[id] = i
+        end
+      end
+    else
+      seen = {}
+    end
+  end
+end
+
+-- Reports quests whose objectives are close to where the quest is picked up,
+-- but which the route only does after walking away and coming back.
+local NEAR, AWAY = 8, 12
+local function reportDetours(steps, path)
+  for i, s in ipairs(steps) do
+    local pos
+    for _, g in ipairs(s.goals) do
+      pos = gotoPos(g) or pos
+      local qid = tonumber(g:match("^accept (%d+)") or "")
+      if qid and pos then
+        for j = i + 1, #steps do
+          local hit = false
+          for _, l in ipairs(steps[j].goals) do
+            if l:find("|q " .. qid .. "[/ ]") or l:find("|q " .. qid .. "$") or l:match("^do " .. qid .. " ") then hit = true end
+          end
+          if hit then
+            local target = steps[j].goals[1] and gotoPos(steps[j].goals[1])
+            if target and dist(pos, target) <= NEAR then
+              for k = i + 1, j - 1 do
+                if dist(pos, lastPos(steps[k])) > AWAY then
+                  warnings[#warnings + 1] = ("%s: quest %d objectives are %.1f from its quest giver (step %d) but done at step %d after a detour")
+                    :format(path, qid, dist(pos, target), i, j)
+                  break
+                end
+              end
+            end
+            break
+          end
+        end
+      end
+    end
+  end
+end
+
+optimizeVisits = function(steps, path)
+  local out, i, pos = {}, 1, nil
+  while i <= #steps do
+    if floating(steps[i]) then
+      local run, j = {}, i
+      while steps[j] and floating(steps[j]) do run[#run + 1] = steps[j]; j = j + 1 end
+      for _, s in ipairs(reorderRun(run, pos)) do out[#out + 1] = s end
+      i = j
+    else
+      out[#out + 1] = steps[i]
+      i = i + 1
+    end
+    pos = lastPos(out[#out]) or pos
+  end
+  reportRevisits(out, path)
+  reportDetours(out, path)
+  return out
 end
 
 ---------------------------------------------------------------------------
@@ -209,8 +441,12 @@ local function buildRoute(path, state)
         local a, x, y = npcLocation(npcId, area)
         if a then s.goals[#s.goals + 1] = gotoLine(a, x, y) else warn("no spawn for NPC " .. npcId) end
         s.goals[#s.goals + 1] = talkLine(npcId)
+        s.head = { s.goals[1], s.goals[2] }
+        s.items = {}
       end
-      s.goals[#s.goals + 1] = questLine(verb, id, q)
+      local ql = questLine(verb, id, q)
+      s.goals[#s.goals + 1] = ql
+      table.insert(s.items, { verb = verb, id = id, line = ql })
     else
       local s = newStep("other")
       local objId = list and list[2] and list[2][1]
@@ -317,12 +553,18 @@ local function buildRoute(path, state)
 
     local pointArea = chooseArea(byArea, area)
     local points = pointArea and byArea[pointArea] or {}
+    local ref
+    do
+      local prevStep = steps[#steps - ((merge or s ~= steps[#steps]) and 0 or 1)]
+      local pp = prevStep and prevStep ~= s and lastPosOf(prevStep)
+      if pp and pointArea and pp[1] == AREA_TO_MAP[pointArea] then ref = { pp[2], pp[3] } end
+    end
 
     if override then
       local x, y, a = override.x, override.y, override.area or area
       table.insert(s.goals, 1, gotoLine(a, x, y))
     elseif not merge then
-      local x, y = hotspot(points)
+      local x, y = hotspot(points, nil, ref)
       if x and area and pointArea ~= area then
         warn(("quest %d %s: objectives found outside the route area (%s)"):format(id, q[Q_NAME], tostring(pointArea)))
       end
@@ -381,6 +623,10 @@ local function buildRoute(path, state)
         -- raw goal line appended to the current step
         local s = curStep() or newStep("other")
         s.goals[#s.goals + 1] = rest
+        if s.items then
+          s.extra = s.extra or {}
+          table.insert(s.extra, { line = rest, after = #s.items })
+        end
       elseif cmd == "talk" then
         local id = tonumber(rest:match("^(%d+)"))
         if not id or not npcs[id] then err("unknown NPC " .. rest)
@@ -389,6 +635,9 @@ local function buildRoute(path, state)
           local a, x, y = npcLocation(id, area)
           if a then s.goals[#s.goals + 1] = gotoLine(a, x, y) end
           s.goals[#s.goals + 1] = talkLine(id)
+          s.head = {}
+          for _, g in ipairs(s.goals) do s.head[#s.head + 1] = g end
+          s.items = {}
         end
       elseif cmd == "home" or cmd == "fpath" or cmd == "fly" or cmd == "hearth" or cmd == "train" or cmd == "note" or cmd == "use" or cmd == "buy" then
         -- action lines: placed in the current step if it is an "other" step that
@@ -400,11 +649,17 @@ local function buildRoute(path, state)
           s = newStep("other")
         end
         s.goals[#s.goals + 1] = line
+        if s.items then
+          s.extra = s.extra or {}
+          table.insert(s.extra, { line = line, after = #s.items })
+        end
       else
         err("unknown route command " .. cmd)
       end
     end
   end
+
+  steps = optimizeVisits(steps, path)
 
   -- emit
   out[#out + 1] = "-- Generated by tools/build_guides.lua from " .. path .. ". Do not edit by hand."
@@ -455,6 +710,7 @@ for line in io.lines(ROUTES .. "ORDER") do
   end
 end
 
+for _, n in ipairs(notes) do io.stderr:write("note: " .. n .. "\n") end
 for _, w in ipairs(warnings) do io.stderr:write("warning: " .. w .. "\n") end
 for _, e in ipairs(errors) do io.stderr:write("ERROR: " .. e .. "\n") end
 print(("%d guides, %d warnings, %d errors"):format(#tocFiles, #warnings, #errors))

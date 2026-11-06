@@ -12,14 +12,13 @@ step
   talk Sten Stoutarm |n 658 |fr Sten Stoutarm
   accept 179 Dwarven Outfitters |fr Tailleur chez les nains
 step
-  goto 1426 28.4,74.8
+  goto 1426 28.9,73.8
   collect Tough Wolf Meat |q 179/1 |fr Viande de loup coriace
 step
   goto 1426 29.9,71.2
   talk Sten Stoutarm |n 658 |fr Sten Stoutarm
   turnin 179 Dwarven Outfitters |fr Tailleur chez les nains
   accept 233 Coldridge Valley Mail Delivery |fr La distribution du courrier de la Vallée des Frigères
-step
   goto 1426 29.7,71.2
   talk Balir Frosthammer |n 713 |fr Balir Frosthammer
   accept 170 A New Threat |fr Une nouvelle menace
@@ -28,7 +27,7 @@ step
   talk Felix Whindlebolt |n 8416 |fr Felix Whindlebolt
   accept 3361 A Refugee's Quandary |fr Les malheurs d'un réfugié
 step
-  goto 1426 28.5,75.2
+  goto 1426 27.1,73.8
   kill Rockjaw Trogg |q 170/1 |fr Trogg Mâcheroc
   kill Burly Rockjaw Trogg |q 170/2 |fr Trogg Mâcheroc forcené
   collect Felix's Box |q 3361/1 |fr Boîte de Felix
@@ -49,7 +48,7 @@ step
   accept 234 Coldridge Valley Mail Delivery |fr La distribution du courrier de la Vallée des Frigères
   accept 183 The Boar Hunter |fr Chasseur de sangliers
 step
-  goto 1426 22.7,71.2
+  goto 1426 22.2,71.1
   kill Small Crag Boar |q 183/1 |fr Petit sanglier des rochers
 step
   goto 1426 22.6,71.4
@@ -60,7 +59,6 @@ step
   talk Grelin Whitebeard |n 786 |fr Grelin Whitebeard
   turnin 234 Coldridge Valley Mail Delivery |fr La distribution du courrier de la Vallée des Frigères
   accept 182 The Troll Cave |fr La caverne des trolls
-step
   goto 1426 25.0,76.0
   talk Nori Pridedrift |n 12738 |fr Nori Pridedrift
   accept 3364 Scalding Mornbrew Delivery |fr Une livraison de thé brûlant
@@ -74,7 +72,7 @@ step
   talk Nori Pridedrift |n 12738 |fr Nori Pridedrift
   turnin 3365 Bring Back the Mug |fr Rapporter la Tasse
 step
-  goto 1426 26.9,80.0
+  goto 1426 26.6,79.8
   kill Frostmane Troll Whelp |q 182/1 |fr Jeune troll Frostmane
 step
   goto 1426 25.1,75.7
@@ -94,7 +92,6 @@ step
   talk Mountaineer Thalos |n 1965 |fr Montagnard Thalos
   turnin 282 Senir's Observations |fr Les observations de Senir
   accept 420 Senir's Observations |fr Les observations de Senir
-step
   goto 1426 33.9,72.2
   talk Hands Springsprocket |n 6782 |fr Hands Springsprocket
   accept 2160 Supplies to Tannok |fr Des provisions pour Tannok

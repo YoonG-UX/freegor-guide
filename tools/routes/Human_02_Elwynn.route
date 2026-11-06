@@ -25,13 +25,12 @@ turnin 106
 accept 111
 turnin 111
 accept 107
+step
 turnin 85
 accept 86
 do 86
-do 88
 turnin 86
 accept 84
-turnin 88
 turnin 84
 accept 87
 
@@ -63,6 +62,7 @@ do 52
 do 46
 do 83
 do 5545
+do 88
 turnin 37
 accept 45
 turnin 45
@@ -81,6 +81,7 @@ turnin 112
 accept 114
 accept 239
 turnin 114
+turnin 88
 turnin 239
 accept 11
 do 11
