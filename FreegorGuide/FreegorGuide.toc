@@ -1,0 +1,22 @@
+## Interface: 16001
+## Title: Freegor Guide
+## Notes: Free, community-made step-by-step leveling guide with waypoint arrow.
+## Notes-frFR: Guide de leveling pas à pas, gratuit et communautaire, avec flèche de navigation.
+## Author: Freegor community
+## Version: 0.1.0
+## SavedVariables: FreegorDB
+## SavedVariablesPerCharacter: FreegorCharDB
+## IconTexture: Interface\Icons\INV_Misc_Book_09
+## Category: Quests
+
+Locales\enUS.lua
+Locales\frFR.lua
+Core\Init.lua
+Core\Compat.lua
+Core\Parser.lua
+Core\Engine.lua
+UI\Arrow.lua
+UI\Viewer.lua
+UI\Picker.lua
+Core\Commands.lua
+Guides\Alliance_Northshire.lua

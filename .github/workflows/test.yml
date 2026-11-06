@@ -1,0 +1,12 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  lua:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Syntax check
+        run: find FreegorGuide tests -name '*.lua' -print0 | xargs -0 -n1 luac5.1 -p
+      - name: Offline tests
+        run: lua5.1 tests/run.lua
