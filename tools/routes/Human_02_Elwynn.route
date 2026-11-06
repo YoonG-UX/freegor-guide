@@ -1,0 +1,88 @@
+guide Human 6-11: Elwynn Forest
+author Freegor community
+faction Alliance
+race Human
+levels 6-11
+next Westfall 11-16
+area 12
+
+# Goldshire
+accept 47
+accept 40
+turnin 54
+accept 62
+turnin 40
+accept 35
+turnin 2158
+home Goldshire |fr Comté-de-l'Or
+accept 60
+
+# Farms south of Goldshire
+accept 106
+accept 85
+accept 88
+turnin 106
+accept 111
+turnin 111
+accept 107
+turnin 85
+accept 86
+do 86
+do 88
+turnin 86
+accept 84
+turnin 88
+turnin 84
+accept 87
+
+# Fargodeep Mine
+do 62
++do 47
++do 60
++do 87
+turnin 87
+
+# Back to Goldshire
+turnin 62
+accept 76
+turnin 47
+turnin 107
+accept 112
+turnin 60
+
+# East: Jasperlode Mine, Crystal Lake, Eastvale
+do 76
+do 112
+turnin 35
+accept 37
+accept 52
+accept 46
+accept 83
+accept 5545
+do 52
+do 46
+do 83
+do 5545
+turnin 37
+accept 45
+turnin 45
+accept 71
+turnin 71
+accept 39
+turnin 46
+turnin 52
+turnin 83
+turnin 5545
+
+# Goldshire, then west to Westbrook Garrison
+turnin 76
+turnin 39
+turnin 112
+accept 114
+accept 239
+turnin 114
+turnin 239
+accept 11
+do 11
+turnin 11
+level 11

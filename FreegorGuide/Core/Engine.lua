@@ -63,8 +63,34 @@ function Engine:GoalMap(goal)
   return C.GetPlayerMap()
 end
 
+-- Actions observed in game. `actions[goal]` is set when an event matching an
+-- action goal of the *current* step fires; `talked[npcID]` when the player
+-- opens any dialog with that NPC this session.
+local actions = {}
+local talked = {}
+Engine.actions, Engine.talked = actions, talked
+
+local function lc(s) return s and s:lower() or nil end
+local function textMatches(goal, name)
+  if not name or name == "" then return false end
+  name = name:lower()
+  for _, t in ipairs({ lc(goal.text), lc(goal.fr) }) do
+    if t and t ~= "" and (name == t or name:find(t, 1, true) or t:find(name, 1, true)) then return true end
+  end
+  return false
+end
+
+local PRIMARY = {
+  accept = true, turnin = true, ["do"] = true, level = true,
+  home = true, fpath = true, fly = true, hearth = true, train = true,
+}
+local function isPrimary(goal)
+  local t = goal.type
+  return PRIMARY[t] or ((t == "kill" or t == "collect") and goal.quest ~= nil)
+end
+
 -- Returns status, progressText.
--- status: "done", "todo", or "info" (not checkable: never blocks or completes a step).
+-- status: "done", "todo", or "info" (does not decide completion).
 function Engine:GoalStatus(goal)
   local t = goal.type
   if t == "accept" then
@@ -85,21 +111,27 @@ function Engine:GoalStatus(goal)
     return C.IsQuestReady(goal.quest) and "done" or "todo"
   elseif t == "level" then
     return UnitLevel("player") >= goal.level and "done" or "todo"
+  elseif t == "home" then
+    return (actions[goal] or textMatches(goal, C.GetBindLocation())) and "done" or "todo"
+  elseif t == "fpath" then
+    if actions[goal] then return "done" end
+    for name in pairs(ns.cdb.taxi or {}) do
+      if textMatches(goal, name) then return "done" end
+    end
+    return "todo"
+  elseif t == "fly" or t == "hearth" or t == "train" then
+    return actions[goal] and "done" or "todo"
+  elseif t == "talk" then
+    return (goal.npc and talked[goal.npc]) and "done" or "info"
   elseif t == "goto" then
     return arrived[goal] and "done" or "info"
   end
   return "info"
 end
 
--- A step completes when all its checkable goals are done. A step whose only
--- checkable goal is a goto completes on arrival. A step with nothing checkable
--- (notes, talk) needs the player to press "Next".
-local function hasCheckable(step)
+local function hasPrimary(step)
   for _, goal in ipairs(step.goals) do
-    local t = goal.type
-    if t ~= "goto" and t ~= "talk" and t ~= "note" and not ((t == "kill" or t == "collect") and not goal.quest) then
-      return true
-    end
+    if isPrimary(goal) then return true end
   end
   return false
 end
@@ -110,20 +142,65 @@ local function firstGoto(step)
   end
 end
 
+local function talkGoals(step)
+  local out = {}
+  for _, goal in ipairs(step.goals) do
+    if goal.type == "talk" and goal.npc then out[#out + 1] = goal end
+  end
+  return out
+end
+
+-- How a step completes, in order of precedence:
+--   1. all "primary" goals done (quests, level, actions);
+--   2. otherwise, talking to every NPC named with |n;
+--   3. otherwise, arriving at the goto;
+--   4. otherwise the player presses "Next" (manual step).
+function Engine:StepKind(step)
+  if hasPrimary(step) then return "primary" end
+  if #talkGoals(step) > 0 then return "talk" end
+  if firstGoto(step) then return "goto" end
+  return "manual"
+end
+
 function Engine:StepComplete(step)
-  if hasCheckable(step) then
+  local kind = self:StepKind(step)
+  if kind == "primary" then
     for _, goal in ipairs(step.goals) do
-      if goal.type ~= "goto" and self:GoalStatus(goal) == "todo" then return false end
+      if isPrimary(goal) and self:GoalStatus(goal) ~= "done" then return false end
     end
     return true
+  elseif kind == "talk" then
+    for _, goal in ipairs(talkGoals(step)) do
+      if not talked[goal.npc] then return false end
+    end
+    return true
+  elseif kind == "goto" then
+    return arrived[firstGoto(step)] == true
   end
-  local g = firstGoto(step)
-  if g then return arrived[g] == true end
   return false
 end
 
 function Engine:IsManualStep(step)
-  return not hasCheckable(step) and not firstGoto(step)
+  return self:StepKind(step) == "manual"
+end
+
+-- Where to resume a guide: the first unfinished quest/action step, preceded by
+-- the travel or talk steps that lead to it.
+function Engine:ResumeIndex()
+  local steps = self.guide.steps
+  local j = #steps + 1
+  for i, s in ipairs(steps) do
+    if self:StepApplies(s) and self:StepKind(s) == "primary" and not self:StepComplete(s) then
+      j = i
+      break
+    end
+  end
+  while j > 1 do
+    local prev = steps[j - 1]
+    if self:StepApplies(prev) and self:StepKind(prev) == "primary" then break end
+    j = j - 1
+  end
+  return j
 end
 
 function Engine:StepApplies(step)
@@ -132,23 +209,34 @@ function Engine:StepApplies(step)
 end
 
 -- Human-readable label for a goal (localized).
+local isFrench = GetLocale() == "frFR"
+
 function ns.GoalText(goal)
+  local fr = isFrench and goal.fr or nil
   local function questName()
-    return C.GetQuestTitle(goal.quest) or goal.title or L.QUEST_FMT:format(goal.quest)
+    return C.GetQuestTitle(goal.quest) or fr or goal.title or L.QUEST_FMT:format(goal.quest)
   end
+  local text = fr or goal.text
   local t = goal.type
   if t == "accept" then return L.GOAL_ACCEPT:format(questName())
   elseif t == "turnin" then return L.GOAL_TURNIN:format(questName())
   elseif t == "do" then return L.GOAL_DO:format(questName())
-  elseif t == "kill" then return L.GOAL_KILL:format(goal.text)
-  elseif t == "collect" then return L.GOAL_COLLECT:format(goal.text)
-  elseif t == "talk" then return L.GOAL_TALK:format(goal.text)
+  elseif t == "kill" then return L.GOAL_KILL:format(text)
+  elseif t == "collect" then return L.GOAL_COLLECT:format(text)
+  elseif t == "talk" then return L.GOAL_TALK:format(text)
+  elseif t == "home" then return L.GOAL_HOME:format(text)
+  elseif t == "fpath" then return L.GOAL_FPATH:format(text)
+  elseif t == "fly" then return L.GOAL_FLY:format(text)
+  elseif t == "hearth" then return text ~= "" and L.GOAL_HEARTH_TO:format(text) or L.GOAL_HEARTH
+  elseif t == "train" then return L.GOAL_TRAIN
+  elseif t == "use" then return L.GOAL_USE:format(text)
+  elseif t == "buy" then return L.GOAL_BUY:format(text)
   elseif t == "level" then return L.GOAL_LEVEL:format(goal.level)
   elseif t == "goto" then
     local zone = C.GetMapName(Engine:GoalMap(goal)) or goal.zone or ""
     return L.GOAL_GOTO:format(("%s %.1f, %.1f"):format(zone, goal.x * 100, goal.y * 100))
   end
-  return goal.text or ""
+  return text or ""
 end
 
 ---------------------------------------------------------------------------
@@ -166,7 +254,7 @@ function Engine:SetWaypointFromGoal(goal)
     local step = self:CurrentStep()
     local label
     for _, g in ipairs(step and step.goals or {}) do
-      if g.type == "talk" or g.type == "accept" or g.type == "turnin" or g.type == "kill" or g.type == "collect" then
+      if g.type ~= "goto" and g.type ~= "note" then
         label = ns.GoalText(g)
         break
       end
@@ -235,7 +323,7 @@ function Engine:LoadGuide(title, step)
   ns.cdb.guide = title
   hold = false
   ns.Fire("GUIDE_LOADED", guide)
-  self:GoToStep(step or 1, true)
+  self:GoToStep(step or self:ResumeIndex(), true)
   self:Refresh()
   return true
 end
@@ -316,6 +404,61 @@ ns.RegisterEvent("QUEST_TURNED_IN", function(_, questID)
   Engine:QueueRefresh()
 end)
 
+-- Mark every goal of the given type in the current step as done.
+local function markAction(goalType, predicate)
+  local step = Engine:CurrentStep()
+  if not step then return end
+  local changed = false
+  for _, goal in ipairs(step.goals) do
+    if goal.type == goalType and not actions[goal] and (not predicate or predicate(goal)) then
+      actions[goal] = true
+      changed = true
+    end
+  end
+  if changed then Engine:QueueRefresh() end
+end
+Engine.MarkAction = markAction
+
+-- Talking to NPCs: any dialog window opened with an NPC counts.
+local function onInteract()
+  local id = C.GetInteractNpcID()
+  if id and not talked[id] then
+    talked[id] = true
+    Engine:QueueRefresh()
+  end
+end
+for _, ev in ipairs({
+  "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_PROGRESS", "QUEST_COMPLETE",
+  "MERCHANT_SHOW", "BANKFRAME_OPENED",
+}) do
+  ns.RegisterEvent(ev, onInteract)
+end
+
+ns.RegisterEvent("TRAINER_SHOW", function()
+  onInteract()
+  markAction("train")
+end)
+
+ns.RegisterEvent("TAXIMAP_OPENED", function()
+  onInteract()
+  ns.cdb.taxi = ns.cdb.taxi or {}
+  for _, name in ipairs(C.GetKnownTaxiNodes()) do ns.cdb.taxi[name:lower()] = true end
+  markAction("fpath")
+end)
+
+ns.RegisterEvent("HEARTHSTONE_BOUND", function() markAction("home") end)
+
+local HEARTHSTONE_SPELLS = { [8690] = true }
+ns.RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, spellID)
+  if unit == "player" and HEARTHSTONE_SPELLS[spellID] then markAction("hearth") end
+end)
+
+-- Taking a flight: checked on the arrival ticker (cheap) and on control loss.
+local function checkTaxi()
+  if UnitOnTaxi and UnitOnTaxi("player") then markAction("fly") end
+end
+ns.RegisterEvent("PLAYER_CONTROL_LOST", function() C_Timer.After(1, checkTaxi) end)
+
 ns.On("INIT", function()
   for _, msg in ipairs(pendingErrors) do ns.Print("|cffff4040%s|r", msg) end
   wipe(pendingErrors)
@@ -323,6 +466,20 @@ ns.On("INIT", function()
   local saved = ns.cdb.guide
   if saved and ns.guides[saved] then
     Engine:LoadGuide(saved, ns.cdb.step)
+  else
+    -- First login with the addon: pick the guide for this race and level.
+    local _, race, faction, level = C.PlayerInfo()
+    for _, title in ipairs(ns.guideOrder) do
+      local g = ns.guides[title]
+      if (not g.faction or g.faction == faction) and Parser.GuideForRace(g, race)
+        and (g.minLevel or 0) <= level and level < (g.maxLevel or 999) then
+        Engine:LoadGuide(title)
+        break
+      end
+    end
   end
-  C_Timer.NewTicker(0.5, checkArrival)
+  C_Timer.NewTicker(0.5, function()
+    checkArrival()
+    checkTaxi()
+  end)
 end)

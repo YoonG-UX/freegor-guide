@@ -1,0 +1,63 @@
+guide Westfall 11-16
+author Freegor community
+faction Alliance
+levels 11-16
+next Redridge Mountains 16-21
+area 40
+
+# Furlbrow's farm and the Saldean farm
+accept 36
+accept 64
+lvl 12
+accept 151
+turnin 36
+accept 38
+accept 22
+accept 9
+accept 109
+
+# Sentinel Hill
+turnin 109
+accept 12
+accept 102
+accept 6181
+turnin 6181
+fpath Sentinel Hill |fr Colline des Sentinelles
+accept 6281
+talk 8931
+home Sentinel Hill |fr Colline des Sentinelles
+fly Stormwind |fr Hurlevent
+
+# Stormwind errand (also learns the Stormwind flight path)
+turnin 6281
+accept 6261
+turnin 6261
+fpath Stormwind |fr Hurlevent
+accept 6285
+fly Sentinel Hill |fr Colline des Sentinelles
+turnin 6285
+accept 153
+
+# North
+do 12
+do 22
++do 38
+do 64
+do 151
+turnin 64
+turnin 151
+turnin 22
+turnin 38
+do 9
+turnin 9
+
+# South and the coast
+do 102
+do 153
+turnin 12
+accept 13
+turnin 102
+turnin 153
+do 13
+turnin 13
+level 16

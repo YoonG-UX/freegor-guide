@@ -1,0 +1,63 @@
+guide Dwarf & Gnome 6-11: Dun Morogh
+author Freegor community
+faction Alliance
+race Dwarf, Gnome
+levels 6-11
+next Loch Modan 11-16
+area 1
+
+# Kharanos
+turnin 420
+accept 287
+turnin 2160
+accept 384
+talk 1247
+home Kharanos
+buy Rhapsody Malt |fr Bière au malt Rhapsody
+accept 400
+turnin 400
+accept 317
+accept 313
+accept 5541
+
+# Around Kharanos
+do 317
++do 384
+turnin 384
+do 313
+turnin 313
+turnin 317
+accept 318
+
+# West: Brewnall Village and Frostmane Hold
+turnin 5541
+turnin 318
+accept 319
+accept 315
+lvl 8
+accept 310
+turnin 310
+accept 311
+turnin 311
+do 319
++do 315
+turnin 319
+accept 320
+turnin 315
+accept 413
+do 287
+turnin 287
+accept 291
+turnin 320
+
+# East: Gol'Bolar Quarry and Helm's Bed Lake
+accept 432
+accept 433
+do 432
++do 433
+turnin 432
+turnin 433
+turnin 413
+accept 414
+level 11
+note Go east through the North Gate pass into Loch Modan. |fr Allez vers l'est par la passe de la Porte nord jusqu'au Loch Modan.

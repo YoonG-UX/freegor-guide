@@ -1,0 +1,69 @@
+guide Darkshore 11-17
+author Freegor community
+faction Alliance
+levels 11-17
+next Redridge Mountains 16-21
+area 148
+
+note From Rut'theran Village (south of Darnassus), take the boat to Auberdine. |fr Depuis le village de Rut'theran (au sud de Darnassus), prenez le bateau pour Auberdine.
+
+# Auberdine
+accept 3524
+accept 983
+accept 984
+accept 954
+accept 958
+accept 4811
+accept 2118
+talk 3841
+fpath Auberdine
+talk 6737
+home Auberdine
+
+# North of Auberdine
+do 983
+do 3524
+turnin 3524
+do 4811
+turnin 4811
+accept 4812
+turnin 954
+accept 955
+do 955
+turnin 955
+accept 956
+do 956
+turnin 956
+accept 957
+do 957
+turnin 957
+
+# South: furbolgs, bears, Ameth'Aran
+do 984
+do 2118 @44.1,49.2
++ note Use Tharnariun's Trap on a Rabid Thistle Bear, then lead it back to Tharnariun in Auberdine |fr Utilisez le piège sur un Ours des chardons enragé, puis ramenez-le à Tharnariun à Auberdine
+accept 953
+do 953
++do 958
+turnin 953
+
+# Back to Auberdine
+turnin 984
+accept 985
+turnin 958
+turnin 2118
+accept 2138
+accept 4761
+turnin 4761
+accept 4762
+do 985
+do 2138
+do 4812
++ note First fill the Empty Water Tube at the Auberdine moonwell. |fr Remplissez d'abord le Tube d'eau vide au puits de lune d'Auberdine.
+do 4762
++ note Draw the sample at the first waterfall of the Cliffspring River, north of Auberdine. |fr Prélevez l'échantillon à la première chute d'eau de la Bondissante, au nord d'Auberdine.
+turnin 985
+turnin 2138
+turnin 4762
+level 17
+note Next: Redridge Mountains. Take the boat from Auberdine to Menethil Harbor, run through the Wetlands and Loch Modan to Ironforge, then the Deeprun Tram to Stormwind. |fr Suite : Les Carmines. Prenez le bateau d'Auberdine vers Menethil, traversez Les Paluns et le Loch Modan jusqu'à Ironforge, puis le tram des profondeurs jusqu'à Hurlevent.

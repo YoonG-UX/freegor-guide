@@ -30,6 +30,16 @@ L.GOAL_DO      = "Terminer |cffffd100%s|r"
 L.GOAL_TALK    = "Parler à |cff00ff96%s|r"
 L.GOAL_GOTO    = "Aller en %s"
 L.GOAL_LEVEL   = "Atteindre le niveau %d"
+L.GOAL_HOME      = "Lier votre pierre de foyer à |cff00ff96%s|r"
+L.GOAL_FPATH     = "Découvrir le point de vol de |cff00ff96%s|r"
+L.GOAL_FLY       = "Prendre le vol pour |cff00ff96%s|r"
+L.GOAL_HEARTH    = "Utiliser votre pierre de foyer"
+L.GOAL_HEARTH_TO = "Pierre de foyer vers |cff00ff96%s|r"
+L.GOAL_TRAIN     = "Voir votre maître de classe"
+L.GOAL_USE       = "Utiliser %s"
+L.GOAL_BUY       = "Acheter %s"
+L.AUTO_ON        = "Acceptation/rendu automatique des quêtes : |cff00ff00activé|r (Maj pour suspendre)"
+L.AUTO_OFF       = "Acceptation/rendu automatique des quêtes : |cffff4040désactivé|r"
 L.QUEST_FMT    = "quête n°%d"
 
 L.HELP = {
@@ -38,5 +48,6 @@ L.HELP = {
   "/freegor next | prev - changer d'étape",
   "/freegor step <n> - aller à une étape",
   "/freegor arrow - afficher ou masquer la flèche",
+  "/freegor auto - activer ou non l'acceptation/le rendu automatique des quêtes",
   "/freegor reset - réinitialiser la position de la fenêtre",
 }

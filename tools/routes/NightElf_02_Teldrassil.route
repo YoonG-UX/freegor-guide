@@ -1,0 +1,57 @@
+guide Night Elf 6-11: Teldrassil
+author Freegor community
+faction Alliance
+race NightElf
+levels 6-11
+next Darkshore 11-17
+area 141
+
+# Dolanaar
+turnin 2159
+home Dolanaar
+turnin 928
+accept 929
+accept 997
+accept 475
+accept 2438
+accept 932
+accept 488
+accept 487
+do 929 @63.4,58.1
++ note Use Jade Phial at the moonwell |fr Utilisez la Fiole de jade au puits de lune
+turnin 929
+accept 933
+do 488
+turnin 488
+turnin 997
+accept 918
+accept 919
+do 918
++do 919
+turnin 918
+turnin 919
+accept 922
+turnin 475
+accept 476
+do 932
+do 2438
+turnin 476
+accept 483
+turnin 932
+turnin 2438
+accept 2459
+do 933 @42.4,67.1
++ note Use Tourmaline Phial at the moonwell |fr Utilisez la Fiole de tourmaline au puits de lune
+turnin 933
+accept 7383
+do 483
+turnin 483
+do 2459
+turnin 2459
+do 487
+turnin 487
+do 7383 @38.4,34.1
++ note Use Amethyst Phial at the moonwell |fr Utilisez la Fiole d'améthyste au puits de lune
+turnin 7383
+accept 935
+level 11

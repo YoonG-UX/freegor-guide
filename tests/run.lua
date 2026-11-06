@@ -102,6 +102,30 @@ C_Map = {
   end,
 }
 
+
+-- Interaction / action APIs
+local npcGUID, onTaxi, bindLoc = nil, false, "Comté-de-l'Or"
+function strsplit(sep, str)
+  local out = {}
+  for part in (str .. sep):gmatch("(.-)" .. sep:gsub("%p", "%%%0")) do out[#out + 1] = part end
+  return unpack(out)
+end
+function UnitGUID(unit) if unit == "npc" then return npcGUID end end
+function UnitOnTaxi() return onTaxi end
+function GetBindLocation() return bindLoc end
+local taxiNodes = { { "Sentinel Hill, Westfall", "CURRENT" }, { "Lakeshire, Redridge", "NONE" } }
+function NumTaxiNodes() return #taxiNodes end
+function TaxiNodeName(i) return taxiNodes[i][1] end
+function TaxiNodeGetType(i) return taxiNodes[i][2] end
+local questDialog, accepted, completed, rewarded = nil, {}, 0, nil
+function GetQuestID() return questDialog end
+function AcceptQuest() accepted[#accepted + 1] = questDialog end
+function IsShiftKeyDown() return false end
+function IsQuestCompletable() return true end
+function CompleteQuest() completed = completed + 1 end
+function GetNumQuestChoices() return 0 end
+function GetQuestReward(c) rewarded = c end
+
 local function fire(event, ...)
   eventFrame._OnEvent(eventFrame, event, ...)
   flushTimers()
@@ -130,6 +154,7 @@ for _, m in ipairs(printed) do
   check(not m:find("ff4040"), "guide parse error printed: " .. m)
 end
 check(#Freegor:GetGuides() >= 1, "example guide registered")
+check(ns.Engine.guide and ns.Engine.guide.title == "Human 1-6: Northshire Valley", "first login picks the starting guide for the race")
 check(ns.L.NEXT == "Étape suivante", "French locale active")
 
 ---------------------------------------------------------------------------
@@ -151,15 +176,18 @@ check(P.StepApplies({ only = { "Warrior", "Paladin" } }, "WARRIOR", "Human", "Al
 check(not P.StepApplies({ only = { "Mage" } }, "WARRIOR", "Human", "Alliance"), "only class mismatch")
 check(not P.StepApplies({ only = { "!Human" } }, "WARRIOR", "Human", "Alliance"), "only negation")
 check(P.StepApplies({ only = { "Night Elf" } }, "DRUID", "NightElf", "Alliance"), "race with spaces")
+local rg = P.Parse("guide R\nrace Dwarf, Gnome\nstep\n note x\n")
+check(P.GuideForRace(rg, "Gnome") and not P.GuideForRace(rg, "Human"), "guide race filter")
 
 ---------------------------------------------------------------------------
 -- Engine simulation on the example guide
 ---------------------------------------------------------------------------
 
 local E = ns.Engine
-check(E:LoadGuide("Northshire Valley (1-6)"), "load example guide")
+check(E:LoadGuide("Human 1-6: Northshire Valley"), "load example guide")
 check(E.stepIndex == 1, "starts at step 1")
 check(E.waypoint and E.waypoint.mapID == 1429 and math.abs(E.waypoint.x - 0.482) < 1e-9, "waypoint from goto, zone resolved by ID")
+check(E:CurrentStep().goals[2].npc == 823 and E:CurrentStep().goals[2].fr == "Adjoint Willem", "talk goal carries NPC ID and French name")
 
 local function accept(id, nObj)
   local objs = {}
@@ -199,6 +227,26 @@ check(E.stepIndex == 5, "prev holds on a completed step")
 E:Next()
 check(E.stepIndex == 6, "next resumes")
 
+-- Guide catalogue checks
+local KNOWN_MAPS = { [1426]=1, [1429]=1, [1431]=1, [1432]=1, [1433]=1, [1436]=1, [1437]=1, [1438]=1, [1439]=1, [1440]=1, [1453]=1, [1455]=1, [1457]=1 }
+local nGuides, nSteps = 0, 0
+for _, guide in ipairs(Freegor:GetGuides()) do
+  nGuides = nGuides + 1
+  nSteps = nSteps + #guide.steps
+  check(guide.faction == "Alliance", guide.title .. ": faction")
+  check(guide.minLevel and guide.maxLevel, guide.title .. ": levels")
+  if guide.next then check(ns.guides[guide.next] ~= nil, guide.title .. ": next guide exists: " .. guide.next) end
+  for _, st in ipairs(guide.steps) do
+    check(#st.goals > 0, guide.title .. ": empty step at line " .. st.line)
+    for _, goal in ipairs(st.goals) do
+      if goal.type == "goto" and goal.zone then
+        check(KNOWN_MAPS[tonumber(goal.zone)], guide.title .. ": unknown map " .. goal.zone .. " line " .. goal.line)
+      end
+    end
+  end
+end
+check(nGuides >= 13 and nSteps >= 350, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
+
 -- Already-completed steps are skipped when jumping forward.
 turnin(33)
 check(E.stepIndex == 7, "turnin 33 -> 7")
@@ -226,6 +274,101 @@ local g3 = P.Parse("guide Cls\nstep\n only Mage\n level 99\nstep\n level 1\nstep
 ns.guides["Cls"] = g3
 E:LoadGuide("Cls")
 check(E.stepIndex == 3, "skips non-matching class step and completed level step (got " .. E.stepIndex .. ")")
+
+
+-- Action detection ---------------------------------------------------------
+local ga = P.Parse([[
+guide Actions
+zone 1429
+step
+  goto 50,40
+  talk Innkeeper Farley |n 295
+  home Goldshire |fr Comté-de-l'Or
+step
+  fpath Sentinel Hill
+step
+  fpath Lakeshire
+step
+  fly Lakeshire
+step
+  hearth Goldshire
+step
+  train
+step
+  goto 10,10
+  talk Marshal Dughan |n 240
+step
+  note end
+]])
+ns.guides["Actions"] = ga
+bindLoc = "Stormwind"
+E:LoadGuide("Actions")
+check(E.stepIndex == 1, "home step waits")
+fire("HEARTHSTONE_BOUND")
+check(E.stepIndex == 2, "home detected (got " .. E.stepIndex .. ")")
+fire("TAXIMAP_OPENED")
+check(E.stepIndex == 3, "flight path learned when the taxi map opens")
+check(FreegorCharDB.taxi["sentinel hill, westfall"], "known flight points saved per character")
+check(not FreegorCharDB.taxi["lakeshire, redridge"], "undiscovered flight points not saved")
+local known = P.Parse("guide K\nstep\n fpath Sentinel Hill\n")
+check(E:StepComplete(known.steps[1]), "a flight path known from an earlier visit counts as done")
+fire("TAXIMAP_OPENED")
+check(E.stepIndex == 4, "second flight path")
+onTaxi = true
+C_Timer.tick()
+flushTimers()
+onTaxi = false
+check(E.stepIndex == 5, "flight detected")
+fire("UNIT_SPELLCAST_SUCCEEDED", "player", "cast", 8690)
+check(E.stepIndex == 6, "hearthstone detected")
+fire("TRAINER_SHOW")
+check(E.stepIndex == 7, "trainer visit detected (got " .. E.stepIndex .. ")")
+npcGUID = "Creature-0-1-0-1-240-0000"
+fire("GOSSIP_SHOW")
+check(E.stepIndex == 8, "talking to the NPC completes a talk step")
+check(E:IsManualStep(E:CurrentStep()), "note step is manual")
+
+-- Bind location already matching completes the home step
+bindLoc = "Comté-de-l'Or"
+E:LoadGuide("Actions", 1)
+fire("QUEST_LOG_UPDATE")
+check(E.stepIndex > 1, "home step done when the hearthstone is already bound there")
+
+-- French display text
+local hg = ns.guides["Human 1-6: Northshire Valley"].steps[1]
+check(ns.GoalText(hg.goals[3]):find("Menace intérieure"), "French quest title shown before the quest is in the log")
+
+-- Resume: loading a guide skips finished quests and lands on the travel before the next one
+wipe(log); wipe(done)
+for _, id in ipairs({ 783, 7, 5261, 33 }) do done[id] = true end
+log[18] = { { finished = false, numFulfilled = 0, numRequired = 12 } }
+log[15] = { { finished = false, numFulfilled = 0, numRequired = 10 } }
+E:LoadGuide("Human 1-6: Northshire Valley")
+local cur = E:CurrentStep()
+local firstTodo
+for _, goal in ipairs(cur.goals) do if goal.type ~= "goto" and goal.type ~= "talk" then firstTodo = firstTodo or goal end end
+check(E.stepIndex > 6, "resume skips completed quests (step " .. E.stepIndex .. ")")
+check(not E:StepComplete(cur), "resume lands on an unfinished step")
+
+-- Automatic accept / turn-in ---------------------------------------------
+FreegorDB.autoQuest = true
+local nextAccept
+for _, goal in ipairs(cur.goals) do if goal.type == "accept" then nextAccept = goal.quest end end
+if not nextAccept then
+  for i = E.stepIndex, E.stepIndex + 3 do
+    for _, goal in ipairs(E.guide.steps[i].goals) do if goal.type == "accept" then nextAccept = nextAccept or goal.quest end end
+  end
+end
+questDialog = nextAccept
+fire("QUEST_DETAIL")
+check(accepted[1] == nextAccept, "auto-accept of a quest from the current steps")
+questDialog = 9999
+fire("QUEST_DETAIL")
+check(#accepted == 1, "quests outside the guide are not auto-accepted")
+FreegorDB.autoQuest = false
+questDialog = nextAccept
+fire("QUEST_DETAIL")
+check(#accepted == 1, "auto-accept off by default")
 
 -- Slash command smoke test
 SlashCmdList.FREEGOR("help")

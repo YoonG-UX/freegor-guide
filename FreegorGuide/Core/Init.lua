@@ -13,6 +13,7 @@ local DB_DEFAULTS = {
   arrowShown = true,
   arrivalRadius = 12, -- yards
   useTomTom = true,
+  autoQuest = false,
   viewerPos = nil,
   arrowPos = nil,
 }
@@ -20,6 +21,7 @@ local DB_DEFAULTS = {
 local CHAR_DEFAULTS = {
   guide = nil,  -- title of the active guide
   step = 1,
+  taxi = {},   -- known flight points (lowercase names)
 }
 
 local function applyDefaults(dst, defaults)

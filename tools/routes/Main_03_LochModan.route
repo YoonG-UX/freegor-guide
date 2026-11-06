@@ -1,0 +1,50 @@
+guide Loch Modan 11-16
+author Freegor community
+faction Alliance
+levels 11-16
+next Redridge Mountains 16-21
+area 38
+
+# Valley of Kings (entrance from Dun Morogh)
+accept 224
+accept 267
+do 224
++do 267
+turnin 224
+turnin 267
+accept 237
+do 237
+turnin 237
+accept 263
+do 263
+turnin 263
+
+# Thelsamar
+turnin 414
+accept 416
+accept 1339
+accept 418
+talk 1572
+fpath Thelsamar
+talk 6734
+home Thelsamar
+do 416
+do 418
+turnin 1339
+accept 307
+do 307
+turnin 307
+turnin 416
+turnin 418
+
+# East: excavation and Farstrider Lodge
+accept 298
+accept 385
+accept 257
+do 385
++do 257
+turnin 385
+turnin 257
+turnin 298
+level 16
+note Next: Redridge Mountains. Take the Deeprun Tram from Ironforge to Stormwind, then go east through Elwynn Forest. |fr Suite : Les Carmines. Prenez le tram des profondeurs d'Ironforge à Hurlevent, puis allez vers l'est par la forêt d'Elwynn.

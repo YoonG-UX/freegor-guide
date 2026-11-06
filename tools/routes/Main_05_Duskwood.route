@@ -1,0 +1,69 @@
+guide Duskwood 21-25
+author Freegor community
+faction Alliance
+levels 20-25
+next Wetlands 25-28
+area 10
+
+note Duskwood is south of Elwynn Forest. Follow the road south from Goldshire. |fr Le Bois de la Pénombre est au sud de la forêt d'Elwynn : suivez la route au sud de Comté-de-l'Or.
+accept 245
+do 245
+turnin 245
+
+# Darkshire
+talk 2409
+fpath Darkshire
+talk 6790
+home Darkshire
+accept 163
+accept 164
+accept 165
+accept 56
+accept 90
+
+# West: Raven Hill and Sven's camp
+do 56
+turnin 163
+accept 5
+turnin 164
+accept 95
+accept 226
+turnin 95
+accept 230
+turnin 230
+accept 262
+do 226
++do 90
+turnin 226
+turnin 165
+accept 148
+
+# Back to Darkshire
+turnin 56
+turnin 5
+accept 93
+turnin 148
+accept 149
+turnin 262
+accept 265
+turnin 265
+accept 266
+turnin 266
+accept 453
+turnin 90
+turnin 149
+accept 154
+turnin 154
+accept 157
+do 93
+turnin 93
+accept 240
+
+# West again
+turnin 240
+turnin 453
+accept 268
+turnin 268
+turnin 157
+accept 158
+level 25

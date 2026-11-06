@@ -1,0 +1,43 @@
+guide Night Elf 1-6: Shadowglen
+author Freegor community
+faction Alliance
+race NightElf
+levels 1-6
+next Night Elf 6-11: Teldrassil
+area 141
+
+accept 456
+accept 458
+turnin 458
+accept 459
+do 456
+turnin 456
+accept 457
+lvl 3
+accept 916
+do 459
++do 457
++do 916
+turnin 459
+turnin 457
+turnin 916
+accept 917
+accept 4495
+turnin 4495
+accept 3519
+turnin 3519
+accept 3521
+do 3521
+turnin 3521
+accept 3522
+turnin 3522
+do 917
+turnin 917
+accept 920
+turnin 920
+accept 921
+do 921 @59.9,33.1
++ note Use Crystal Phial at the moonwell |fr Utilisez la Fiole de cristal au puits de lune
+turnin 921
+accept 928
+accept 2159

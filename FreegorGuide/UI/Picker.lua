@@ -60,10 +60,11 @@ for i = 1, ROWS do
 end
 
 function P:Render()
-  local _, _, faction, level = C.PlayerInfo()
+  local _, race, faction, level = C.PlayerInfo()
   wipe(visible)
   for _, g in ipairs(ns.Freegor:GetGuides()) do
-    if not g.faction or g.faction == "" or g.faction == faction or g.faction == "Neutral" then
+    local factionOK = not g.faction or g.faction == "" or g.faction == faction or g.faction == "Neutral"
+    if factionOK and ns.Parser.GuideForRace(g, race) then
       visible[#visible + 1] = g
     end
   end

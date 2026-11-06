@@ -21,6 +21,8 @@ SlashCmdList.FREEGOR = function(msg)
     Engine:Jump(tonumber(arg))
   elseif cmd == "load" and arg ~= "" then
     Engine:LoadGuide(arg)
+  elseif cmd == "auto" then
+    ns.ToggleAutoQuest()
   elseif cmd == "arrow" then
     ns.db.arrowShown = not ns.db.arrowShown
     ns.Arrow:UpdateVisibility()

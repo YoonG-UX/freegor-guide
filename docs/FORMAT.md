@@ -12,6 +12,7 @@ Une commande par ligne, l'indentation est libre. Les lignes vides et celles qui 
 | `levels 1-6` | Tranche de niveaux (sert au tri dans le sélecteur). |
 | `next <titre>` | Guide proposé à la fin de celui-ci. |
 | `zone 1429, Elwynn Forest, Forêt d'Elwynn` | Zone par défaut des `goto` : un uiMapID ou des noms ; le premier qui existe dans le client est utilisé. |
+| `race Dwarf, Gnome` | Le sélecteur ne montre le guide qu'à ces races (guides de départ). |
 | `author`, `description` | Informatifs. |
 
 ## Étapes
@@ -27,15 +28,25 @@ Une commande par ligne, l'indentation est libre. Les lignes vides et celles qui 
 | `collect <texte> \|q <questID>/<n>` | idem |
 | `level <n>` | le joueur atteint le niveau n |
 | `goto [zone] x,y [\|r rayon]` | voir ci-dessous |
-| `talk <PNJ>` | information seulement |
+| `talk <PNJ> \|n <npcID>` | le joueur ouvre un dialogue avec ce PNJ (sans `\|n` : information seulement) |
+| `home <lieu>` | la pierre de foyer est liée ici (événement du jeu, ou lieu de rappel actuel) |
+| `fpath <lieu>` | le point de vol est découvert (carte des vols ouverte pendant l'étape, ou déjà connu) |
+| `fly <destination>` | le joueur prend un vol |
+| `hearth [lieu]` | le joueur utilise sa pierre de foyer |
+| `train` | le joueur ouvre la fenêtre d'un maître de classe |
+| `use <objet>`, `buy <objet>` | information seulement |
 | `note <texte>` | information seulement |
 
 Le titre de quête est facultatif : le client affiche son propre nom (traduit) dès que la quête est dans le journal.
 
+Toute ligne accepte `|fr <texte>` : le texte affiché sur un client français
+(titre de quête, nom de PNJ, de monstre ou d'objet, note).
+
 ### Avancement
 
-- Une étape est terminée quand tous ses objectifs vérifiables le sont ; le guide passe alors
-  à la prochaine étape non terminée.
+- Une étape est terminée quand tous ses objectifs vérifiables (quêtes, niveau, actions) le sont ;
+  le guide passe alors à la prochaine étape non terminée.
+- Sinon, une étape avec des `talk ... |n <id>` se valide quand le joueur a parlé à ces PNJ.
 - `goto` place la flèche. Si c'est le seul objectif vérifiable de l'étape, l'étape se valide
   à l'arrivée (12 mètres par défaut, ou `|r <rayon>`).
 - Une étape sans rien de vérifiable (que des `note` / `talk`) attend un clic sur « Suivant ».
@@ -57,3 +68,8 @@ step
 
 Classes : `WARRIOR, PALADIN, HUNTER, ROGUE, PRIEST, SHAMAN, MAGE, WARLOCK, DRUID`…
 Races : `Human, Dwarf, NightElf, Gnome, Orc, Scourge, Tauren, Troll`…
+
+## Guides générés
+
+Les guides de `FreegorGuide/Guides/` sont générés à partir des parcours de `tools/routes/`
+(voir `tools/README.md`). Pour corriger un guide, modifiez son parcours puis régénérez-le.

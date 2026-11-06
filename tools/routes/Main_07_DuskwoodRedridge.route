@@ -1,0 +1,48 @@
+guide Duskwood & Redridge 28-30
+author Freegor community
+faction Alliance
+levels 27-30
+area 10
+
+# Duskwood
+accept 57
+accept 173
+do 57
++do 173
+turnin 57
+turnin 173
+accept 221
+do 221
+turnin 221
+turnin 158
+accept 156
+do 156
+turnin 156
+accept 159
+turnin 159
+accept 133
+do 133
+turnin 133
+
+# Redridge
+area 44
+fly Lakeshire
+accept 20
+accept 91
+accept 34
+accept 128
+do 20
++do 128
+turnin 20
+accept 115
+accept 19
+do 91
++do 34
+do 115
++do 19
+turnin 91
+turnin 34
+turnin 115
+turnin 19
+turnin 128
+level 30

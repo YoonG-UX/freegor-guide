@@ -86,6 +86,13 @@ local ICONS = {
   talk    = "Interface\\GossipFrame\\GossipGossipIcon",
   level   = "Interface\\Icons\\Spell_Holy_SurgeOfLight",
   note    = "Interface\\Icons\\INV_Misc_Note_01",
+  home    = "Interface\\Icons\\INV_Misc_Rune_01",
+  hearth  = "Interface\\Icons\\INV_Misc_Rune_01",
+  fpath   = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green",
+  fly     = "Interface\\TaxiFrame\\UI-Taxi-Icon-Green",
+  train   = "Interface\\Icons\\INV_Misc_Book_11",
+  use     = "Interface\\Icons\\INV_Misc_Bag_08",
+  buy     = "Interface\\Icons\\INV_Misc_Coin_01",
 }
 
 local lines = {}

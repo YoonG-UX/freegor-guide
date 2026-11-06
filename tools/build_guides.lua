@@ -1,0 +1,463 @@
+-- Builds FreegorGuide/Guides/*.lua from the route files in tools/routes/.
+--
+-- A route lists *what to do* in which order (quest IDs, travel, actions).
+-- This script fills in the facts from a local checkout of the public
+-- QuestieDB data (quest givers, NPC positions, mob/item locations, French
+-- names) and checks the route: unknown IDs, quests turned in before being
+-- accepted, missing prerequisite quests, quests started below their level.
+--
+-- Usage (from the repository root, with Lua 5.1):
+--   QUESTIEDB=/path/to/QuestieDB lua5.1 tools/build_guides.lua
+--
+-- QuestieDB: https://github.com/Questie/QuestieDB (only data/Forever/*.lua and
+-- l10n/Forever/*/frFR.lua are read). See tools/README.md.
+
+local DB = os.getenv("QUESTIEDB") or error("set QUESTIEDB to a QuestieDB checkout")
+DB = DB:gsub("/?$", "/")
+
+---------------------------------------------------------------------------
+-- Data loading (the data files are Lua table literals; load them with no globals)
+---------------------------------------------------------------------------
+
+local function readFile(path)
+  local f = assert(io.open(path, "rb"))
+  local t = f:read("*a")
+  f:close()
+  return t
+end
+
+local function evalTable(src, chunkname)
+  local fn = assert(loadstring(src, chunkname))
+  setfenv(fn, {})
+  return fn()
+end
+
+local function loadData(path, marker)
+  local txt = readFile(DB .. path)
+  local _, e = txt:find(marker, 1, true)
+  assert(e, marker .. " not found in " .. path)
+  local stop = txt:find("]]", e + 1, true)
+  return evalTable(txt:sub(e + 1, stop - 1), path)
+end
+
+local quests = loadData("data/Forever/foreverQuestDB.lua", "QuestieDB.questData = [[")
+local npcs = loadData("data/Forever/foreverNpcDB.lua", "QuestieDB.npcData = [[")
+local objects = loadData("data/Forever/foreverObjectDB.lua", "QuestieDB.objectData = [[")
+local items = loadData("data/Forever/foreverItemDB.lua", "QuestieDB.itemData = [[")
+local frQuests = loadData("l10n/Forever/lookupQuests/frFR.lua", "loadstring([[")
+local frNpcs = loadData("l10n/Forever/lookupNpcs/frFR.lua", "loadstring([[")
+local frItems = loadData("l10n/Forever/lookupItems/frFR.lua", "loadstring([[")
+local frObjects = loadData("l10n/Forever/lookupObjects/frFR.lua", "loadstring([[")
+
+-- Field indexes (see QuestieDB questKeys / npcKeys / objectKeys / itemKeys)
+local Q_NAME, Q_START, Q_END, Q_REQLVL, Q_LVL, Q_RACES, Q_CLASSES = 1, 2, 3, 4, 5, 6, 7
+local Q_TRIGGER, Q_OBJ, Q_PREGROUP, Q_PRESINGLE = 9, 10, 12, 13
+local N_NAME, N_SPAWNS = 1, 7
+local O_NAME, O_SPAWNS = 1, 4
+local I_NAME, I_NPCDROPS, I_OBJDROPS = 1, 2, 3
+
+-- AreaTable zone ID -> uiMapID (Classic/Forever world maps)
+local AREA_TO_MAP = {
+  [1] = 1426,    -- Dun Morogh
+  [10] = 1431,   -- Duskwood
+  [11] = 1437,   -- Wetlands
+  [12] = 1429,   -- Elwynn Forest
+  [38] = 1432,   -- Loch Modan
+  [40] = 1436,   -- Westfall
+  [44] = 1433,   -- Redridge Mountains
+  [141] = 1438,  -- Teldrassil
+  [148] = 1439,  -- Darkshore
+  [267] = 1424,  -- Hillsbrad Foothills
+  [331] = 1440,  -- Ashenvale
+  [406] = 1442,  -- Stonetalon Mountains
+  [1519] = 1453, -- Stormwind City
+  [1537] = 1455, -- Ironforge
+  [1657] = 1457, -- Darnassus
+}
+
+---------------------------------------------------------------------------
+-- Helpers
+---------------------------------------------------------------------------
+
+local errors, warnings = {}, {}
+local ctx = { file = "?", line = 0 }
+local function err(msg) errors[#errors + 1] = ("%s:%d: %s"):format(ctx.file, ctx.line, msg) end
+local function warn(msg) warnings[#warnings + 1] = ("%s:%d: %s"):format(ctx.file, ctx.line, msg) end
+
+local function hasBit(mask, bit) return math.floor(mask / bit) % 2 == 1 end
+local ALLIANCE_RACES = { 1, 4, 8, 64 }
+local function isAlliance(q)
+  local r = q[Q_RACES]
+  if not r or r == 0 then return true end
+  for _, b in ipairs(ALLIANCE_RACES) do if hasBit(r, b) then return true end end
+  return false
+end
+
+local function frQuestTitle(id)
+  local e = frQuests[id]
+  return e and e[1] or nil
+end
+local function frNpcName(id)
+  local e = frNpcs[id]
+  return e and e[1] or nil
+end
+
+-- The text of a guide option must not contain "|".
+local function clean(s) return s and (s:gsub("|", "/"):gsub("%s+", " ")) or nil end
+
+local function fmtCoord(x, y) return ("%.1f,%.1f"):format(x, y) end
+
+-- Pick the spawn area: the preferred area if present, else the one with most points.
+local function chooseArea(spawns, preferred)
+  if not spawns then return nil end
+  if preferred and spawns[preferred] and #spawns[preferred] > 0 then return preferred end
+  local best, n = nil, 0
+  for area, pts in pairs(spawns) do
+    if AREA_TO_MAP[area] and #pts > n then best, n = area, #pts end
+  end
+  return best
+end
+
+-- Densest point of a point cloud: the point with most neighbours within r,
+-- averaged with those neighbours.
+local function hotspot(points, r)
+  r = r or 5
+  local best, bestN = nil, -1
+  for _, p in ipairs(points) do
+    local n = 0
+    for _, o in ipairs(points) do
+      local dx, dy = p[1] - o[1], p[2] - o[2]
+      if dx * dx + dy * dy <= r * r then n = n + 1 end
+    end
+    if n > bestN then best, bestN = p, n end
+  end
+  if not best then return nil end
+  local sx, sy, c = 0, 0, 0
+  for _, o in ipairs(points) do
+    local dx, dy = best[1] - o[1], best[2] - o[2]
+    if dx * dx + dy * dy <= r * r then sx, sy, c = sx + o[1], sy + o[2], c + 1 end
+  end
+  return sx / c, sy / c
+end
+
+-- First spawn of an NPC: area, x, y
+local function npcLocation(id, preferredArea)
+  local n = npcs[id]
+  if not n then return nil end
+  local area = chooseArea(n[N_SPAWNS], preferredArea)
+  if not area then return nil end
+  local pts = n[N_SPAWNS][area]
+  if #pts == 1 then return area, pts[1][1], pts[1][2] end
+  local x, y = hotspot(pts, 3)
+  return area, x, y
+end
+
+---------------------------------------------------------------------------
+-- Route parsing and guide emission
+---------------------------------------------------------------------------
+
+local function buildRoute(path, state)
+  ctx.file = path
+  local out = {}      -- emitted lines
+  local header = {}
+  local steps = {}    -- { only=, goals = { lines }, npc = id or nil, kind = }
+  local area, map     -- current defaults
+  local pendingOnly
+  local level = state.level
+
+  local function newStep(kind, npc)
+    local s = { goals = {}, kind = kind, npc = npc, only = pendingOnly }
+    pendingOnly = nil
+    steps[#steps + 1] = s
+    return s
+  end
+  local function curStep() return steps[#steps] end
+
+  local function gotoLine(a, x, y)
+    local m = AREA_TO_MAP[a]
+    if not m then err("no uiMapID for area " .. tostring(a)); return "goto ?" end
+    return ("goto %d %s"):format(m, fmtCoord(x, y))
+  end
+
+  local function questOrErr(id)
+    local q = quests[id]
+    if not q then err("unknown quest " .. id) return nil end
+    if not isAlliance(q) then err(("quest %d %s is not available to the Alliance"):format(id, q[Q_NAME])) end
+    return q
+  end
+
+  local function talkLine(npcId)
+    local fr = frNpcName(npcId)
+    return ("talk %s |n %d%s"):format(clean(npcs[npcId][N_NAME]), npcId, fr and (" |fr " .. clean(fr)) or "")
+  end
+
+  local function questLine(verb, id, q)
+    local fr = frQuestTitle(id)
+    return ("%s %d %s%s"):format(verb, id, clean(q[Q_NAME]), fr and (" |fr " .. clean(fr)) or "")
+  end
+
+  -- accept/turnin at an NPC (or an object / item)
+  local function questGiver(verb, id, giverOverride)
+    local q = questOrErr(id)
+    if not q then return end
+    local list = verb == "accept" and q[Q_START] or q[Q_END]
+    local npcId = giverOverride or (list and list[1] and list[1][1])
+    if npcId then
+      local s = curStep()
+      if not (s and s.kind == "npc" and s.npc == npcId and not pendingOnly) then
+        s = newStep("npc", npcId)
+        local a, x, y = npcLocation(npcId, area)
+        if a then s.goals[#s.goals + 1] = gotoLine(a, x, y) else warn("no spawn for NPC " .. npcId) end
+        s.goals[#s.goals + 1] = talkLine(npcId)
+      end
+      s.goals[#s.goals + 1] = questLine(verb, id, q)
+    else
+      local s = newStep("other")
+      local objId = list and list[2] and list[2][1]
+      local itemId = verb == "accept" and q[Q_START] and q[Q_START][3] and q[Q_START][3][1]
+      if objId and objects[objId] then
+        local a = chooseArea(objects[objId][O_SPAWNS], area)
+        if a then
+          local p = objects[objId][O_SPAWNS][a][1]
+          s.goals[#s.goals + 1] = gotoLine(a, p[1], p[2])
+        end
+        local fr = frObjects[objId]
+        s.goals[#s.goals + 1] = ("note Click on %s%s"):format(clean(objects[objId][O_NAME]),
+          fr and (" |fr Cliquez sur : " .. clean(fr)) or "")
+      elseif itemId and items[itemId] then
+        local fr = frItems[itemId]
+        s.goals[#s.goals + 1] = ("use %s%s"):format(clean(items[itemId][I_NAME]), fr and (" |fr " .. clean(fr)) or "")
+      else
+        warn(("quest %d has no %s NPC"):format(id, verb))
+      end
+      s.goals[#s.goals + 1] = questLine(verb, id, q)
+    end
+
+    -- bookkeeping / checks
+    if verb == "accept" then
+      if state.accepted[id] or state.done[id] then warn(("quest %d accepted twice"):format(id)) end
+      state.accepted[id] = true
+      if q[Q_REQLVL] and level and q[Q_REQLVL] > level + 1 then
+        warn(("quest %d %s requires level %d (route level %d)"):format(id, q[Q_NAME], q[Q_REQLVL], level))
+      end
+      local single = q[Q_PRESINGLE]
+      if single and #single > 0 then
+        local ok = false
+        for _, p in ipairs(single) do if state.done[p] then ok = true end end
+        if not ok then warn(("quest %d needs one of %s turned in first"):format(id, table.concat(single, ","))) end
+      end
+      for _, p in ipairs(q[Q_PREGROUP] or {}) do
+        if not state.done[p] then warn(("quest %d needs %d turned in first"):format(id, p)) end
+      end
+    else
+      if not state.accepted[id] then err(("quest %d turned in but never accepted"):format(id)) end
+      state.done[id] = true
+    end
+  end
+
+  -- objective step
+  local function doQuest(id, override, merge)
+    local q = questOrErr(id)
+    if not q then return end
+    if not state.accepted[id] then err(("quest %d done before being accepted"):format(id)) end
+    local s = (merge and curStep()) or newStep("do")
+    local obj = q[Q_OBJ] or {}
+    local creatures, objs, its, credits = obj[1] or {}, obj[2] or {}, obj[3] or {}, obj[5] or {}
+    local nTypes = (#creatures > 0 and 1 or 0) + (#objs > 0 and 1 or 0) + (#its > 0 and 1 or 0) + (#credits > 0 and 1 or 0)
+    local total = #creatures + #objs + #its + #credits
+    -- Spawn points of every objective source, grouped by area; the route's
+    -- area wins when it has any, else the area with the most points.
+    local byArea = {}
+    local function addSpawns(spawns)
+      for a, pts in pairs(spawns or {}) do
+        if AREA_TO_MAP[a] then
+          byArea[a] = byArea[a] or {}
+          for _, p in ipairs(pts) do table.insert(byArea[a], p) end
+        end
+      end
+    end
+    local function idx(i) return (total == 1 or nTypes == 1) and ("/" .. i) or "" end
+    local lines = {}
+
+    for i, c in ipairs(creatures) do
+      local n = npcs[c[1]]
+      if n then
+        addSpawns(n[N_SPAWNS])
+        local fr = frNpcName(c[1])
+        lines[#lines + 1] = ("kill %s |q %d%s%s"):format(clean(c[2] or n[N_NAME]), id, idx(i), fr and not c[2] and (" |fr " .. clean(fr)) or "")
+      end
+    end
+    for i, c in ipairs(credits) do
+      local n = npcs[c[2]]
+      if n then addSpawns(n[N_SPAWNS]) end
+      for _, alt in ipairs(c[1] or {}) do if npcs[alt] then addSpawns(npcs[alt][N_SPAWNS]) end end
+      local fr = frNpcName(c[2])
+      lines[#lines + 1] = ("kill %s |q %d%s%s"):format(clean(c[3] or (n and n[N_NAME]) or "?"), id, idx(i), fr and not c[3] and (" |fr " .. clean(fr)) or "")
+    end
+    for i, it in ipairs(its) do
+      local item = items[it[1]]
+      if item then
+        for _, src in ipairs(item[I_NPCDROPS] or {}) do if npcs[src] then addSpawns(npcs[src][N_SPAWNS]) end end
+        for _, src in ipairs(item[I_OBJDROPS] or {}) do if objects[src] then addSpawns(objects[src][O_SPAWNS]) end end
+        local fr = frItems[it[1]]
+        lines[#lines + 1] = ("collect %s |q %d%s%s"):format(clean(it[2] or item[I_NAME]), id, idx(i), fr and not it[2] and (" |fr " .. clean(fr)) or "")
+      end
+    end
+    for _, o in ipairs(objs) do
+      local ob = objects[o[1]]
+      if ob then addSpawns(ob[O_SPAWNS]) end
+    end
+    if #objs > 0 or #lines == 0 then
+      lines[#lines + 1] = questLine("do", id, q)
+    end
+    local trig = q[Q_TRIGGER]
+    if trig and trig[2] and next(byArea) == nil then
+      addSpawns(trig[2])
+    end
+
+    local pointArea = chooseArea(byArea, area)
+    local points = pointArea and byArea[pointArea] or {}
+
+    if override then
+      local x, y, a = override.x, override.y, override.area or area
+      table.insert(s.goals, 1, gotoLine(a, x, y))
+    elseif not merge then
+      local x, y = hotspot(points)
+      if x and area and pointArea ~= area then
+        warn(("quest %d %s: objectives found outside the route area (%s)"):format(id, q[Q_NAME], tostring(pointArea)))
+      end
+      if x then
+        table.insert(s.goals, 1, gotoLine(pointArea, x, y))
+      else
+        warn(("no location found for quest %d %s"):format(id, q[Q_NAME]))
+      end
+    end
+    for _, l in ipairs(lines) do s.goals[#s.goals + 1] = l end
+  end
+
+  local lineNo = 0
+  for raw in io.lines(path) do
+    lineNo = lineNo + 1
+    ctx.line = lineNo
+    local line = raw:gsub("%s+$", ""):gsub("^%s+", "")
+    if line ~= "" and not line:match("^%-%-") and not line:match("^#") then
+      local cmd, rest = line:match("^(%S+)%s*(.*)$")
+      if cmd == "guide" or cmd == "faction" or cmd == "levels" or cmd == "next" or cmd == "author" or cmd == "description" or cmd == "race" then
+        header[#header + 1] = line
+        if cmd == "levels" then
+          level = tonumber(rest:match("^(%d+)"))
+        end
+      elseif cmd == "area" then
+        area = tonumber(rest)
+        if not AREA_TO_MAP[area] then err("unknown area " .. rest) end
+        map = AREA_TO_MAP[area]
+      elseif cmd == "accept" or cmd == "turnin" then
+        local id, giver = rest:match("^(%d+)%s*(%d*)")
+        questGiver(cmd, tonumber(id), tonumber(giver))
+      elseif cmd == "do" or cmd == "+do" then
+        local id, x, y = rest:match("^(%d+)%s*@?%s*([%d%.]*),?([%d%.]*)")
+        local override = (x ~= "" and y ~= "") and { x = tonumber(x), y = tonumber(y) } or nil
+        doQuest(tonumber(id), override, cmd == "+do")
+      elseif cmd == "only" then
+        pendingOnly = rest
+      elseif cmd == "lvl" then
+        -- expected level at this point of the route (no step emitted)
+        level = tonumber(rest)
+      elseif cmd == "level" then
+        local s = newStep("level")
+        level = tonumber(rest)
+        s.goals[#s.goals + 1] = "level " .. rest
+      elseif cmd == "step" then
+        newStep("other")
+      elseif cmd == "goto" then
+        -- goto x,y            (current area)
+        -- goto <area> x,y
+        local a, x, y = rest:match("^(%d+)%s+([%d%.]+),([%d%.]+)$")
+        if not a then x, y = rest:match("^([%d%.]+),([%d%.]+)$"); a = area end
+        local s = curStep()
+        if not s or s.kind ~= "other" or #s.goals > 0 then s = newStep("other") end
+        s.goals[#s.goals + 1] = gotoLine(tonumber(a), tonumber(x), tonumber(y))
+      elseif cmd == "+" then
+        -- raw goal line appended to the current step
+        local s = curStep() or newStep("other")
+        s.goals[#s.goals + 1] = rest
+      elseif cmd == "talk" then
+        local id = tonumber(rest:match("^(%d+)"))
+        if not id or not npcs[id] then err("unknown NPC " .. rest)
+        else
+          local s = newStep("talk", id)
+          local a, x, y = npcLocation(id, area)
+          if a then s.goals[#s.goals + 1] = gotoLine(a, x, y) end
+          s.goals[#s.goals + 1] = talkLine(id)
+        end
+      elseif cmd == "home" or cmd == "fpath" or cmd == "fly" or cmd == "hearth" or cmd == "train" or cmd == "note" or cmd == "use" or cmd == "buy" then
+        -- action lines: placed in the current step if it is an "other" step that
+        -- only holds a goto, else in a new step
+        -- action lines join the current NPC/travel step (e.g. "home" right after
+        -- talking to the innkeeper), otherwise they start a new step
+        local s = curStep()
+        if not (s and (s.kind == "other" or s.kind == "npc" or s.kind == "talk")) or pendingOnly then
+          s = newStep("other")
+        end
+        s.goals[#s.goals + 1] = line
+      else
+        err("unknown route command " .. cmd)
+      end
+    end
+  end
+
+  -- emit
+  out[#out + 1] = "-- Generated by tools/build_guides.lua from " .. path .. ". Do not edit by hand."
+  out[#out + 1] = "Freegor:RegisterGuide([["
+  for _, h in ipairs(header) do out[#out + 1] = h end
+  if map then out[#out + 1] = "zone " .. map end
+  for _, s in ipairs(steps) do
+    if #s.goals > 0 then
+      out[#out + 1] = "step"
+      if s.only then out[#out + 1] = "  only " .. s.only end
+      for _, g in ipairs(s.goals) do out[#out + 1] = "  " .. g end
+    end
+  end
+  out[#out + 1] = "]])"
+  state.level = level
+  return table.concat(out, "\n") .. "\n"
+end
+
+---------------------------------------------------------------------------
+-- Main: routes are built in the order listed in tools/routes/ORDER
+---------------------------------------------------------------------------
+
+local ROUTES = "tools/routes/"
+local OUT = "FreegorGuide/Guides/"
+local tocFiles = {}
+local state = { accepted = {}, done = {}, level = 1 }
+local chains = {} -- name -> state (each starting area has its own quest state)
+
+for line in io.lines(ROUTES .. "ORDER") do
+  local chain, name = line:match("^(%S+)%s+(%S+)$")
+  if chain then
+    chains[chain] = chains[chain] or { accepted = {}, done = {}, level = 1 }
+    -- "main" inherits the quests done by every starting chain listed before it
+    if chain == "main" and not chains.main.inherited then
+      chains.main.inherited = true
+      for c, st in pairs(chains) do
+        if c ~= "main" then
+          for k in pairs(st.done) do chains.main.done[k] = true end
+          for k in pairs(st.accepted) do chains.main.accepted[k] = true end
+        end
+      end
+    end
+    local text = buildRoute(ROUTES .. name .. ".route", chains[chain])
+    local f = assert(io.open(OUT .. name .. ".lua", "wb"))
+    f:write(text)
+    f:close()
+    tocFiles[#tocFiles + 1] = "Guides\\" .. name .. ".lua"
+  end
+end
+
+for _, w in ipairs(warnings) do io.stderr:write("warning: " .. w .. "\n") end
+for _, e in ipairs(errors) do io.stderr:write("ERROR: " .. e .. "\n") end
+print(("%d guides, %d warnings, %d errors"):format(#tocFiles, #warnings, #errors))
+print("TOC entries:")
+for _, t in ipairs(tocFiles) do print(t) end
+os.exit(#errors == 0 and 0 or 1)

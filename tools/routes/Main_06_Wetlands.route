@@ -1,0 +1,62 @@
+guide Wetlands 25-28
+author Freegor community
+faction Alliance
+levels 24-28
+next Duskwood & Redridge 28-30
+area 11
+
+note Menethil Harbor is reached from Loch Modan through Dun Algaz (north), or by boat from Auberdine. |fr Menethil se rejoint depuis le Loch Modan par Dun Algaz (au nord), ou en bateau depuis Auberdine.
+
+# Menethil Harbor
+talk 1571
+fpath Menethil Harbor |fr Menethil
+talk 1464
+home Menethil Harbor |fr Menethil
+accept 279
+accept 484
+accept 470
+accept 305
+accept 463
+accept 288
+do 279
++do 484
++do 470
+turnin 279
+accept 281
+turnin 484
+accept 471
+turnin 470
+
+# The Excavation and the Greenwarden
+turnin 281
+accept 284
+turnin 284
+accept 285
+turnin 285
+accept 286
+turnin 305
+accept 306
+accept 294
+do 294
+turnin 294
+accept 295
+turnin 463
+accept 276
+do 276
+turnin 276
+accept 277
+do 277
++do 295
+turnin 277
+accept 275
+turnin 295
+
+# Back to Menethil
+do 471
+turnin 306
+turnin 286
+talk 1464
+buy Flagon of Mead |fr Cruche d'hydromiel nain
+turnin 288
+turnin 471
+level 28

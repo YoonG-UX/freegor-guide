@@ -179,6 +179,46 @@ function C.ResolveMap(ref)
 end
 
 ---------------------------------------------------------------------------
+-- Interactions
+---------------------------------------------------------------------------
+
+-- Creature ID of the NPC the player is interacting with (gossip, quest, vendor...).
+function C.GetInteractNpcID()
+  local ok, guid = pcall(UnitGUID, "npc")
+  if not ok or type(guid) ~= "string" then return nil end
+  local kind, _, _, _, _, id = strsplit("-", guid)
+  if kind == "Creature" or kind == "Vehicle" then return tonumber(id) end
+  return nil
+end
+
+function C.GetBindLocation()
+  return _G.GetBindLocation and _G.GetBindLocation() or nil
+end
+
+-- Names of flight points known to the character, read while the taxi map is open.
+function C.GetKnownTaxiNodes()
+  local names = {}
+  local TM = _G.C_TaxiMap
+  if TM and TM.GetAllTaxiNodes and _G.GetTaxiMapID then
+    local ok, nodes = pcall(TM.GetAllTaxiNodes, _G.GetTaxiMapID())
+    if ok and type(nodes) == "table" then
+      for _, n in ipairs(nodes) do
+        -- state 2 = unreachable (not discovered)
+        if n.name and n.state ~= 2 then names[#names + 1] = n.name end
+      end
+      if #names > 0 then return names end
+    end
+  end
+  if _G.NumTaxiNodes and _G.TaxiNodeName and _G.TaxiNodeGetType then
+    for i = 1, _G.NumTaxiNodes() do
+      local t = _G.TaxiNodeGetType(i)
+      if t == "CURRENT" or t == "REACHABLE" then names[#names + 1] = _G.TaxiNodeName(i) end
+    end
+  end
+  return names
+end
+
+---------------------------------------------------------------------------
 -- Player info
 ---------------------------------------------------------------------------
 

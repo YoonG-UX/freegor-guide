@@ -1,0 +1,14 @@
+# chain   route-file   (built in this order; "main" inherits the quests of the start chains)
+human Human_01_Northshire
+human Human_02_Elwynn
+dwarf Dwarf_01_Coldridge
+dwarf Dwarf_02_DunMorogh
+nelf NightElf_01_Shadowglen
+nelf NightElf_02_Teldrassil
+human Main_03_Westfall
+dwarf Main_03_LochModan
+nelf NightElf_03_Darkshore
+main Main_04_Redridge
+main Main_05_Duskwood
+main Main_06_Wetlands
+main Main_07_DuskwoodRedridge

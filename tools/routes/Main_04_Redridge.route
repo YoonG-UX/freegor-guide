@@ -1,0 +1,42 @@
+guide Redridge Mountains 16-21
+author Freegor community
+faction Alliance
+levels 16-21
+next Duskwood 21-25
+area 44
+
+note Redridge is east of Elwynn Forest, through Three Corners. |fr Les Carmines sont à l'est de la forêt d'Elwynn, par les Trois chemins.
+accept 244
+turnin 244
+accept 246
+talk 931
+fpath Lakeshire
+
+# Lakeshire
+accept 125
+accept 92
+accept 3741
+accept 116
+accept 127
+talk 6727
+home Lakeshire
+
+# Lake and murlocs
+do 125
+do 127
+do 3741
+turnin 125
+accept 89
+turnin 3741
+turnin 127
+
+# Gnolls and wildlife
+do 246
++do 92
++do 116
+turnin 246
+turnin 92
+turnin 116
+do 89
+turnin 89
+level 20

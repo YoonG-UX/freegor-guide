@@ -1,0 +1,40 @@
+guide Dwarf & Gnome 1-6: Coldridge Valley
+author Freegor community
+faction Alliance
+race Dwarf, Gnome
+levels 1-6
+next Dwarf & Gnome 6-11: Dun Morogh
+area 1
+
+accept 179
+do 179
+turnin 179
+accept 233
+accept 170
+lvl 3
+accept 3361
+do 170
++do 3361
+turnin 170
+turnin 3361
+turnin 233
+accept 234
+accept 183
+do 183
+turnin 183
+turnin 234
+accept 182
+lvl 4
+accept 3364
+turnin 3364
+accept 3365
+turnin 3365
+do 182
+turnin 182
+accept 218
+do 218
+turnin 218
+accept 282
+turnin 282
+accept 420
+accept 2160

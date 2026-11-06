@@ -1,0 +1,39 @@
+guide Human 1-6: Northshire Valley
+author Freegor community
+faction Alliance
+race Human
+levels 1-6
+next Human 6-11: Elwynn Forest
+area 12
+
+accept 783
+turnin 783
+accept 7
+accept 5261
+accept 18
+turnin 5261
+accept 33
+do 7
++do 33
+turnin 33
+accept 3903
+turnin 7
+accept 15
+turnin 3903
+accept 3904
+do 3904
+do 18
+turnin 3904
+accept 3905
+turnin 18
+accept 6
+turnin 3905
+do 15
+do 6
+turnin 6
+turnin 15
+accept 21
+do 21
+turnin 21
+accept 54
+accept 2158

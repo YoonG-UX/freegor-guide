@@ -33,6 +33,16 @@ L.GOAL_DO      = "Complete |cffffd100%s|r"
 L.GOAL_TALK    = "Talk to |cff00ff96%s|r"
 L.GOAL_GOTO    = "Go to %s"
 L.GOAL_LEVEL   = "Reach level %d"
+L.GOAL_HOME      = "Set your hearthstone at |cff00ff96%s|r"
+L.GOAL_FPATH     = "Get the flight path at |cff00ff96%s|r"
+L.GOAL_FLY       = "Fly to |cff00ff96%s|r"
+L.GOAL_HEARTH    = "Use your hearthstone"
+L.GOAL_HEARTH_TO = "Hearth to |cff00ff96%s|r"
+L.GOAL_TRAIN     = "Visit your class trainer"
+L.GOAL_USE       = "Use %s"
+L.GOAL_BUY       = "Buy %s"
+L.AUTO_ON        = "Automatic quest accept/turn-in: |cff00ff00on|r (hold Shift to suspend)"
+L.AUTO_OFF       = "Automatic quest accept/turn-in: |cffff4040off|r"
 L.QUEST_FMT    = "quest #%d"
 
 L.HELP = {
@@ -41,5 +51,6 @@ L.HELP = {
   "/freegor next | prev - move between steps",
   "/freegor step <n> - jump to a step",
   "/freegor arrow - show or hide the arrow",
+  "/freegor auto - automatic quest accept/turn-in on or off",
   "/freegor reset - reset the window position",
 }

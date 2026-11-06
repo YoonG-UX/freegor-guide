@@ -101,10 +101,25 @@ goalParsers["goto"] = function(args, opts)
   return g
 end
 
-goalParsers.talk = function(args)
+goalParsers.talk = function(args, opts)
   if args == "" then return nil, "talk needs an NPC name" end
-  return { type = "talk", text = args }
+  return { type = "talk", text = args, npc = tonumber(opts.n) }
 end
+
+-- Actions detected from game events while the step is active.
+local function actionGoal(kind, needsText)
+  return function(args)
+    if needsText and args == "" then return nil, kind .. " needs a name" end
+    return { type = kind, text = args }
+  end
+end
+goalParsers.home = actionGoal("home", true)     -- bind the hearthstone at an inn
+goalParsers.fpath = actionGoal("fpath", true)   -- discover a flight path
+goalParsers.fly = actionGoal("fly", true)       -- take a flight
+goalParsers.hearth = actionGoal("hearth", false) -- use the hearthstone
+goalParsers.train = actionGoal("train", false)  -- visit a class trainer
+goalParsers.use = actionGoal("use", true)       -- information only
+goalParsers.buy = actionGoal("buy", true)       -- information only
 
 goalParsers.level = function(args)
   local n = tonumber(args)
@@ -118,7 +133,7 @@ end
 
 local headerKeys = {
   guide = true, author = true, faction = true, levels = true,
-  next = true, zone = true, description = true,
+  next = true, zone = true, description = true, race = true,
 }
 
 -- Returns guide table, or nil + error message + line number.
@@ -149,6 +164,8 @@ function Parser.Parse(text)
           guide.minLevel, guide.maxLevel = tonumber(a), tonumber(b)
         elseif cmd == "zone" then
           guide.zone = splitList(rest)
+        elseif cmd == "race" then
+          guide.race = splitList(rest)
         else
           guide[cmd] = rest
         end
@@ -161,6 +178,7 @@ function Parser.Parse(text)
         local goal, err = parse(main, opts)
         if not goal then return nil, err, lineNo end
         goal.line = lineNo
+        goal.fr = opts.fr -- French display text (|fr ...)
         step.goals[#step.goals + 1] = goal
       end
     end
@@ -173,6 +191,16 @@ function Parser.Parse(text)
     return nil, "guide has no steps", lineNo
   end
   return guide
+end
+
+-- Is a guide meant for this race? (no "race" header = every race)
+function Parser.GuideForRace(guide, race)
+  if not guide.race then return true end
+  local me = (race or ""):gsub("%s", ""):upper()
+  for _, r in ipairs(guide.race) do
+    if r:gsub("%s", ""):upper() == me then return true end
+  end
+  return false
 end
 
 -- Does this step apply to the given player? `only` tokens may name a class
