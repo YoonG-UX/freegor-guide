@@ -1,0 +1,10 @@
+guide Herbalism: Bruiseweed & Briarthorn - Stonetalon Mountains
+author Freegor community
+category gold
+faction Horde
+levels 20-28
+loop
+description Herb circuit around Stonetalon Mountains.
+area 406
+
+gather 406 12 1622,1621 Pick Bruiseweed and Briarthorn along the way (Herbalism 70-100). |fr Cueillez Doulourante et Églantine en chemin (Herboristerie 70-100).

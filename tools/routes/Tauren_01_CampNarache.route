@@ -1,0 +1,33 @@
+guide Tauren 1-6: Camp Narache
+author Freegor community
+faction Horde
+race Tauren
+levels 1-6
+next Tauren 6-11: Mulgore
+area 215
+
+accept 747
+accept 752
+do 747
+turnin 747
+accept 750
+turnin 752
+accept 753
+turnin 753
+accept 755
+lvl 3
+accept 3376
+do 750
++do 3376
+turnin 750
+accept 780
+turnin 3376
+turnin 755
+accept 757
+do 757
++do 780
+turnin 780
+turnin 757
+accept 763
+accept 1656
+turnin 1656

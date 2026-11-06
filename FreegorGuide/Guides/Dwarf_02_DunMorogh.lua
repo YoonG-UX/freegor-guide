@@ -93,7 +93,6 @@ step
   goto 1426 46.7,53.8
   talk Senir Whitebeard |n 1252 |fr Senir Whitebeard
   turnin 287 Frostmane Hold |fr Le repaire des Frostmane
-  accept 291 The Reports |fr Les rapports
 step
   goto 1426 47.7,52.7
   note Click on Unguarded Thunder Ale Barrel |fr Cliquez sur : Tonneau de Thunder Ale non gardé

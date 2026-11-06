@@ -50,6 +50,8 @@ do 277
 turnin 277
 accept 275
 turnin 295
+do 275
+turnin 275
 
 # Back to Menethil
 do 471

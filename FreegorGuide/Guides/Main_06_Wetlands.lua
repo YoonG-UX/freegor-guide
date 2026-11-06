@@ -123,7 +123,14 @@ step
   talk Ormer Ironbraid |n 1078 |fr Ormer Ironbraid
   turnin 295 Ormer's Revenge |fr La vengeance d'Ormer
 step
-  goto 1437 17.2,27.2
+  goto 1437 26.6,37.3
+  kill Fen Creeper |q 275/1 |fr Rampant des tourbières
+step
+  goto 1437 56.4,40.4
+  talk Rethiel the Greenwarden |n 1244 |fr Rethiel le Gouverneur vert
+  turnin 275 Blisters on The Land |fr Fièvre sur le pays
+step
+  goto 1437 22.8,21.7
   collect Giant Crocolisk Skin |q 471/1 |fr Peau de crocilisque géant
 step
   goto 1437 11.5,52.2

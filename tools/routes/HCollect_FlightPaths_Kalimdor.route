@@ -1,0 +1,65 @@
+guide Flight paths: Kalimdor (Horde)
+author Freegor community
+category achievements
+faction Horde
+levels 10-60
+description Discover every Horde flight point of Kalimdor. Southern points need a higher level: do them when the zones are safe for you.
+area 1637
+
+area 1637
+talk 3310
+fpath Orgrimmar
+area 17
+talk 3615
+fpath The Crossroads |fr La Croisée
+area 17
+talk 16227
+fpath Ratchet |fr Cabestan
+area 17
+talk 10378
+fpath Camp Taurajo
+area 1638
+talk 2995
+fpath Thunder Bluff |fr Les Pitons-du-Tonnerre
+area 406
+talk 4312
+fpath Sun Rock Retreat |fr Retraite du Roc-Soleil
+area 331
+talk 12616
+fpath Splintertree Post
+area 331
+talk 11901
+fpath Zoram'gar Outpost
+area 400
+talk 4317
+fpath Freewind Post
+area 405
+talk 6726
+fpath Shadowprey Village
+area 357
+talk 8020
+fpath Camp Mojache
+area 15
+talk 11899
+fpath Brackenwall Village
+area 440
+talk 7824
+fpath Gadgetzan
+area 490
+talk 10583
+fpath Marshal's Refuge
+area 1377
+talk 15178
+fpath Cenarion Hold
+area 361
+talk 11900
+fpath Bloodvenom Post
+area 618
+talk 11139
+fpath Everlook
+area 493
+talk 12740
+fpath Moonglade
+area 16
+talk 8610
+fpath Valormok

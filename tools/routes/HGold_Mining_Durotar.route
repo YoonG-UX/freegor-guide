@@ -1,0 +1,10 @@
+guide Mining: Copper - Durotar
+author Freegor community
+category gold
+faction Horde
+levels 5-15
+loop
+description Copper ore circuit around Durotar. Sell the ore or the bars at the auction house.
+area 14
+
+gather 14 12 1731 Mine the Copper Veins along the way (Mining 1+). |fr Minez les filons de cuivre en chemin (Minage 1+).

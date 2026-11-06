@@ -1,0 +1,10 @@
+guide Herbalism: Mageroyal & Earthroot - The Barrens
+author Freegor community
+category gold
+faction Horde
+levels 12-22
+loop
+description Large herb circuit around The Barrens.
+area 17
+
+gather 17 16 1620,1619,1621,1622 Pick Mageroyal, Earthroot, Briarthorn and Bruiseweed along the way (Herbalism 50-100). |fr Cueillez Mage royal, Terrestrine, Églantine et Doulourante en chemin (Herboristerie 50-100).

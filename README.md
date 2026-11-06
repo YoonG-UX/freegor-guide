@@ -15,6 +15,22 @@ Fenêtre d'étapes, validation automatique des objectifs, flèche de navigation,
 | 25-28 | Les Paluns | | |
 | 28-30 | Bois de la Pénombre et Les Carmines | | |
 
+## Guides inclus : Horde 1-30
+
+| Niveaux | Orc / Troll | Tauren | Mort-vivant |
+| --- | --- | --- | --- |
+| 1-6 | Vallée des Épreuves | Camp Narache | Le Glas |
+| 6-11 | Durotar | Mulgore | Clairières de Tirisfal |
+| 11-16 | Les Tarides | Les Tarides | Bois des Pins-Argentés |
+| 16-21 | Les Tarides | | |
+| 21-24 | Serres-Rocheuses | | |
+| 24-30 | Contreforts de Hautebrande | | |
+
+Les autres catégories du menu existent aussi pour la Horde : montures de chaque race
+(loups, raptors, kodos, chevaux squelettes), circuits de minage et d'herboristerie (Durotar,
+Mulgore, Tirisfal, Pins-Argentés, Tarides, Serres-Rocheuses, Hautebrande), farm de tissu à
+Hautebrande, dons de tissu aux quatre capitales et tous les points de vol de la Horde.
+
 À la première connexion, le guide adapté à votre race et à votre niveau est chargé tout seul.
 Chaque guide propose le suivant à la fin.
 

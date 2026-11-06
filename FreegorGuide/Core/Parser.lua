@@ -231,12 +231,20 @@ function Parser.Parse(text)
   return guide
 end
 
+-- Race tokens as written in guides vs. as returned by UnitRace (Undead = "Scourge").
+local RACE_ALIAS = { SCOURGE = "UNDEAD" }
+local function normRace(s)
+  s = (s or ""):gsub("%s", ""):upper()
+  return RACE_ALIAS[s] or s
+end
+Parser.NormRace = normRace
+
 -- Is a guide meant for this race? (no "race" header = every race)
 function Parser.GuideForRace(guide, race)
   if not guide.race then return true end
-  local me = (race or ""):gsub("%s", ""):upper()
+  local me = normRace(race)
   for _, r in ipairs(guide.race) do
-    if r:gsub("%s", ""):upper() == me then return true end
+    if normRace(r) == me then return true end
   end
   return false
 end
@@ -247,7 +255,7 @@ end
 function Parser.StepApplies(step, class, race, faction)
   if not step.only then return true end
   local norm = function(s) return (s or ""):gsub("%s", ""):upper() end
-  local me = { [norm(class)] = true, [norm(race)] = true, [norm(faction)] = true }
+  local me = { [norm(class)] = true, [normRace(race)] = true, [norm(faction)] = true }
   local anyPositive, matched = false, false
   for _, tok in ipairs(step.only) do
     local neg = tok:sub(1, 1) == "!"

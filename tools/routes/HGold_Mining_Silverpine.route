@@ -1,0 +1,10 @@
+guide Mining: Copper & Tin - Silverpine Forest
+author Freegor community
+category gold
+faction Horde
+levels 10-20
+loop
+description Copper and tin circuit around Silverpine Forest.
+area 130
+
+gather 130 12 1731 Mine the Copper and Tin Veins along the way (Tin: Mining 65). |fr Minez les filons de cuivre et d'étain en chemin (étain : Minage 65).

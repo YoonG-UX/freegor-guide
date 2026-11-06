@@ -1,0 +1,49 @@
+guide Hillsbrad Foothills 24-30
+author Freegor community
+faction Horde
+levels 24-30
+area 267
+
+note Take the zeppelin from Orgrimmar to Undercity, then go south through Silverpine Forest to Tarren Mill. |fr Prenez le zeppelin d'Orgrimmar vers Fossoyeuse, puis descendez par le Bois des Pins-Argentés jusqu'à Moulin-de-Tarren.
+
+# Tarren Mill
+talk 2389
+fpath Tarren Mill |fr Moulin-de-Tarren
+talk 2388
+home Tarren Mill |fr Moulin-de-Tarren
+accept 527
+accept 496
+accept 498
+accept 501
+do 527
++do 496
+turnin 527
+accept 528
+accept 546
+turnin 496
+accept 499
+turnin 499
+do 498
+turnin 498
+do 528
++do 546
+turnin 528
+accept 529
+turnin 546
+do 501
+turnin 501
+accept 502
+turnin 502
+do 529
+turnin 529
+accept 532
+do 532
+turnin 532
+accept 539
+lvl 28
+accept 509
+do 539
++do 509
+turnin 539
+turnin 509
+level 30

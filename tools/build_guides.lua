@@ -92,6 +92,17 @@ local AREA_TO_MAP = {
   [493] = 1450,  -- Moonglade
   [618] = 1452,  -- Winterspring
   [1377] = 1451, -- Silithus
+  [14] = 1411,   -- Durotar
+  [215] = 1412,  -- Mulgore
+  [85] = 1420,   -- Tirisfal Glades
+  [130] = 1421,  -- Silverpine Forest
+  [36] = 1416,   -- Alterac Mountains
+  [400] = 1441,  -- Thousand Needles
+  [1637] = 1454, -- Orgrimmar
+  [1638] = 1456, -- Thunder Bluff
+  [1497] = 1458, -- Undercity
+  [3] = 1418,    -- Badlands
+  [8] = 1435,    -- Swamp of Sorrows
 }
 
 ---------------------------------------------------------------------------
@@ -114,11 +125,11 @@ local function err(msg) errors[#errors + 1] = ("%s:%d: %s"):format(ctx.file, ctx
 local function warn(msg) warnings[#warnings + 1] = ("%s:%d: %s"):format(ctx.file, ctx.line, msg) end
 
 local function hasBit(mask, bit) return math.floor(mask / bit) % 2 == 1 end
-local ALLIANCE_RACES = { 1, 4, 8, 64 }
-local function isAlliance(q)
+local FACTION_RACES = { Alliance = { 1, 4, 8, 64 }, Horde = { 2, 16, 32, 128 } }
+local function availableTo(q, faction)
   local r = q[Q_RACES]
   if not r or r == 0 then return true end
-  for _, b in ipairs(ALLIANCE_RACES) do if hasBit(r, b) then return true end end
+  for _, b in ipairs(FACTION_RACES[faction] or FACTION_RACES.Alliance) do if hasBit(r, b) then return true end end
   return false
 end
 
@@ -483,6 +494,7 @@ local function buildRoute(path, state)
   local area, map     -- current defaults
   local pendingOnly
   local level = state.level
+  local routeFaction = "Alliance"
 
   local function newStep(kind, npc)
     local s = { goals = {}, kind = kind, npc = npc, only = pendingOnly }
@@ -501,7 +513,7 @@ local function buildRoute(path, state)
   local function questOrErr(id)
     local q = quests[id]
     if not q then err("unknown quest " .. id) return nil end
-    if not isAlliance(q) then err(("quest %d %s is not available to the Alliance"):format(id, q[Q_NAME])) end
+    if not availableTo(q, routeFaction) then err(("quest %d %s is not available to the %s"):format(id, q[Q_NAME], routeFaction)) end
     return q
   end
 
@@ -674,6 +686,7 @@ local function buildRoute(path, state)
       if cmd == "guide" or cmd == "faction" or cmd == "levels" or cmd == "next" or cmd == "author"
         or cmd == "description" or cmd == "race" or cmd == "category" or cmd == "loop" then
         header[#header + 1] = line
+        if cmd == "faction" then routeFaction = rest end
         if cmd == "levels" then
           level = tonumber(rest:match("^(%d+)"))
         end
@@ -800,17 +813,17 @@ local state = { accepted = {}, done = {}, level = 1 }
 local chains = {} -- name -> state (each starting area has its own quest state)
 
 for line in io.lines(ROUTES .. "ORDER") do
-  local chain, name = line:match("^(%S+)%s+(%S+)$")
-  if chain then
-    chains[chain] = chains[chain] or { accepted = {}, done = {}, level = 1 }
-    -- "main" inherits the quests done by every starting chain listed before it
-    if chain == "main" and not chains.main.inherited then
-      chains.main.inherited = true
-      for c, st in pairs(chains) do
-        if c ~= "main" then
-          for k in pairs(st.done) do chains.main.done[k] = true end
-          for k in pairs(st.accepted) do chains.main.accepted[k] = true end
-        end
+  local spec, name = line:match("^(%S+)%s+(%S+)$")
+  if spec and not spec:match("^#") then
+    -- "main<human,dwarf,nelf": the chain starts with the quests done by those chains
+    local chain, parents = spec:match("^([^<]+)<?(.*)$")
+    if not chains[chain] then
+      chains[chain] = { accepted = {}, done = {}, level = 1 }
+      for parent in parents:gmatch("[^,]+") do
+        local st = chains[parent] or error("unknown chain " .. parent .. " in ORDER")
+        st.isParent = true
+        for k in pairs(st.done) do chains[chain].done[k] = true end
+        for k in pairs(st.accepted) do chains[chain].accepted[k] = true end
       end
     end
     local text = buildRoute(ROUTES .. name .. ".route", chains[chain])
@@ -821,6 +834,20 @@ for line in io.lines(ROUTES .. "ORDER") do
   end
 end
 
+-- Quests taken but never turned in by any guide of the chain
+local reported = {}
+for name, st in pairs(chains) do
+  local openList = {}
+  if st.isParent then st = { accepted = {}, done = {} } end -- checked through the chains that continue it
+  for id in pairs(st.accepted) do
+    if not st.done[id] and not reported[id] then
+      reported[id] = true
+      openList[#openList + 1] = ("%d %s"):format(id, quests[id] and quests[id][Q_NAME] or "?")
+    end
+  end
+  table.sort(openList)
+  for _, q in ipairs(openList) do notes[#notes + 1] = ("chain %s: quest %s is never turned in"):format(name, q) end
+end
 for _, n in ipairs(notes) do io.stderr:write("note: " .. n .. "\n") end
 for _, w in ipairs(warnings) do io.stderr:write("warning: " .. w .. "\n") end
 for _, e in ipairs(errors) do io.stderr:write("ERROR: " .. e .. "\n") end

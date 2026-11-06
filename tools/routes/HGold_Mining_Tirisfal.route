@@ -1,0 +1,10 @@
+guide Mining: Copper - Tirisfal Glades
+author Freegor community
+category gold
+faction Horde
+levels 5-15
+loop
+description Copper ore circuit around Tirisfal Glades.
+area 85
+
+gather 85 10 1731 Mine the Copper Veins along the way (Mining 1+). |fr Minez les filons de cuivre en chemin (Minage 1+).

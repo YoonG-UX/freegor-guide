@@ -251,15 +251,19 @@ check(E.stepIndex == killStep + 1, "next resumes")
 -- Guide catalogue checks
 local KNOWN_MAPS = {}
 for id = 1411, 1458 do KNOWN_MAPS[id] = 1 end -- Classic/Forever world zone maps
-local CATS = {}
-for _, c in ipairs(ns.CATEGORIES) do CATS[c.key] = 0 end
+local CATS = { Alliance = {}, Horde = {} }
+for _, c in ipairs(ns.CATEGORIES) do CATS.Alliance[c.key] = 0; CATS.Horde[c.key] = 0 end
 local nGuides, nSteps = 0, 0
 for _, guide in ipairs(Freegor:GetGuides()) do
   nGuides = nGuides + 1
   nSteps = nSteps + #guide.steps
-  check(guide.faction == "Alliance", guide.title .. ": faction")
-  check(CATS[guide.category] ~= nil, guide.title .. ": known category " .. tostring(guide.category))
-  if CATS[guide.category] then CATS[guide.category] = CATS[guide.category] + 1 end
+  check(guide.faction == "Alliance" or guide.faction == "Horde", guide.title .. ": faction")
+  local fc = CATS[guide.faction] or {}
+  check(fc[guide.category] ~= nil, guide.title .. ": known category " .. tostring(guide.category))
+  if fc[guide.category] then fc[guide.category] = fc[guide.category] + 1 end
+  if guide.next and ns.guides[guide.next] then
+    check(ns.guides[guide.next].faction == guide.faction, guide.title .. ": next guide is for the same faction")
+  end
   check(guide.minLevel and guide.maxLevel, guide.title .. ": levels")
   if guide.next then check(ns.guides[guide.next] ~= nil, guide.title .. ": next guide exists: " .. guide.next) end
   for _, st in ipairs(guide.steps) do
@@ -271,8 +275,10 @@ for _, guide in ipairs(Freegor:GetGuides()) do
     end
   end
 end
-for key, n in pairs(CATS) do check(n >= 2, "at least two guides in category " .. key) end
-check(nGuides >= 33 and nSteps >= 400, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
+for faction, cats in pairs(CATS) do
+  for key, n in pairs(cats) do check(n >= 2, ("at least two %s guides in category %s (%d)"):format(faction, key, n)) end
+end
+check(nGuides >= 64 and nSteps >= 800, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
 
 -- Turning in part of a multi-NPC step keeps the step open.
 local before = E.stepIndex
@@ -464,6 +470,27 @@ check(E.stepIndex == 2, "gold, item and reputation goals complete")
 check(ns.GoalText(gg.steps[1].goals[3]):find("Honoré"), "reputation goal text in French")
 local ag = P.Parse("guide A\nstep\n achieve 6 Level 10\n note x\n")
 check(E:StepKind(ag.steps[1]) == "manual", "achievement goal is informative on a client without achievements")
+
+-- Horde character: first login picks the right start guide, menu shows Horde guides only
+player.race, player.faction, player.level, player.class = "Orc", "Horde", 1, "WARRIOR"
+FreegorCharDB.guide = nil
+E.guide = nil
+fire("PLAYER_LOGIN")
+check(E.guide and E.guide.title == "Orc & Troll 1-6: Valley of Trials", "Orc gets the Valley of Trials guide (got " .. tostring(E.guide and E.guide.title) .. ")")
+player.race = "Scourge" -- the client's race token for Undead
+check(P.GuideForRace(ns.guides["Undead 1-6: Deathknell"], "Scourge"), "Undead guides match the Scourge race token")
+check(P.StepApplies({ only = { "Undead" } }, "MAGE", "Scourge", "Horde"), "only Undead matches Scourge")
+FreegorCharDB.guide = nil
+E.guide = nil
+fire("PLAYER_LOGIN")
+check(E.guide and E.guide.title == "Undead 1-6: Deathknell", "Undead gets the Deathknell guide")
+for _, g in ipairs(Freegor:GetGuides()) do
+  if g.faction == "Alliance" then
+    -- the menu filter: an Alliance guide never shows for a Horde character
+    check(g.faction ~= player.faction, "faction filter")
+  end
+end
+player.race, player.faction, player.level = "Human", "Alliance", 1
 -- Slash command smoke test
 SlashCmdList.FREEGOR("help")
 SlashCmdList.FREEGOR("step 2")

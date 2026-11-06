@@ -1,0 +1,58 @@
+guide Undead 11-16: Silverpine Forest
+author Freegor community
+faction Horde
+race Undead
+levels 11-16
+next The Barrens 11-16
+area 130
+
+# The Sepulcher
+turnin 445
+talk 2226
+fpath The Sepulcher |fr Le Sépulcre
+talk 6739
+home The Sepulcher |fr Le Sépulcre
+accept 421
+accept 428
+accept 437
+accept 477
+accept 6321
+turnin 6321
+do 421
+turnin 421
+accept 422
+do 437 @44.3,21.5
++do 477
+turnin 437
+turnin 477
+accept 478
+turnin 478
+accept 481
+turnin 481
+accept 482
+turnin 482
+do 422
+turnin 422
+accept 423
+
+# North: the Deathstalkers
+turnin 428
+accept 429
+accept 435
+turnin 435
+accept 449
+do 429
+turnin 429
+accept 430
+turnin 449
+accept 3221
+turnin 3221
+step
+turnin 430
+accept 425
+do 425
+turnin 425
+do 423
+turnin 423
+level 16
+note Next: The Barrens. Take the zeppelin from the towers outside Undercity to Orgrimmar, then go south through Durotar. |fr Suite : Les Tarides. Prenez le zeppelin depuis les tours près de Fossoyeuse jusqu'à Orgrimmar, puis allez vers le sud par Durotar.

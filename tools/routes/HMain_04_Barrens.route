@@ -1,0 +1,40 @@
+guide The Barrens 16-21
+author Freegor community
+faction Horde
+levels 16-21
+next Stonetalon Mountains 21-24
+area 17
+
+# Centaurs and harpies
+accept 855
+accept 850
+do 855
++do 850
+turnin 855
+turnin 850
+do 875
++do 880
+turnin 875
+accept 876
+turnin 880
+do 876
+turnin 876
+
+# Ratchet
+turnin 888
+accept 865
+do 865
+turnin 865
+
+# The Crossroads: Mankrik
+accept 899
+accept 4921
+do 899
++do 4921
+turnin 899
+turnin 4921
+
+# Camp Taurajo, on the way to Stonetalon
+talk 10378
+fpath Camp Taurajo
+level 21

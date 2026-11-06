@@ -1,0 +1,71 @@
+guide Tauren 6-11: Mulgore
+author Freegor community
+faction Horde
+race Tauren
+levels 6-11
+next The Barrens 11-16
+area 215
+
+# Bloodhoof Village
+talk 6747
+home Bloodhoof Village |fr Sabot-de-Sang
+turnin 763
+accept 745
+accept 767
+accept 748
+accept 761
+accept 743
+accept 746
+do 748
++do 745
+turnin 748
+accept 754
+turnin 745
+turnin 767
+accept 771
+do 771
+turnin 771
+accept 772
+do 761
+turnin 761
+do 754 @51.9,68.5
++ note Use the Winterhoof Cleansing Totem at the well. |fr Utilisez le totem de purification à côté du puits.
+turnin 754
+accept 756
+do 756
+turnin 756
+accept 758
+do 758 @44.2,51.0
++ note Use the Thunderhorn Cleansing Totem at the well. |fr Utilisez le totem de purification à côté du puits.
+turnin 758
+accept 759
+do 743
+turnin 743
+do 746 @33.8,53.9
+turnin 746
+accept 749
+turnin 749
+accept 751
+turnin 751
+accept 764
+do 764
+turnin 764
+accept 765
+do 765
+turnin 765
+do 759
+turnin 759
+accept 760
+do 760 @42.7,24.9
++ note Use the Wildmane Cleansing Totem at the well. |fr Utilisez le totem de purification à côté du puits.
+turnin 760
+
+# Rite of Wisdom and Thunder Bluff
+turnin 772
+accept 773
+turnin 773
+accept 775
+talk 2995
+fpath Thunder Bluff |fr Les Pitons-du-Tonnerre
+turnin 775
+level 11

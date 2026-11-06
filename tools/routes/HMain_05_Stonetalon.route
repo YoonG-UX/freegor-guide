@@ -1,0 +1,48 @@
+guide Stonetalon Mountains 21-24
+author Freegor community
+faction Horde
+levels 20-24
+next Hillsbrad Foothills 24-30
+area 406
+
+note Stonetalon is reached from the north-west of The Barrens (Malaka'jin), or by the road from Ashenvale. |fr Les Serres-Rocheuses se rejoignent par le nord-ouest des Tarides (Malaka'jin) ou par la route depuis Orneval.
+
+# Malaka'jin, on the Barrens border
+area 17
+accept 1062
+accept 6548
+area 406
+do 1062
++do 6548
+turnin 1062
+accept 1068
+turnin 6548
+accept 6629
+
+# Sun Rock Retreat
+talk 4312
+fpath Sun Rock Retreat |fr Retraite du Roc-Soleil
+talk 7731
+home Sun Rock Retreat |fr Retraite du Roc-Soleil
+accept 6421
+accept 6301
+accept 1093
+accept 1090
+do 6421
+turnin 6421
+do 6301
+turnin 6301
+accept 6381
+do 6381
+turnin 6381
+do 1093
++do 1090
+turnin 1093
+turnin 1090
+accept 1092
+turnin 1092
+do 6629
++do 1068
+turnin 6629
+turnin 1068
+level 24

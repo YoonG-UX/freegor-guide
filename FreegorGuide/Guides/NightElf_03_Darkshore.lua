@@ -49,6 +49,10 @@ step
   goto 1439 36.3,40.9
   collect Crawler Leg |q 983/1 |fr Patte de clampant
 step
+  goto 1439 36.6,46.3
+  note Click on Buzzbox 827 |fr Cliquez sur : Bigobox 827
+  turnin 983 Buzzbox 827 |fr Bigobox 827
+step
   goto 1439 36.4,50.9
   collect Sea Creature Bones |q 3524/1 |fr Os de créature marine
 step
@@ -132,12 +136,23 @@ step
   collect Cliffspring River Sample |q 4762/1 |fr Prélèvement de la Bondissante
   note Draw the sample at the first waterfall of the Cliffspring River, north of Auberdine. |fr Prélevez l'échantillon à la première chute d'eau de la Bondissante, au nord d'Auberdine.
 step
+  goto 1439 47.3,48.7
+  note Click on Mysterious Red Crystal |fr Cliquez sur : Mystérieux Cristal rouge
+  turnin 4812 As Water Cascades |fr Comme l'eau tombe en cascade
+step
+  goto 1439 47.3,48.7
+  note Click on Mysterious Red Crystal |fr Cliquez sur : Mystérieux Cristal rouge
+  accept 4813 The Fragments Within |fr Les fragments à l'intérieur
+step
   goto 1439 39.4,43.5
   talk Terenthis |n 3693 |fr Terenthis
   turnin 985 How Big a Threat? |fr Quelle est l'ampleur de la menace ?
   goto 1439 38.8,43.4
   talk Tharnariun Treetender |n 3701 |fr Tharnariun Treetender
   turnin 2138 Cleansing of the Infected |fr Nettoyage de l'infection
+  goto 1439 37.7,43.4
+  talk Sentinel Glynda Nal'Shea |n 2930 |fr Sentinelle Glynda Nal'Shea
+  turnin 4813 The Fragments Within |fr Les fragments à l'intérieur
 step
   goto 1439 37.4,40.1
   talk Thundris Windweaver |n 3649 |fr Thundris Windweaver

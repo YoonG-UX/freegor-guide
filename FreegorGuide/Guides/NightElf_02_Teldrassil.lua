@@ -6,7 +6,7 @@ faction Alliance
 race NightElf
 levels 6-11
 next Darkshore 11-17
-zone 1438
+zone 1457
 step
   goto 1438 55.6,59.8
   talk Innkeeper Keldamyr |n 6736 |fr Keldamyr l'aubergiste
@@ -133,4 +133,12 @@ step
   accept 935 Crown of the Earth |fr La couronne de la Terre
 step
   level 11
+step
+  goto 1457 38.2,21.6
+  talk Rellian Greenspyre |n 3517 |fr Rellian Greenspyre
+  turnin 922 Rellian Greenspyre |fr Rellian Greenspyre
+step
+  goto 1457 34.8,9.3
+  talk Arch Druid Fandral Staghelm |n 3516 |fr Archidruide Fandral Staghelm
+  turnin 935 Crown of the Earth |fr La couronne de la Terre
 ]])

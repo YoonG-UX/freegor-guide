@@ -1,0 +1,37 @@
+guide Undead 1-6: Deathknell
+author Freegor community
+faction Horde
+race Undead
+levels 1-6
+next Undead 6-11: Tirisfal Glades
+area 85
+
+accept 363
+turnin 363
+accept 364
+accept 376
+do 364
++do 376
+turnin 364
+accept 3901
+turnin 376
+lvl 3
+accept 3902
+accept 6395
+lvl 4
+accept 380
+do 3901
++do 3902
++do 6395
+turnin 3901
+turnin 3902
+turnin 6395
+do 380
+turnin 380
+accept 381
+do 381
+turnin 381
+accept 382
+do 382
+turnin 382
+accept 383

@@ -1,0 +1,44 @@
+guide Flight paths: Eastern Kingdoms (Horde)
+author Freegor community
+category achievements
+faction Horde
+levels 10-60
+description Discover every Horde flight point of the Eastern Kingdoms. Southern and eastern points need a higher level: do them when the zones are safe for you.
+area 1497
+
+area 1497
+talk 4551
+fpath Undercity |fr Fossoyeuse
+area 130
+talk 2226
+fpath The Sepulcher |fr Le Sépulcre
+area 267
+talk 2389
+fpath Tarren Mill |fr Moulin-de-Tarren
+area 45
+talk 2851
+fpath Hammerfall
+area 47
+talk 4314
+fpath Revantusk Village
+area 139
+talk 12636
+fpath Light's Hope Chapel
+area 3
+talk 2861
+fpath Kargath
+area 51
+talk 3305
+fpath Thorium Point
+area 46
+talk 13177
+fpath Flame Crest
+area 8
+talk 6026
+fpath Stonard
+area 33
+talk 1387
+fpath Grom'gol
+area 33
+talk 2858
+fpath Booty Bay |fr Baie-du-Butin

@@ -1,0 +1,65 @@
+guide The Barrens 11-16
+author Freegor community
+faction Horde
+levels 11-16
+next The Barrens 16-21
+area 17
+
+note The Crossroads are in the middle of The Barrens: west of Durotar, north of Mulgore. |fr La Croisée est au centre des Tarides : à l'ouest de Durotar, au nord de Mulgore.
+
+# The Crossroads
+talk 3615
+fpath The Crossroads |fr La Croisée
+talk 3934
+home The Crossroads |fr La Croisée
+accept 844
+accept 871
+accept 869
+accept 870
+accept 1492
+accept 867
+
+# North: plainstriders, Razormane, raptors
+do 844
++do 871
++do 869
+turnin 844
+accept 845
+turnin 871
+accept 872
+accept 5041
+turnin 869
+do 870
+turnin 870
+accept 877
+do 845
++do 872
++do 5041
+turnin 845
+accept 903
+turnin 872
+turnin 5041
+
+# Ratchet
+turnin 1492
+talk 16227
+fpath Ratchet |fr Cabestan
+accept 887
+do 887
+turnin 887
+accept 890
+turnin 890
+accept 892
+turnin 892
+accept 888
+
+# Back to the Crossroads
+do 867
++do 903
+turnin 867
+accept 875
+turnin 903
+do 877
+turnin 877
+accept 880
+level 16

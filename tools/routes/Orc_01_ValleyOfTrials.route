@@ -1,0 +1,40 @@
+guide Orc & Troll 1-6: Valley of Trials
+author Freegor community
+faction Horde
+race Orc, Troll
+levels 1-6
+next Orc & Troll 6-11: Durotar
+area 14
+
+accept 4641
+turnin 4641
+accept 788
+do 788
+turnin 788
+accept 789
+accept 4402
+lvl 3
+accept 5441
+accept 790
+do 789
++do 4402
++do 5441
+do 790
+turnin 790
+accept 804
+turnin 804
+turnin 789
+turnin 4402
+turnin 5441
+accept 6394
+only !Warlock
+accept 792
+do 6394
++do 792
+turnin 6394
+turnin 792
+accept 794
+do 794
+turnin 794
+accept 805
+accept 2161

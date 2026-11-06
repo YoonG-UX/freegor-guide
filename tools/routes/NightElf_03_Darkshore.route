@@ -26,6 +26,7 @@ accept 2138
 
 # North of Auberdine
 do 983
+turnin 983
 do 3524
 turnin 3524
 do 4811
@@ -62,8 +63,11 @@ do 4812
 + note First fill the Empty Water Tube at the Auberdine moonwell. |fr Remplissez d'abord le Tube d'eau vide au puits de lune d'Auberdine.
 do 4762
 + note Draw the sample at the first waterfall of the Cliffspring River, north of Auberdine. |fr Prélevez l'échantillon à la première chute d'eau de la Bondissante, au nord d'Auberdine.
+turnin 4812
+accept 4813
 turnin 985
 turnin 2138
 turnin 4762
+turnin 4813
 level 17
 note Next: Redridge Mountains. Take the boat from Auberdine to Menethil Harbor, run through the Wetlands and Loch Modan to Ironforge, then the Deeprun Tram to Stormwind. |fr Suite : Les Carmines. Prenez le bateau d'Auberdine vers Menethil, traversez Les Paluns et le Loch Modan jusqu'à Ironforge, puis le tram des profondeurs jusqu'à Hurlevent.

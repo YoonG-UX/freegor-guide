@@ -1,0 +1,64 @@
+guide Orc & Troll 6-11: Durotar
+author Freegor community
+faction Horde
+race Orc, Troll
+levels 6-11
+next The Barrens 11-16
+area 14
+
+# Sen'jin Village
+turnin 805
+accept 808
+accept 818
+accept 817
+accept 786
+accept 823
+do 817
++do 818
+turnin 817
+turnin 818
+
+# Razor Hill
+turnin 2161
+talk 6928
+home Razor Hill |fr Tranchecolline
+turnin 823
+accept 806
+accept 784
+accept 791
+accept 815
+do 784
++do 791
+turnin 784
+accept 825
+turnin 791
+do 815
+turnin 815
+do 786
+turnin 786
+do 825
+turnin 825
+accept 837
+do 837
+turnin 837
+
+# Echo Isles
+do 808
+turnin 808
+accept 826
+do 826
+turnin 826
+
+# Skull Rock and Orgrimmar
+do 806
+turnin 806
+accept 828
+turnin 828
+accept 827
+do 827
+turnin 827
+accept 829
+talk 3310
+fpath Orgrimmar
+turnin 829
+level 11

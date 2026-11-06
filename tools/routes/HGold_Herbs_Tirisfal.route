@@ -1,0 +1,10 @@
+guide Herbalism: Peacebloom & Silverleaf - Tirisfal Glades
+author Freegor community
+category gold
+faction Horde
+levels 5-15
+loop
+description Starter herb circuit around Tirisfal Glades.
+area 85
+
+gather 85 12 1618,1617,1619 Pick Peacebloom, Silverleaf and Earthroot along the way (Herbalism 1+). |fr Cueillez Pacifique, Feuillargent et Terrestrine en chemin (Herboristerie 1+).

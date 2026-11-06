@@ -1,0 +1,54 @@
+guide Undead 6-11: Tirisfal Glades
+author Freegor community
+faction Horde
+race Undead
+levels 6-11
+next Undead 11-16: Silverpine Forest
+area 85
+
+# Brill
+turnin 383
+accept 427
+talk 5688
+home Brill
+accept 367
+accept 404
+accept 375
+accept 358
+do 367
++do 375
+turnin 367
+accept 368
+turnin 375
+do 427
++do 404
+turnin 427
+accept 370
+turnin 404
+accept 426
+do 358
+turnin 358
+accept 359
+turnin 359
+accept 360
+turnin 360
+do 426
++do 370
+turnin 426
+turnin 370
+accept 371
+do 368
+turnin 368
+accept 369
+do 369
+turnin 369
+accept 492
+turnin 492
+do 371
+turnin 371
+accept 372
+do 372
+turnin 372
+lvl 10
+accept 445
+level 11
