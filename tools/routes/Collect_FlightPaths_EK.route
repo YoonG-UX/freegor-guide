@@ -1,0 +1,55 @@
+guide Flight paths: Eastern Kingdoms (Alliance)
+author Freegor community
+category achievements
+faction Alliance
+levels 1-60
+description Discover every Alliance flight point of the Eastern Kingdoms. Northern and southern points need a higher level: do them when the zones are safe for you.
+area 1519
+
+talk 352
+fpath Stormwind |fr Hurlevent
+area 40
+talk 523
+fpath Sentinel Hill |fr Colline des Sentinelles
+area 44
+talk 931
+fpath Lakeshire
+area 10
+talk 2409
+fpath Darkshire
+area 33
+talk 2859
+fpath Booty Bay |fr Baie-du-Butin
+area 4
+talk 8609
+fpath Nethergarde Keep |fr Rempart-du-Néant
+area 46
+talk 2299
+fpath Morgan's Vigil
+area 51
+talk 2941
+fpath Thorium Point
+area 1537
+talk 1573
+fpath Ironforge |fr Forgefer
+area 38
+talk 1572
+fpath Thelsamar
+area 11
+talk 1571
+fpath Menethil Harbor |fr Menethil
+area 267
+talk 2432
+fpath Southshore |fr Austrivage
+area 45
+talk 2835
+fpath Refuge Pointe
+area 47
+talk 8018
+fpath Aerie Peak
+area 28
+talk 12596
+fpath Chillwind Camp
+area 139
+talk 12617
+fpath Light's Hope Chapel

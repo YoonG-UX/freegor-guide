@@ -11,7 +11,7 @@ SlashCmdList.FREEGOR = function(msg)
 
   if cmd == "" then
     ns.SetShown(not ns.Viewer:IsShown())
-  elseif cmd == "list" then
+  elseif cmd == "list" or cmd == "menu" then
     ns.Picker:Toggle()
   elseif cmd == "next" then
     Engine:Next()
@@ -21,6 +21,9 @@ SlashCmdList.FREEGOR = function(msg)
     Engine:Jump(tonumber(arg))
   elseif cmd == "load" and arg ~= "" then
     Engine:LoadGuide(arg)
+  elseif cmd == "minimap" then
+    ns.db.minimapButton = ns.db.minimapButton == false
+    ns.MinimapButton:SetShown(ns.db.minimapButton)
   elseif cmd == "auto" then
     ns.ToggleAutoQuest()
   elseif cmd == "arrow" then

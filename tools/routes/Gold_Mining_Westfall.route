@@ -1,0 +1,10 @@
+guide Mining: Copper & Tin - Westfall
+author Freegor community
+category gold
+faction Alliance
+levels 10-20
+loop
+description Copper and tin circuit around Westfall, safe from level 15.
+area 40
+
+gather 40 14 1731 Mine the Copper and Tin Veins along the way (Tin: Mining 65). |fr Minez les filons de cuivre et d'étain en chemin (étain : Minage 65).

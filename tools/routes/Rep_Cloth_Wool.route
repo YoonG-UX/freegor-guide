@@ -1,0 +1,19 @@
+guide Cloth donations: Wool (4 capitals)
+author Freegor community
+category reputation
+faction Alliance
+levels 12-60
+description One-time cloth donations to the four Alliance capitals: reputation with Stormwind, Ironforge, Gnomeregan Exiles and Darnassus. Bring the cloth in your bags.
+area 1519
+
+note Bring the Wool Cloth for every donation in your bags. |fr Ayez dans vos sacs le tissu demandé pour chaque don.
+accept 7791
+turnin 7791
+area 1537
+accept 7802
+turnin 7802
+accept 7807
+turnin 7807
+area 1657
+accept 7792
+turnin 7792

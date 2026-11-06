@@ -1,0 +1,10 @@
+guide Herbalism: Peacebloom & Silverleaf - Teldrassil
+author Freegor community
+category gold
+faction Alliance
+levels 5-15
+loop
+description Starter herb circuit around Teldrassil.
+area 141
+
+gather 141 12 1618,1617,1619 Pick Peacebloom, Silverleaf and Earthroot along the way (Herbalism 1+). |fr Cueillez Pacifique, Feuillargent et Terrestrine en chemin (Herboristerie 1+).

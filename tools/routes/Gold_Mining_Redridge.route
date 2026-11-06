@@ -1,0 +1,10 @@
+guide Mining: Tin & Silver - Redridge Mountains
+author Freegor community
+category gold
+faction Alliance
+levels 18-28
+loop
+description Tin, silver and copper circuit around Redridge.
+area 44
+
+gather 44 12 1731 Mine the Tin and Silver Veins along the way (Tin: Mining 65, Silver: 75). |fr Minez les filons d'étain et d'argent en chemin (étain : Minage 65, argent : 75).

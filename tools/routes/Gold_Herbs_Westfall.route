@@ -1,0 +1,10 @@
+guide Herbalism: Mageroyal & Briarthorn - Westfall
+author Freegor community
+category gold
+faction Alliance
+levels 10-20
+loop
+description Mid-level herb circuit around Westfall.
+area 40
+
+gather 40 14 1620,1621,1622 Pick Mageroyal, Briarthorn and Bruiseweed along the way (Herbalism 50-100). |fr Cueillez Mage royal, Églantine et Doulourante en chemin (Herboristerie 50-100).

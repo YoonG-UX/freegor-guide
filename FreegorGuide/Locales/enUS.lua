@@ -43,14 +43,35 @@ L.GOAL_USE       = "Use %s"
 L.GOAL_BUY       = "Buy %s"
 L.AUTO_ON        = "Automatic quest accept/turn-in: |cff00ff00on|r (hold Shift to suspend)"
 L.AUTO_OFF       = "Automatic quest accept/turn-in: |cffff4040off|r"
+L.GOAL_GOLD    = "Have |cffffd100%d gold|r"
+L.GOAL_ITEM    = "Get |cffffd100%s|r"
+L.GOAL_ITEM_N  = "Get %d x |cffffd100%s|r"
+L.GOAL_REP     = "Reach %s with |cff00ff96%s|r"
+L.GOAL_ACHIEVE = "Achievement: |cffffd100%s|r"
+L.STANDING_1, L.STANDING_2, L.STANDING_3, L.STANDING_4 = "Hated", "Hostile", "Unfriendly", "Neutral"
+L.STANDING_5, L.STANDING_6, L.STANDING_7, L.STANDING_8 = "Friendly", "Honored", "Revered", "Exalted"
+L.MENU_TITLE       = "Freegor Guide - what to track?"
+L.CURRENT_FMT      = "Active guide: %s"
+L.CAT_leveling     = "Leveling"
+L.CAT_mounts       = "Mounts"
+L.CAT_gold         = "Gold & gathering"
+L.CAT_reputation   = "Reputation"
+L.CAT_achievements = "Achievements & collections"
+L.NO_ACHIEVEMENTS  = "This client has no achievement system: these guides track goals the game can check (flight points, ...)."
+L.NO_GUIDES_IN_CAT = "No guide in this category for your character yet."
+L.PROGRESS_FMT     = "step %d/%d"
+L.STEPS_FMT        = "%d steps"
+L.LOOP_HINT        = "Circuit: starts over at the end."
+L.MINIMAP_HINT     = "Left click: choose a guide. Right click: show/hide the guide. Drag to move."
 L.QUEST_FMT    = "quest #%d"
 
 L.HELP = {
   "/freegor - show or hide the guide window",
-  "/freegor list - choose a guide",
+  "/freegor menu - choose what to track (leveling, mounts, gold, reputation...)",
   "/freegor next | prev - move between steps",
   "/freegor step <n> - jump to a step",
   "/freegor arrow - show or hide the arrow",
   "/freegor auto - automatic quest accept/turn-in on or off",
+  "/freegor minimap - show or hide the minimap button",
   "/freegor reset - reset the window position",
 }

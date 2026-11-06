@@ -1,0 +1,10 @@
+guide Mining: Copper - Dun Morogh
+author Freegor community
+category gold
+faction Alliance
+levels 5-15
+loop
+description Copper ore circuit around Dun Morogh.
+area 1
+
+gather 1 12 1731 Mine the Copper Veins along the way (Mining 1+). |fr Minez les filons de cuivre en chemin (Minage 1+).

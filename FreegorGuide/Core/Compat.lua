@@ -218,6 +218,71 @@ function C.GetKnownTaxiNodes()
   return names
 end
 
+-- Name of the flight point the player is standing at, while the taxi map is open.
+function C.GetCurrentTaxiNode()
+  local TM = _G.C_TaxiMap
+  if TM and TM.GetAllTaxiNodes and _G.GetTaxiMapID then
+    local ok, nodes = pcall(TM.GetAllTaxiNodes, _G.GetTaxiMapID())
+    if ok and type(nodes) == "table" then
+      for _, n in ipairs(nodes) do
+        if n.state == 0 then return n.name end -- 0 = current
+      end
+    end
+  end
+  if _G.NumTaxiNodes and _G.TaxiNodeGetType then
+    for i = 1, _G.NumTaxiNodes() do
+      if _G.TaxiNodeGetType(i) == "CURRENT" then return _G.TaxiNodeName(i) end
+    end
+  end
+  return nil
+end
+
+function C.GetItemCount(itemID)
+  local f = (_G.C_Item and _G.C_Item.GetItemCount) or _G.GetItemCount
+  if not f then return 0 end
+  local ok, n = pcall(f, itemID)
+  return ok and tonumber(n) or 0
+end
+
+function C.GetItemName(itemID)
+  if _G.C_Item and _G.C_Item.GetItemNameByID then
+    local n = _G.C_Item.GetItemNameByID(itemID)
+    if n then return n end
+  end
+  if _G.GetItemInfo then
+    local n = _G.GetItemInfo(itemID)
+    if n then return n end
+  end
+  return nil
+end
+
+-- Reputation standing (1 hated .. 8 exalted) and faction name.
+function C.GetFactionStanding(factionID)
+  local R = _G.C_Reputation
+  if R and R.GetFactionDataByID then
+    local ok, d = pcall(R.GetFactionDataByID, factionID)
+    if ok and type(d) == "table" then return d.reaction, d.name end
+  end
+  if _G.GetFactionInfoByID then
+    local name, _, standing = _G.GetFactionInfoByID(factionID)
+    return standing, name
+  end
+  return nil
+end
+
+-- true / false when the client knows the achievement, nil when it has no achievements.
+function C.IsAchievementDone(achievementID)
+  if not _G.GetAchievementInfo then return nil end
+  local ok, id, name, _, completed = pcall(_G.GetAchievementInfo, achievementID)
+  if not ok or not id then return nil end
+  return completed and true or false, name
+end
+
+function C.HasAchievements()
+  return _G.GetAchievementInfo ~= nil and _G.GetCategoryList ~= nil
+    and #(_G.GetCategoryList() or {}) > 0
+end
+
 ---------------------------------------------------------------------------
 -- Player info
 ---------------------------------------------------------------------------

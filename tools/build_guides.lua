@@ -73,6 +73,25 @@ local AREA_TO_MAP = {
   [1519] = 1453, -- Stormwind City
   [1537] = 1455, -- Ironforge
   [1657] = 1457, -- Darnassus
+  [4] = 1419,    -- Blasted Lands
+  [15] = 1445,   -- Dustwallow Marsh
+  [16] = 1447,   -- Azshara
+  [17] = 1413,   -- The Barrens
+  [28] = 1422,   -- Western Plaguelands
+  [33] = 1434,   -- Stranglethorn Vale
+  [45] = 1417,   -- Arathi Highlands
+  [46] = 1428,   -- Burning Steppes
+  [47] = 1425,   -- The Hinterlands
+  [51] = 1427,   -- Searing Gorge
+  [139] = 1423,  -- Eastern Plaguelands
+  [357] = 1444,  -- Feralas
+  [361] = 1448,  -- Felwood
+  [405] = 1443,  -- Desolace
+  [440] = 1446,  -- Tanaris
+  [490] = 1449,  -- Un'Goro Crater
+  [493] = 1450,  -- Moonglade
+  [618] = 1452,  -- Winterspring
+  [1377] = 1451, -- Silithus
 }
 
 ---------------------------------------------------------------------------
@@ -80,6 +99,7 @@ local AREA_TO_MAP = {
 ---------------------------------------------------------------------------
 
 local errors, warnings, notes = {}, {}, {}
+local circuit
 local function lastPosOf(step)
   local pos
   for _, g in ipairs(step.goals) do
@@ -166,6 +186,73 @@ local function hotspot(points, r, ref)
 end
 
 -- First spawn of an NPC: area, x, y
+-- Circuit through spawn points: k-means into `n` waypoints (weighted toward
+-- dense areas), then the shortest loop found by nearest neighbour + 2-opt.
+circuit = function(points, n, start)
+  if #points == 0 then return {} end
+  n = math.min(n, #points)
+  -- farthest-point initialisation, deterministic
+  local centers = { { points[1][1], points[1][2] } }
+  while #centers < n do
+    local best, bestD = nil, -1
+    for _, p in ipairs(points) do
+      local d = math.huge
+      for _, c in ipairs(centers) do
+        local dx, dy = p[1] - c[1], p[2] - c[2]
+        d = math.min(d, dx * dx + dy * dy)
+      end
+      if d > bestD then best, bestD = p, d end
+    end
+    centers[#centers + 1] = { best[1], best[2] }
+  end
+  for _ = 1, 30 do
+    local sums = {}
+    for i = 1, n do sums[i] = { 0, 0, 0 } end
+    for _, p in ipairs(points) do
+      local bi, bd = 1, math.huge
+      for i, c in ipairs(centers) do
+        local dx, dy = p[1] - c[1], p[2] - c[2]
+        local d = dx * dx + dy * dy
+        if d < bd then bi, bd = i, d end
+      end
+      sums[bi][1], sums[bi][2], sums[bi][3] = sums[bi][1] + p[1], sums[bi][2] + p[2], sums[bi][3] + 1
+    end
+    for i = 1, n do
+      if sums[i][3] > 0 then centers[i] = { sums[i][1] / sums[i][3], sums[i][2] / sums[i][3] } end
+    end
+  end
+  local function d(a, b) local dx, dy = a[1] - b[1], a[2] - b[2]; return math.sqrt(dx * dx + dy * dy) end
+  -- start from the waypoint nearest to the player's position
+  local first = 1
+  if start then
+    for i, c in ipairs(centers) do if d(c, start) < d(centers[first], start) then first = i end end
+  end
+  local tour, used = { centers[first] }, { [first] = true }
+  while #tour < n do
+    local last, bi, bd = tour[#tour], nil, math.huge
+    for i, c in ipairs(centers) do
+      if not used[i] and d(last, c) < bd then bi, bd = i, d(last, c) end
+    end
+    used[bi] = true
+    tour[#tour + 1] = centers[bi]
+  end
+  local improved = true
+  while improved do
+    improved = false
+    for i = 2, n - 1 do
+      for j = i + 1, n do
+        local a, b, c2, e = tour[i - 1], tour[i], tour[j], tour[j % n + 1]
+        if d(a, c2) + d(b, e) < d(a, b) + d(c2, e) - 1e-9 then
+          local k, l = i, j
+          while k < l do tour[k], tour[l] = tour[l], tour[k]; k, l = k + 1, l - 1 end
+          improved = true
+        end
+      end
+    end
+  end
+  return tour
+end
+
 local function npcLocation(id, preferredArea)
   local n = npcs[id]
   if not n then return nil end
@@ -584,7 +671,8 @@ local function buildRoute(path, state)
     local line = raw:gsub("%s+$", ""):gsub("^%s+", "")
     if line ~= "" and not line:match("^%-%-") and not line:match("^#") then
       local cmd, rest = line:match("^(%S+)%s*(.*)$")
-      if cmd == "guide" or cmd == "faction" or cmd == "levels" or cmd == "next" or cmd == "author" or cmd == "description" or cmd == "race" then
+      if cmd == "guide" or cmd == "faction" or cmd == "levels" or cmd == "next" or cmd == "author"
+        or cmd == "description" or cmd == "race" or cmd == "category" or cmd == "loop" then
         header[#header + 1] = line
         if cmd == "levels" then
           level = tonumber(rest:match("^(%d+)"))
@@ -602,6 +690,28 @@ local function buildRoute(path, state)
         doQuest(tonumber(id), override, cmd == "+do")
       elseif cmd == "only" then
         pendingOnly = rest
+      elseif cmd == "gather" or cmd == "farm" then
+        -- gather <area> <waypoints> <objectID,...> <note text> [|fr ...]
+        -- farm   <area> <waypoints> <npcID,...>    <note text> [|fr ...]
+        local a, n, ids, note = rest:match("^(%d+)%s+(%d+)%s+([%d,]+)%s*(.*)$")
+        if not a then err("expected: " .. cmd .. " <area> <waypoints> <ids> <note>")
+        else
+          a, n = tonumber(a), tonumber(n)
+          local pts = {}
+          for id in ids:gmatch("%d+") do
+            local src = cmd == "gather" and objects[tonumber(id)] or npcs[tonumber(id)]
+            local sp = src and src[cmd == "gather" and O_SPAWNS or N_SPAWNS]
+            if not src then err("unknown " .. (cmd == "gather" and "object " or "NPC ") .. id)
+            elseif not (sp and sp[a]) then err(id .. " has no spawn in area " .. a)
+            else for _, p in ipairs(sp[a]) do pts[#pts + 1] = p end end
+          end
+          local prev = curStep() and lastPosOf(curStep())
+          for _, c in ipairs(circuit(pts, n, prev and { prev[2], prev[3] })) do
+            local st = newStep("other")
+            st.goals[#st.goals + 1] = gotoLine(a, c[1], c[2]) .. " |r 30"
+            if note ~= "" then st.goals[#st.goals + 1] = "note " .. note end
+          end
+        end
       elseif cmd == "lvl" then
         -- expected level at this point of the route (no step emitted)
         level = tonumber(rest)
@@ -639,7 +749,8 @@ local function buildRoute(path, state)
           for _, g in ipairs(s.goals) do s.head[#s.head + 1] = g end
           s.items = {}
         end
-      elseif cmd == "home" or cmd == "fpath" or cmd == "fly" or cmd == "hearth" or cmd == "train" or cmd == "note" or cmd == "use" or cmd == "buy" then
+      elseif cmd == "home" or cmd == "fpath" or cmd == "fly" or cmd == "hearth" or cmd == "train" or cmd == "note"
+        or cmd == "use" or cmd == "buy" or cmd == "gold" or cmd == "item" or cmd == "rep" or cmd == "achieve" then
         -- action lines: placed in the current step if it is an "other" step that
         -- only holds a goto, else in a new step
         -- action lines join the current NPC/travel step (e.g. "home" right after

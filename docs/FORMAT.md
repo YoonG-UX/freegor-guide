@@ -13,7 +13,9 @@ Une commande par ligne, l'indentation est libre. Les lignes vides et celles qui 
 | `next <titre>` | Guide proposé à la fin de celui-ci. |
 | `zone 1429, Elwynn Forest, Forêt d'Elwynn` | Zone par défaut des `goto` : un uiMapID ou des noms ; le premier qui existe dans le client est utilisé. |
 | `race Dwarf, Gnome` | Le sélecteur ne montre le guide qu'à ces races (guides de départ). |
-| `author`, `description` | Informatifs. |
+| `category <nom>` | Rubrique du menu : `leveling` (par défaut), `mounts`, `gold`, `reputation`, `achievements`. |
+| `loop` | Circuit : arrivé au bout, le guide recommence à la première étape. |
+| `author`, `description` | Informatifs (la description s'affiche dans le menu). |
 
 ## Étapes
 
@@ -34,6 +36,10 @@ Une commande par ligne, l'indentation est libre. Les lignes vides et celles qui 
 | `fly <destination>` | le joueur prend un vol |
 | `hearth [lieu]` | le joueur utilise sa pierre de foyer |
 | `train` | le joueur ouvre la fenêtre d'un maître de classe |
+| `gold <montant>` | le joueur a au moins ce nombre de pièces d'or |
+| `item <itemID> [nombre] [nom]` | l'objet est dans les sacs (en quantité suffisante) |
+| `rep <factionID> <niveau> [nom]` | réputation atteinte : `neutral`, `friendly`, `honored`, `revered`, `exalted` |
+| `achieve <id> [nom]` | haut fait obtenu (information seulement sur un client sans hauts faits) |
 | `use <objet>`, `buy <objet>` | information seulement |
 | `note <texte>` | information seulement |
 
@@ -49,6 +55,8 @@ Toute ligne accepte `|fr <texte>` : le texte affiché sur un client français
 - Sinon, une étape avec des `talk ... |n <id>` se valide quand le joueur a parlé à ces PNJ.
 - `goto` place la flèche. Si c'est le seul objectif vérifiable de l'étape, l'étape se valide
   à l'arrivée (12 mètres par défaut, ou `|r <rayon>`).
+- Un `fpath` ne se valide qu'au bon point de vol : celui dont le nom correspond, ou celui du
+  maître de vol nommé dans l'étape.
 - Une étape sans rien de vérifiable (que des `note` / `talk`) attend un clic sur « Suivant ».
 - `kill` / `collect` sans `|q` sont de simples indications.
 

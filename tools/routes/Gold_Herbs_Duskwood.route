@@ -1,0 +1,10 @@
+guide Herbalism: Briarthorn & Bruiseweed - Duskwood
+author Freegor community
+category gold
+faction Alliance
+levels 20-30
+loop
+description Herb circuit around Duskwood.
+area 10
+
+gather 10 14 1621,1622,1620 Pick Briarthorn, Bruiseweed and Mageroyal along the way (Herbalism 70-100). |fr Cueillez Églantine, Doulourante et Mage royal en chemin (Herboristerie 70-100).

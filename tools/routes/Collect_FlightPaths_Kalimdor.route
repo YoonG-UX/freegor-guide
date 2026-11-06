@@ -1,0 +1,54 @@
+guide Flight paths: Kalimdor (Alliance)
+author Freegor community
+category achievements
+faction Alliance
+levels 10-60
+description Discover every Alliance flight point of Kalimdor. Southern points need a higher level: do them when the zones are safe for you.
+area 141
+
+talk 3838
+fpath Rut'theran Village
+area 148
+talk 3841
+fpath Auberdine
+area 331
+talk 4267
+fpath Astranaar
+area 406
+talk 4407
+fpath Stonetalon Peak
+area 405
+talk 6706
+fpath Nijel's Point
+area 357
+talk 8019
+fpath Feathermoon
+talk 4319
+fpath Thalanaar
+area 17
+talk 16227
+fpath Ratchet
+area 15
+talk 4321
+fpath Theramore
+area 440
+talk 7823
+fpath Gadgetzan
+area 490
+talk 10583
+fpath Marshal's Refuge
+area 1377
+talk 15177
+fpath Cenarion Hold
+area 361
+talk 12578
+fpath Talonbranch Glade
+area 618
+talk 11138
+fpath Everlook
+area 493
+talk 10897
+fpath Moonglade
+area 16
+talk 12577
+fpath Talrendis Point

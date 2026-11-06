@@ -119,6 +119,38 @@ goalParsers.fly = actionGoal("fly", true)       -- take a flight
 goalParsers.hearth = actionGoal("hearth", false) -- use the hearthstone
 goalParsers.train = actionGoal("train", false)  -- visit a class trainer
 goalParsers.use = actionGoal("use", true)       -- information only
+
+-- gold <amount>: have at least this much gold
+goalParsers.gold = function(args)
+  local n = tonumber(args)
+  if not n then return nil, "expected: gold <amount>" end
+  return { type = "gold", amount = n }
+end
+
+-- item <itemID> [count] [name]: have the item in the bags
+goalParsers.item = function(args)
+  local id, count, name = args:match("^(%d+)%s*(%d*)%s*(.*)$")
+  if not id then return nil, "expected: item <itemID> [count] [name]" end
+  return { type = "item", item = tonumber(id), count = tonumber(count) or 1, text = name ~= "" and name or nil }
+end
+
+-- rep <factionID> <standing> [name]: reach a reputation standing
+local STANDINGS = { hated = 1, hostile = 2, unfriendly = 3, neutral = 4, friendly = 5, honored = 6, revered = 7, exalted = 8 }
+Parser.STANDINGS = STANDINGS
+goalParsers.rep = function(args)
+  local id, standing, name = args:match("^(%d+)%s+(%a+)%s*(.*)$")
+  if not id or not STANDINGS[standing:lower()] then
+    return nil, "expected: rep <factionID> <neutral|friendly|honored|revered|exalted> [name]"
+  end
+  return { type = "rep", faction = tonumber(id), standing = STANDINGS[standing:lower()], text = name ~= "" and name or nil }
+end
+
+-- achieve <achievementID> [name]: only meaningful on clients with achievements
+goalParsers.achieve = function(args)
+  local id, name = args:match("^(%d+)%s*(.*)$")
+  if not id then return nil, "expected: achieve <achievementID> [name]" end
+  return { type = "achieve", achievement = tonumber(id), text = name ~= "" and name or nil }
+end
 goalParsers.buy = actionGoal("buy", true)       -- information only
 
 goalParsers.level = function(args)
@@ -134,6 +166,7 @@ end
 local headerKeys = {
   guide = true, author = true, faction = true, levels = true,
   next = true, zone = true, description = true, race = true,
+  category = true, loop = true,
 }
 
 -- Returns guide table, or nil + error message + line number.
@@ -166,6 +199,10 @@ function Parser.Parse(text)
           guide.zone = splitList(rest)
         elseif cmd == "race" then
           guide.race = splitList(rest)
+        elseif cmd == "category" then
+          guide.category = rest:lower()
+        elseif cmd == "loop" then
+          guide.loop = true
         else
           guide[cmd] = rest
         end
@@ -184,6 +221,7 @@ function Parser.Parse(text)
     end
   end
 
+  guide.category = guide.category or "leveling"
   if not guide.title or guide.title == "" then
     return nil, "missing 'guide <title>' header", 1
   end

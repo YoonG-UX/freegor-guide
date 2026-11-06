@@ -44,6 +44,9 @@ chaîne `main` reprend les quêtes de toutes les chaînes de départ.
 | `level <n>` | Étape « atteindre le niveau n » |
 | `lvl <n>` | Niveau attendu à ce point (pour les vérifications, sans créer d'étape) |
 | `step` | Coupure : sépare deux groupes de visites de PNJ |
+| `gather <zoneID> <n> <objetID,...> <note>` | Circuit de récolte : `n` points de passage calculés sur les points d'apparition des filons / herbes |
+| `farm <zoneID> <n> <pnjID,...> <note>` | Circuit de farm : pareil avec les monstres |
+| `category`, `loop` | En-têtes (rubrique du menu, circuit en boucle) |
 
 ## Regroupement automatique
 

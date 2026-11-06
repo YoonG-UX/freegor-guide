@@ -14,6 +14,8 @@ local DB_DEFAULTS = {
   arrivalRadius = 12, -- yards
   useTomTom = true,
   autoQuest = false,
+  minimapButton = true,
+  minimapAngle = 210,
   viewerPos = nil,
   arrowPos = nil,
 }

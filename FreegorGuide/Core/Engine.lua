@@ -83,9 +83,11 @@ end
 local PRIMARY = {
   accept = true, turnin = true, ["do"] = true, level = true,
   home = true, fpath = true, fly = true, hearth = true, train = true,
+  gold = true, item = true, rep = true,
 }
 local function isPrimary(goal)
   local t = goal.type
+  if t == "achieve" then return C.IsAchievementDone(goal.achievement) ~= nil end
   return PRIMARY[t] or ((t == "kill" or t == "collect") and goal.quest ~= nil)
 end
 
@@ -121,6 +123,21 @@ function Engine:GoalStatus(goal)
     return "todo"
   elseif t == "fly" or t == "hearth" or t == "train" then
     return actions[goal] and "done" or "todo"
+  elseif t == "gold" then
+    local have = math.floor((GetMoney and GetMoney() or 0) / 10000)
+    return have >= goal.amount and "done" or "todo", ("%d/%d"):format(math.min(have, goal.amount), goal.amount)
+  elseif t == "item" then
+    local have = C.GetItemCount(goal.item)
+    return have >= goal.count and "done" or "todo",
+      goal.count > 1 and ("%d/%d"):format(math.min(have, goal.count), goal.count) or nil
+  elseif t == "rep" then
+    local standing = C.GetFactionStanding(goal.faction)
+    if not standing then return "info" end
+    return standing >= goal.standing and "done" or "todo", L["STANDING_" .. standing]
+  elseif t == "achieve" then
+    local doneA = C.IsAchievementDone(goal.achievement)
+    if doneA == nil then return "info" end
+    return doneA and "done" or "todo"
   elseif t == "talk" then
     return (goal.npc and talked[goal.npc]) and "done" or "info"
   elseif t == "goto" then
@@ -250,6 +267,16 @@ function ns.GoalText(goal)
   elseif t == "fly" then return L.GOAL_FLY:format(text)
   elseif t == "hearth" then return text ~= "" and L.GOAL_HEARTH_TO:format(text) or L.GOAL_HEARTH
   elseif t == "train" then return L.GOAL_TRAIN
+  elseif t == "gold" then return L.GOAL_GOLD:format(goal.amount)
+  elseif t == "item" then
+    local name = C.GetItemName(goal.item) or text or ("#" .. goal.item)
+    return goal.count > 1 and L.GOAL_ITEM_N:format(goal.count, name) or L.GOAL_ITEM:format(name)
+  elseif t == "rep" then
+    local _, fname = C.GetFactionStanding(goal.faction)
+    return L.GOAL_REP:format(L["STANDING_" .. goal.standing], fname or text or ("#" .. goal.faction))
+  elseif t == "achieve" then
+    local _, aname = C.IsAchievementDone(goal.achievement)
+    return L.GOAL_ACHIEVE:format(aname or text or ("#" .. goal.achievement))
   elseif t == "use" then return L.GOAL_USE:format(text)
   elseif t == "buy" then return L.GOAL_BUY:format(text)
   elseif t == "level" then return L.GOAL_LEVEL:format(goal.level)
@@ -293,8 +320,17 @@ function Engine:GoToStep(index, manual)
   local g = self.guide
   if not g then return end
   index = math.max(1, math.min(index, #g.steps + 1)) -- #steps + 1 means "finished"
+  if index > #g.steps and g.loop then
+    -- circuits (gathering, farming) start over
+    index = 1
+    for _, st in ipairs(g.steps) do
+      for _, goal in ipairs(st.goals) do arrived[goal] = nil end
+    end
+  end
   self.stepIndex = index
   ns.cdb.step = index
+  ns.cdb.steps = ns.cdb.steps or {}
+  ns.cdb.steps[g.title] = index
   local step = self:CurrentStep()
   if step then
     for _, goal in ipairs(step.goals) do arrived[goal] = nil end
@@ -349,6 +385,8 @@ function Engine:LoadGuide(title, step)
   ns.cdb.guide = title
   hold = false
   ns.Fire("GUIDE_LOADED", guide)
+  local saved = ns.cdb.steps and ns.cdb.steps[title]
+  if not step and guide.category ~= "leveling" and saved then step = saved end
   self:GoToStep(step or self:ResumeIndex(), true)
   self:Refresh()
   return true
@@ -475,8 +513,23 @@ ns.RegisterEvent("TAXIMAP_OPENED", function()
   onInteract()
   ns.cdb.taxi = ns.cdb.taxi or {}
   for _, name in ipairs(C.GetKnownTaxiNodes()) do ns.cdb.taxi[name:lower()] = true end
-  markAction("fpath")
+  -- Only the flight point of the step counts: matched by name, or by the
+  -- flight master named in the step.
+  local here = C.GetCurrentTaxiNode()
+  local npc = C.GetInteractNpcID()
+  local step = Engine:CurrentStep()
+  local stepNpc = false
+  for _, goal in ipairs(step and step.goals or {}) do
+    if goal.type == "talk" and goal.npc and goal.npc == npc then stepNpc = true end
+  end
+  markAction("fpath", function(goal)
+    return stepNpc or not here or textMatches(goal, here)
+  end)
 end)
+
+for _, ev in ipairs({ "PLAYER_MONEY", "BAG_UPDATE_DELAYED", "UPDATE_FACTION", "ACHIEVEMENT_EARNED" }) do
+  ns.RegisterEvent(ev, function() Engine:QueueRefresh() end)
+end
 
 ns.RegisterEvent("HEARTHSTONE_BOUND", function() markAction("home") end)
 
@@ -503,7 +556,7 @@ ns.On("INIT", function()
     local _, race, faction, level = C.PlayerInfo()
     for _, title in ipairs(ns.guideOrder) do
       local g = ns.guides[title]
-      if (not g.faction or g.faction == faction) and Parser.GuideForRace(g, race)
+      if g.category == "leveling" and (not g.faction or g.faction == faction) and Parser.GuideForRace(g, race)
         and (g.minLevel or 0) <= level and level < (g.maxLevel or 999) then
         Engine:LoadGuide(title)
         break

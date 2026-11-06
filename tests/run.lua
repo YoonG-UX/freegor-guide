@@ -50,6 +50,11 @@ function CreateFrame()
   return f
 end
 UIParent, GameTooltip = mock(), mock()
+Minimap = mock()
+Minimap.GetWidth = function() return 140 end
+Minimap.GetCenter = function() return 0, 0 end
+function GetCursorPosition() return 0, 0 end
+function GetMoney() return 0 end
 UISpecialFrames, SlashCmdList = {}, {}
 tinsert = table.insert
 function wipe(t) for k in pairs(t) do t[k] = nil end return t end
@@ -244,12 +249,17 @@ E:Next()
 check(E.stepIndex == killStep + 1, "next resumes")
 
 -- Guide catalogue checks
-local KNOWN_MAPS = { [1426]=1, [1429]=1, [1431]=1, [1432]=1, [1433]=1, [1436]=1, [1437]=1, [1438]=1, [1439]=1, [1440]=1, [1453]=1, [1455]=1, [1457]=1 }
+local KNOWN_MAPS = {}
+for id = 1411, 1458 do KNOWN_MAPS[id] = 1 end -- Classic/Forever world zone maps
+local CATS = {}
+for _, c in ipairs(ns.CATEGORIES) do CATS[c.key] = 0 end
 local nGuides, nSteps = 0, 0
 for _, guide in ipairs(Freegor:GetGuides()) do
   nGuides = nGuides + 1
   nSteps = nSteps + #guide.steps
   check(guide.faction == "Alliance", guide.title .. ": faction")
+  check(CATS[guide.category] ~= nil, guide.title .. ": known category " .. tostring(guide.category))
+  if CATS[guide.category] then CATS[guide.category] = CATS[guide.category] + 1 end
   check(guide.minLevel and guide.maxLevel, guide.title .. ": levels")
   if guide.next then check(ns.guides[guide.next] ~= nil, guide.title .. ": next guide exists: " .. guide.next) end
   for _, st in ipairs(guide.steps) do
@@ -261,7 +271,8 @@ for _, guide in ipairs(Freegor:GetGuides()) do
     end
   end
 end
-check(nGuides >= 13 and nSteps >= 300, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
+for key, n in pairs(CATS) do check(n >= 2, "at least two guides in category " .. key) end
+check(nGuides >= 33 and nSteps >= 400, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
 
 -- Turning in part of a multi-NPC step keeps the step open.
 local before = E.stepIndex
@@ -330,7 +341,10 @@ check(not FreegorCharDB.taxi["lakeshire, redridge"], "undiscovered flight points
 local known = P.Parse("guide K\nstep\n fpath Sentinel Hill\n")
 check(E:StepComplete(known.steps[1]), "a flight path known from an earlier visit counts as done")
 fire("TAXIMAP_OPENED")
-check(E.stepIndex == 4, "second flight path")
+check(E.stepIndex == 3, "opening the taxi map at another flight point does not count")
+taxiNodes[1][2], taxiNodes[2][2] = "REACHABLE", "CURRENT"
+fire("TAXIMAP_OPENED")
+check(E.stepIndex == 4, "second flight path, at the right flight point")
 onTaxi = true
 C_Timer.tick()
 flushTimers()
@@ -417,6 +431,39 @@ check(E.stepIndex == 1 and math.abs(E.waypoint.x - 0.12) < 1e-9, "arrow moves to
 accept(502)
 check(E.stepIndex == 2, "multi-NPC step completes")
 
+
+-- Menu renders every category without errors
+for _, c in ipairs(ns.CATEGORIES) do
+  ns.Picker:Toggle()
+  ns.Picker:Hide()
+end
+ns.Picker:Toggle()
+check(ns.Picker:IsShown(), "menu opens")
+ns.Picker:Hide()
+
+-- Loop guides start over; gold / item / reputation goals
+local lg = P.Parse("guide L\ncategory gold\nloop\nzone 1429\nstep\n goto 50,50\nstep\n goto 60,60\n")
+ns.guides["L"] = lg
+E:LoadGuide("L", 2)
+E:Next()
+check(E.stepIndex == 1, "circuit starts over after the last step")
+check(lg.category == "gold" and lg.loop, "category and loop headers")
+local money, bag, standing = 0, 0, 4
+GetMoney = function() return money end
+GetItemCount = function() return bag end
+GetFactionInfoByID = function() return "Stormwind", "", standing end
+local gg = P.Parse("guide G\ncategory reputation\nstep\n gold 100\n item 2592 60 Wool Cloth\n rep 72 honored Stormwind\nstep\n note end\n")
+ns.guides["G"] = gg
+E:LoadGuide("G", 1)
+check(E.stepIndex == 1, "gold/item/rep step waits")
+local _, gp = E:GoalStatus(gg.steps[1].goals[1])
+check(gp == "0/100", "gold progress")
+money = 100 * 10000; bag = 60; standing = 6
+fire("PLAYER_MONEY")
+check(E.stepIndex == 2, "gold, item and reputation goals complete")
+check(ns.GoalText(gg.steps[1].goals[3]):find("Honoré"), "reputation goal text in French")
+local ag = P.Parse("guide A\nstep\n achieve 6 Level 10\n note x\n")
+check(E:StepKind(ag.steps[1]) == "manual", "achievement goal is informative on a client without achievements")
 -- Slash command smoke test
 SlashCmdList.FREEGOR("help")
 SlashCmdList.FREEGOR("step 2")

@@ -18,6 +18,25 @@ Fenêtre d'étapes, validation automatique des objectifs, flèche de navigation,
 À la première connexion, le guide adapté à votre race et à votre niveau est chargé tout seul.
 Chaque guide propose le suivant à la fin.
 
+## Le menu : que voulez-vous suivre ?
+
+Ouvrez le menu avec le bouton de la minicarte (clic gauche) ou `/fg menu`. Les guides sont
+rangés par catégorie ; la progression de chaque guide est mémorisée, vous pouvez passer de
+l'un à l'autre et revenir.
+
+| Catégorie | Guides |
+| --- | --- |
+| Montée de niveau | Alliance 1-30 (voir ci-dessus) |
+| Montures | Monture du niveau 40 pour chaque race : maître de monte, vendeur, or nécessaire (Paladin et Démoniste : monture de classe) |
+| Or et récolte | Circuits en boucle : minage (cuivre, étain, argent), herboristerie, farm de tissu sur les Défias |
+| Réputation | Dons de tissu (laine, soie, tisse-mage, étoffe runique) aux quatre capitales |
+| Hauts faits et collections | Tous les points de vol de l'Alliance (Royaumes de l'Est, Kalimdor) |
+
+WoW Forever reprend le contenu de Classic, qui n'a pas de système de hauts faits.
+Les guides de cette catégorie suivent donc des objectifs que le jeu sait vérifier
+(points de vol découverts...). Le format accepte aussi des objectifs `achieve <id>`, qui
+s'activeront tout seuls si le client a des hauts faits.
+
 ## Installation
 
 1. Téléchargez ce dépôt (bouton *Code → Download ZIP*).
@@ -29,7 +48,8 @@ Chaque guide propose le suivant à la fin.
 | Commande | Effet |
 | --- | --- |
 | `/freegor` ou `/fg` | Afficher / masquer la fenêtre |
-| `/freegor list` | Choisir un guide |
+| `/freegor menu` | Ouvrir le menu des guides |
+| `/freegor minimap` | Afficher / masquer le bouton de la minicarte |
 | `/freegor next`, `/freegor prev` | Étape suivante / précédente |
 | `/freegor step 12` | Aller à l'étape 12 |
 | `/freegor arrow` | Afficher / masquer la flèche |
