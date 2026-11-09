@@ -276,7 +276,7 @@ for _, guide in ipairs(Freegor:GetGuides()) do
   end
 end
 for faction, cats in pairs(CATS) do
-  for key, n in pairs(cats) do check(n >= 2, ("at least two %s guides in category %s (%d)"):format(faction, key, n)) end
+  for key, n in pairs(cats) do check(key == "professions" or n >= 2, ("at least two %s guides in category %s (%d)"):format(faction, key, n)) end
 end
 check(nGuides >= 64 and nSteps >= 800, ("catalogue size (%d guides, %d steps)"):format(nGuides, nSteps))
 

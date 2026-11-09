@@ -185,7 +185,8 @@ end
 -- Creature ID of the NPC the player is interacting with (gossip, quest, vendor...).
 function C.GetInteractNpcID()
   local ok, guid = pcall(UnitGUID, "npc")
-  if not ok or type(guid) ~= "string" then return nil end
+  -- Retail (Midnight) can return a "secret" value when the unit identity is restricted.
+  if not ok or (_G.issecretvalue and _G.issecretvalue(guid)) or type(guid) ~= "string" then return nil end
   local kind, _, _, _, _, id = strsplit("-", guid)
   if kind == "Creature" or kind == "Vehicle" then return tonumber(id) end
   return nil

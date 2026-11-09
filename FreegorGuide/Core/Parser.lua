@@ -159,6 +159,11 @@ goalParsers.level = function(args)
   return { type = "level", level = n }
 end
 
+-- Other modules (e.g. the Retail add-ons) add their own goal types.
+function Parser.RegisterGoal(name, parse)
+  goalParsers[name] = parse
+end
+
 goalParsers.note = function(args)
   return { type = "note", text = args }
 end
@@ -208,6 +213,8 @@ function Parser.Parse(text)
         end
       elseif cmd == "only" then
         step.only = splitList(rest)
+      elseif cmd == "key" then
+        step.key = rest -- identifies a step of a generated guide (used to skip it)
       else
         local parse = goalParsers[cmd]
         if not parse then return nil, "unknown command '" .. cmd .. "'", lineNo end

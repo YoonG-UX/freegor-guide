@@ -35,6 +35,34 @@ function Freegor:RegisterGuide(text)
   return true
 end
 
+-- Generated guides: `build()` returns the guide body (steps) from the game's
+-- current data, or nil plus a message. The guide is rebuilt when it is loaded,
+-- when one of `events` fires while it is active, and when a step is skipped.
+--   Freegor:RegisterDynamicGuide({ title =, category =, description =,
+--     faction =, race =, levels = "min-max", events = { ... }, build = fn })
+function Freegor:RegisterDynamicGuide(def)
+  local guide = {
+    title = def.title, category = def.category or "leveling", description = def.description,
+    faction = def.faction, race = def.race, steps = {}, zone = {}, dynamic = def,
+  }
+  local a, b = (def.levels or ""):match("^(%d+)%-(%d+)$")
+  guide.minLevel, guide.maxLevel = tonumber(a), tonumber(b)
+  if not ns.guides[def.title] then table.insert(ns.guideOrder, def.title) end
+  ns.guides[def.title] = guide
+  for _, ev in ipairs(def.events or {}) do
+    ns.RegisterEvent(ev, function()
+      if Engine.guide == guide then Engine:QueueRebuild() end
+    end)
+  end
+  return guide
+end
+
+-- Steps skipped by the player in generated guides, per character.
+function Freegor:IsSkipped(title, key)
+  local t = ns.cdb and ns.cdb.dynSkip and ns.cdb.dynSkip[title]
+  return t and key and t[key] or false
+end
+
 function Freegor:GetGuides()
   local list = {}
   for _, title in ipairs(ns.guideOrder) do list[#list + 1] = ns.guides[title] end
@@ -85,8 +113,17 @@ local PRIMARY = {
   home = true, fpath = true, fly = true, hearth = true, train = true,
   gold = true, item = true, rep = true,
 }
+-- Goal types added by other modules: ns.GoalTypes[name] = { status = fn(goal)
+-- -> status, progress ; text = fn(goal, text) ; primary = bool or fn(goal) }
+ns.GoalTypes = ns.GoalTypes or {}
+
 local function isPrimary(goal)
   local t = goal.type
+  local reg = ns.GoalTypes[t]
+  if reg then
+    if type(reg.primary) == "function" then return reg.primary(goal) end
+    return reg.primary ~= false
+  end
   if t == "achieve" then return C.IsAchievementDone(goal.achievement) ~= nil end
   return PRIMARY[t] or ((t == "kill" or t == "collect") and goal.quest ~= nil)
 end
@@ -95,6 +132,8 @@ end
 -- status: "done", "todo", or "info" (does not decide completion).
 function Engine:GoalStatus(goal)
   local t = goal.type
+  local reg = ns.GoalTypes[t]
+  if reg then return reg.status(goal) end
   if t == "accept" then
     return (C.IsOnQuest(goal.quest) or questDone(goal.quest)) and "done" or "todo"
   elseif t == "turnin" then
@@ -256,6 +295,8 @@ function ns.GoalText(goal)
   end
   local text = fr or goal.text
   local t = goal.type
+  local reg = ns.GoalTypes[t]
+  if reg and reg.text then return reg.text(goal, text) end
   if t == "accept" then return L.GOAL_ACCEPT:format(questName())
   elseif t == "turnin" then return L.GOAL_TURNIN:format(questName())
   elseif t == "do" then return L.GOAL_DO:format(questName())
@@ -353,6 +394,18 @@ end
 
 function Engine:Next()
   if not self.guide then return end
+  local g, cur = self.guide, self:CurrentStep()
+  if g.dynamic then
+    -- Skipping a step of a generated guide hides it until /freegor unskip.
+    if cur and cur.key then
+      ns.cdb.dynSkip = ns.cdb.dynSkip or {}
+      ns.cdb.dynSkip[g.title] = ns.cdb.dynSkip[g.title] or {}
+      ns.cdb.dynSkip[g.title][cur.key] = true
+    end
+    self:RebuildDynamic(g)
+    hold = false
+    return self:GoToStep(1, true)
+  end
   hold = false
   -- Pressing Next always moves at least one step, even on an incomplete step.
   local i = self.stepIndex + 1
@@ -384,6 +437,10 @@ function Engine:LoadGuide(title, step)
   self.guide = guide
   ns.cdb.guide = title
   hold = false
+  if guide.dynamic then
+    self:RebuildDynamic(guide)
+    step = 1
+  end
   ns.Fire("GUIDE_LOADED", guide)
   local saved = ns.cdb.steps and ns.cdb.steps[title]
   if not step and guide.category ~= "leveling" and saved then step = saved end
@@ -414,6 +471,43 @@ function Engine:Refresh()
     if g and not (self.waypoint and self.waypoint.goal == g) then self:SetWaypointFromGoal(g) end
   end
   ns.Fire("REFRESH")
+end
+
+-- Generated guides --------------------------------------------------------
+
+function Engine:RebuildDynamic(guide)
+  local def = guide.dynamic
+  local ok, body, msg = pcall(def.build, guide)
+  local parsed
+  if ok and type(body) == "string" and body ~= "" then
+    local err, line
+    parsed, err, line = Parser.Parse("guide " .. def.title .. "\n" .. body)
+    if not parsed then
+      ns.Print("|cffff4040%s|r", L.PARSE_ERROR_FMT:format(def.title, line or 0, err))
+    end
+  elseif not ok then
+    geterrorhandler()(body)
+  end
+  if not parsed then
+    local reason = (ok and msg) or L.DYN_EMPTY
+    parsed = Parser.Parse("guide x\nstep\n note " .. tostring(reason):gsub("[|\n]", " "))
+  end
+  guide.steps, guide.zone = parsed.steps, parsed.zone or {}
+end
+
+local rebuildQueued = false
+function Engine:QueueRebuild()
+  if rebuildQueued then return end
+  rebuildQueued = true
+  C_Timer.After(1, function()
+    rebuildQueued = false
+    local g = Engine.guide
+    if g and g.dynamic then
+      Engine:RebuildDynamic(g)
+      Engine:GoToStep(1, true)
+      Engine:Refresh()
+    end
+  end)
 end
 
 -- Coalesce bursts of quest events into one refresh.

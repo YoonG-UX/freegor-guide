@@ -85,6 +85,14 @@ local ICONS = {
   ["goto"] = "Interface\\Icons\\INV_Misc_Map_01",
   talk    = "Interface\\GossipFrame\\GossipGossipIcon",
   level   = "Interface\\Icons\\Spell_Holy_SurgeOfLight",
+  mount   = "Interface\\Icons\\Ability_Mount_RidingHorse",
+  farm    = "Interface\\Icons\\Ability_Mount_RidingHorse",
+  skill   = "Interface\\Icons\\Trade_BlackSmithing",
+  recipe  = "Interface\\Icons\\INV_Misc_Note_04",
+  reagent = "Interface\\Icons\\INV_Misc_Bag_08",
+  achieve = "Interface\\Icons\\Achievement_General",
+  currency = "Interface\\Icons\\INV_Misc_Coin_02",
+  profopen = "Interface\\Icons\\Trade_BlackSmithing",
   note    = "Interface\\Icons\\INV_Misc_Note_01",
   home    = "Interface\\Icons\\INV_Misc_Rune_01",
   hearth  = "Interface\\Icons\\INV_Misc_Rune_01",
@@ -116,6 +124,9 @@ for i = 1, MAX_LINES do
     if self.goal and self.goal.type == "goto" then
       Engine.manualWaypoint = true
       Engine:SetWaypointFromGoal(self.goal)
+    elseif self.goal then
+      local reg = ns.GoalTypes and ns.GoalTypes[self.goal.type]
+      if reg and reg.onClick then reg.onClick(self.goal) end
     end
   end)
   b:SetScript("OnEnter", function(self)

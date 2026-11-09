@@ -1,5 +1,40 @@
 # Freegor Guide
 
+Deux addons dans ce dépôt :
+
+| Dossier | Jeu | Contenu |
+| --- | --- | --- |
+| `FreegorGuide` | WoW Forever (interface 16001) | Leveling 1-30 Alliance et Horde, montures, récolte, réputation, points de vol |
+| `FreegorGuideRetail` | World of Warcraft Retail (12.1.5, interface 120105) | Métiers, montures, hauts faits, construits à partir des données de votre jeu |
+
+N'installez que le dossier qui correspond à votre jeu.
+
+## Version Retail
+
+Les guides Retail sont **générés en jeu** à partir des données du client, ils suivent donc
+chaque patch sans mise à jour du guide :
+
+- **Métiers** (un guide par métier du personnage) : ouvrez une fois la fenêtre du métier sur
+  l'onglet de l'extension à monter. Le guide indique la prochaine recette à fabriquer (celle qui
+  rapporte le plus de points pour le moins de composants ; avec Auctionator, selon les prix de
+  l'hôtel des ventes), combien en faire, les composants avec ce que vous possédez déjà (sacs,
+  banque, banque de composants, banque de bataillon), le niveau visé, un second choix et les
+  premières fabrications qui donnent des points de connaissance. Cliquer sur une recette l'ouvre.
+  Il se recalcule après chaque fabrication.
+- **Montures** : toutes les montures que vous n'avez pas, d'après le journal des montures.
+  - *Butin de donjons et raids* : boss et instance lus dans la source de la monture, flèche vers
+    l'entrée de l'instance (journal des donjons), contenu ancien d'abord ; les boss déjà tués
+    cette semaine sont masqués jusqu'à la réinitialisation.
+  - *Hauts faits* : la monture, son haut fait, la progression et les critères restants, les plus
+    avancés d'abord.
+  - *Vendeurs* et *Quêtes, événements et découvertes* : la source indiquée par le jeu.
+- **Hauts faits presque terminés** : vos hauts faits les plus avancés et ce qu'il leur manque.
+
+Une étape ne vous intéresse pas ? « Suivant » la masque (`/fg unskip` pour tout réafficher).
+
+Limites : le jeu ne donne pas la position des vendeurs ni des ressources à récolter ; les guides
+de vendeurs et de métiers de récolte n'ont donc pas de flèche.
+
 Guide de leveling pas à pas pour World of Warcraft (client WoW Forever), **gratuit et communautaire**.
 Fenêtre d'étapes, validation automatique des objectifs, flèche de navigation, compatible TomTom.
 

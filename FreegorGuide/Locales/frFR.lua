@@ -60,6 +60,8 @@ L.PROGRESS_FMT     = "étape %d/%d"
 L.STEPS_FMT        = "%d étapes"
 L.LOOP_HINT        = "Circuit : recommence au début une fois terminé."
 L.MINIMAP_HINT     = "Clic gauche : choisir un guide. Clic droit : afficher/masquer le guide. Glisser pour déplacer."
+L.DYN_EMPTY = "Rien à faire ici pour le moment."
+L.CAT_professions = "Métiers"
 L.QUEST_FMT    = "quête n°%d"
 
 L.HELP = {
@@ -69,6 +71,7 @@ L.HELP = {
   "/freegor step <n> - aller à une étape",
   "/freegor arrow - afficher ou masquer la flèche",
   "/freegor auto - activer ou non l'acceptation/le rendu automatique des quêtes",
+  "/freegor unskip - réafficher les étapes passées dans les guides générés",
   "/freegor minimap - afficher ou masquer le bouton de la minicarte",
   "/freegor reset - réinitialiser la position de la fenêtre",
 }

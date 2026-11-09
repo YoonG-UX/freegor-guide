@@ -61,3 +61,15 @@ Pour les objectifs, le générateur choisit la zone dense de monstres ou d'objet
 de l'endroit où se trouve le joueur à ce moment du parcours. Il signale aussi les quêtes dont
 les objectifs sont à côté de leur donneur mais que le parcours ne fait qu'après un détour, et
 les PNJ revisités juste après (normalement seulement quand un prérequis l'impose).
+
+## Version Retail
+
+`FreegorGuideRetail/` réutilise le moteur et l'interface de `FreegorGuide/` (dossiers `Core`,
+`UI`, `Locales`). Après une modification de ces fichiers, recopiez-les :
+
+```bash
+sh tools/sync_retail.sh
+```
+
+`tests/run_retail.lua` vérifie que les copies sont identiques. Le code propre à Retail est dans
+`FreegorGuideRetail/Retail/` : il ne contient aucune donnée de jeu, tout est lu dans le client.

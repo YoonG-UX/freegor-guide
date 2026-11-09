@@ -63,6 +63,8 @@ L.PROGRESS_FMT     = "step %d/%d"
 L.STEPS_FMT        = "%d steps"
 L.LOOP_HINT        = "Circuit: starts over at the end."
 L.MINIMAP_HINT     = "Left click: choose a guide. Right click: show/hide the guide. Drag to move."
+L.DYN_EMPTY = "Nothing to do here right now."
+L.CAT_professions = "Professions"
 L.QUEST_FMT    = "quest #%d"
 
 L.HELP = {
@@ -72,6 +74,7 @@ L.HELP = {
   "/freegor step <n> - jump to a step",
   "/freegor arrow - show or hide the arrow",
   "/freegor auto - automatic quest accept/turn-in on or off",
+  "/freegor unskip - show again the steps you skipped in generated guides",
   "/freegor minimap - show or hide the minimap button",
   "/freegor reset - reset the window position",
 }

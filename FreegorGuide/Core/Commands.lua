@@ -21,6 +21,9 @@ SlashCmdList.FREEGOR = function(msg)
     Engine:Jump(tonumber(arg))
   elseif cmd == "load" and arg ~= "" then
     Engine:LoadGuide(arg)
+  elseif cmd == "unskip" then
+    ns.cdb.dynSkip = {}
+    if Engine.guide and Engine.guide.dynamic then Engine:LoadGuide(Engine.guide.title) end
   elseif cmd == "minimap" then
     ns.db.minimapButton = ns.db.minimapButton == false
     ns.MinimapButton:SetShown(ns.db.minimapButton)

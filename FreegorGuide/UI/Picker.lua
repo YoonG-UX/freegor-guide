@@ -8,6 +8,7 @@ local C = ns.Compat
 
 local CATEGORIES = {
   { key = "leveling",     icon = "Interface\\Icons\\INV_Misc_Book_09" },
+  { key = "professions",  icon = "Interface\\Icons\\Trade_BlackSmithing" },
   { key = "mounts",       icon = "Interface\\Icons\\Ability_Mount_RidingHorse" },
   { key = "gold",         icon = "Interface\\Icons\\INV_Misc_Coin_02" },
   { key = "reputation",   icon = "Interface\\Icons\\INV_Fabric_Wool_01" },
@@ -155,12 +156,29 @@ function P:Render()
   local _, race, faction, level = C.PlayerInfo()
   current:SetText(Engine.guide and L.CURRENT_FMT:format(Engine.guide.title) or "")
 
+  -- Only categories that have guides for this character are listed.
+  local shown = 0
+  local selectedVisible = false
   for i, cat in ipairs(CATEGORIES) do
     local b = catButtons[i]
     local n = #guidesFor(cat.key, race, faction)
-    b.text:SetText(("%s |cff888888(%d)|r"):format(L["CAT_" .. cat.key], n))
-    b.sel:SetShown(cat.key == selected)
+    if n > 0 then
+      shown = shown + 1
+      b:ClearAllPoints()
+      b:SetPoint("TOPLEFT", 10, -48 - (shown - 1) * 34)
+      b.text:SetText(("%s |cff888888(%d)|r"):format(L["CAT_" .. cat.key], n))
+      b:Show()
+      if cat.key == selected then selectedVisible = true end
+    else
+      b:Hide()
+    end
   end
+  if not selectedVisible then
+    for i, cat in ipairs(CATEGORIES) do
+      if catButtons[i]:IsShown() then selected = cat.key break end
+    end
+  end
+  for i, cat in ipairs(CATEGORIES) do catButtons[i].sel:SetShown(cat.key == selected) end
   catHint:SetText(selected == "achievements" and not C.HasAchievements() and L.NO_ACHIEVEMENTS or "")
 
   visible = guidesFor(selected, race, faction)

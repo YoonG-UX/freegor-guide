@@ -1,0 +1,30 @@
+## Interface: 120105
+## Title: Freegor Guide (Retail)
+## Notes: Free, community-made guides: professions, mounts and achievements, built from your own game data.
+## Notes-frFR: Guides gratuits et communautaires : métiers, montures et hauts faits, construits à partir des données de votre jeu.
+## Author: Freegor community
+## Version: 0.1.0
+## SavedVariables: FreegorDB
+## SavedVariablesPerCharacter: FreegorCharDB
+## IconTexture: Interface\Icons\INV_Misc_Book_09
+## Category: Quests
+## OptionalDeps: Auctionator, TomTom
+
+# Shared engine and UI (copied from FreegorGuide/ by tools/sync_retail.sh: do not edit here)
+Locales\enUS.lua
+Locales\frFR.lua
+Core\Init.lua
+Core\Compat.lua
+Core\Parser.lua
+Core\Engine.lua
+Core\AutoQuest.lua
+UI\Arrow.lua
+UI\Viewer.lua
+UI\Picker.lua
+Core\Commands.lua
+
+# Retail guides, built in game from the client's data
+Retail\Locales.lua
+Retail\Goals.lua
+Retail\Professions.lua
+Retail\Mounts.lua
