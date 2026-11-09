@@ -9,6 +9,8 @@ SlashCmdList.FREEGOR = function(msg)
   local cmd, arg = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
   cmd = cmd:lower()
 
+  local extra = ns.SlashHandlers and ns.SlashHandlers[cmd]
+  if extra then return extra(arg) end
   if cmd == "" then
     ns.SetShown(not ns.Viewer:IsShown())
   elseif cmd == "list" or cmd == "menu" then

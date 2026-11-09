@@ -29,3 +29,4 @@ Retail\Goals.lua
 Retail\Data\Professions.lua
 Retail\Professions.lua
 Retail\Mounts.lua
+Retail\Collection.lua

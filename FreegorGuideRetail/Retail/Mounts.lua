@@ -236,7 +236,110 @@ local function buildBySource(types)
   end
 end
 
+-- Single mounts (collection window, tracked list) ------------------------------
+
+-- Everything the collection window shows about one mount.
+function R.MountEntry(id)
+  local MJ = C_MountJournal
+  local name, collected, sourceType, factionSpecific, faction, hidden, icon, spellID = R.MountInfo(id)
+  if not name then return nil end
+  local display, description, source = MJ.GetMountInfoExtraByID(id)
+  local e = {
+    id = id, name = name, collected = collected, sourceType = sourceType, icon = icon, spellID = spellID,
+    factionSpecific = factionSpecific, faction = faction, hidden = hidden,
+    display = display, description = clean(description), raw = source or "", source = clean(source),
+  }
+  if sourceType == SOURCE.DROP then
+    e.instance, e.boss = dropInfo(e)
+    if e.instance then e.entrance = loadEntrances()[e.instance.id] end
+    if e.instance and e.boss then e.killed = R.IsBossKilled(e.instance.id, e.boss) end
+  end
+  e.achievement = R.AchievementMountMap()[id]
+  if e.achievement then
+    e.achDone = select(4, GetAchievementInfo(e.achievement))
+    e.achFrac, e.achLeft = R.AchievementProgress(e.achievement)
+  end
+  return e
+end
+
+-- Every mount of the journal this character can get (both factions' own mounts filtered).
+function R.AllMounts()
+  local MJ = C_MountJournal
+  local myFaction = UnitFactionGroup("player") == "Horde" and 0 or 1
+  local out = {}
+  for _, id in ipairs(MJ and MJ.GetMountIDs and MJ.GetMountIDs() or {}) do
+    local name, collected, sourceType, factionSpecific, faction, hidden, icon = R.MountInfo(id)
+    if name and (collected or not hidden) and not (factionSpecific and faction ~= nil and faction ~= myFaction) then
+      out[#out + 1] = { id = id, name = name, collected = collected, sourceType = sourceType, icon = icon }
+    end
+  end
+  table.sort(out, function(a, b) return a.name < b.name end)
+  return out
+end
+
+-- Guide step for one mount, from its source.
+function R.MountStep(e)
+  local lines = { "step", " key mount:" .. e.id }
+  if e.instance and e.boss then
+    if e.entrance then
+      lines[#lines + 1] = (" goto %d %.1f,%.1f"):format(e.entrance.map, e.entrance.x * 100, e.entrance.y * 100)
+    end
+    lines[#lines + 1] = (" farm %d %d %s"):format(e.id, e.instance.id, clean(e.boss))
+  else
+    if e.achievement and not e.achDone then lines[#lines + 1] = " achieve " .. e.achievement end
+    lines[#lines + 1] = (" mount %d %s"):format(e.id, clean(e.name))
+  end
+  if e.achLeft and #e.achLeft > 0 and not e.achDone then
+    lines[#lines + 1] = " note " .. L.ACH_LEFT:format(table.concat(e.achLeft, ", "))
+  end
+  lines[#lines + 1] = " note " .. L.MOUNT_SOURCE:format(e.source)
+  return table.concat(lines, "\n")
+end
+
+-- Tracked mounts (wish list) -----------------------------------------------------
+
+function R.IsTracked(id) return ns.cdb and ns.cdb.trackedMounts and ns.cdb.trackedMounts[id] or false end
+
+function R.SetTracked(id, on)
+  ns.cdb.trackedMounts = ns.cdb.trackedMounts or {}
+  ns.cdb.trackedMounts[id] = on and true or nil
+  if ns.Engine.guide and ns.Engine.guide.title == L.MOUNT_TRACKED_TITLE then ns.Engine:QueueRebuild() end
+end
+
+local function buildTracked(guide)
+  R.ScanLockouts()
+  local first = R.focusMount
+  local list = {}
+  for id in pairs(ns.cdb.trackedMounts or {}) do
+    local e = R.MountEntry(id)
+    if e and not e.collected and not e.killed and not Freegor:IsSkipped(guide.title, "mount:" .. id) then
+      list[#list + 1] = e
+    end
+  end
+  table.sort(list, function(a, b)
+    if (a.id == first) ~= (b.id == first) then return a.id == first end
+    return a.name < b.name
+  end)
+  if #list == 0 then return nil, L.MOUNT_TRACKED_EMPTY end
+  local parts = {}
+  for _, e in ipairs(list) do parts[#parts + 1] = R.MountStep(e) end
+  return table.concat(parts, "\n") .. "\n"
+end
+
+-- Track a mount and start guiding to it.
+function R.GuideToMount(id)
+  R.SetTracked(id, true)
+  R.focusMount = id
+  ns.Engine:LoadGuide(L.MOUNT_TRACKED_TITLE)
+  ns.SetShown(true)
+end
+
 local MOUNT_EVENTS = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED" }
+
+Freegor:RegisterDynamicGuide({
+  title = L.MOUNT_TRACKED_TITLE, category = "mounts", description = L.MOUNT_TRACKED_DESC,
+  events = MOUNT_EVENTS, build = buildTracked,
+})
 
 Freegor:RegisterDynamicGuide({
   title = L.MOUNT_DROP_TITLE, category = "mounts", description = L.MOUNT_DROP_DESC,

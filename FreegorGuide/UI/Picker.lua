@@ -86,6 +86,13 @@ for i, cat in ipairs(CATEGORIES) do
   catButtons[i] = b
 end
 
+-- Optional action of a category (e.g. the mount collection window on Retail):
+-- ns.CategoryActions[key] = { label =, run = fn }
+local catAction = CreateFrame("Button", nil, P, "UIPanelButtonTemplate")
+catAction:SetSize(CAT_W - 16, 22)
+catAction:Hide()
+catAction:SetScript("OnClick", function(self) if self.action then self.action.run() end end)
+
 local catHint = P:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
 catHint:SetPoint("BOTTOMLEFT", 12, 12)
 catHint:SetWidth(CAT_W - 16)
@@ -179,6 +186,14 @@ function P:Render()
     end
   end
   for i, cat in ipairs(CATEGORIES) do catButtons[i].sel:SetShown(cat.key == selected) end
+  local action = ns.CategoryActions and ns.CategoryActions[selected]
+  catAction.action = action
+  catAction:SetShown(action ~= nil)
+  if action then
+    catAction:SetText(action.label)
+    catAction:ClearAllPoints()
+    catAction:SetPoint("TOPLEFT", 10, -48 - shown * 34 - 6)
+  end
   catHint:SetText(selected == "achievements" and not C.HasAchievements() and L.NO_ACHIEVEMENTS or "")
 
   visible = guidesFor(selected, race, faction)

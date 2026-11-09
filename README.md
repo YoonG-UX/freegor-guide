@@ -26,7 +26,15 @@ chaque patch sans mise à jour du guide :
   banque, banque de composants, banque de bataillon), le niveau visé, un second choix et les
   premières fabrications qui donnent des points de connaissance. Cliquer sur une recette l'ouvre.
   Il se recalcule après chaque fabrication.
+- **Collection de montures** (`/fg mounts`, ou le bouton de la catégorie Montures du menu) :
+  toutes les montures du journal, avec votre progression, une recherche et des filtres
+  (manquantes / obtenues / toutes, par source). Pour chaque monture : son modèle 3D (à faire
+  tourner à la souris), sa description et comment l'obtenir — source donnée par le jeu, boss et
+  instance avec l'entrée sur la carte et « déjà tué cette semaine » ou « disponible », haut fait
+  avec sa progression et les critères restants. Boutons : **Me guider** (flèche et étapes),
+  **Suivre** (liste de suivi), **Invoquer**, **Lien** dans le chat.
 - **Montures** : toutes les montures que vous n'avez pas, d'après le journal des montures.
+  - *Ma liste de suivi* : les montures que vous chassez, avec la façon d'obtenir chacune.
   - *Butin de donjons et raids* : boss et instance lus dans la source de la monture, flèche vers
     l'entrée de l'instance (journal des donjons), contenu ancien d'abord ; les boss déjà tués
     cette semaine sont masqués jusqu'à la réinitialisation.

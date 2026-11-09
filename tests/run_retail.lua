@@ -66,6 +66,8 @@ function UnitFactionGroup() return "Alliance" end
 function UnitLevel() return 80 end
 function GetPlayerFacing() return 0 end
 local npcGUID = nil
+summoned, linked = nil, nil
+function ChatEdit_InsertLink(l) linked = l end
 local secret = false
 function UnitGUID() return npcGUID end
 function issecretvalue() return secret end
@@ -127,6 +129,8 @@ C_MountJournal = {
   end,
   GetMountInfoExtraByID = function(id) return 1, "desc", mounts[id].text end,
   GetMountFromItem = function(item) if item == 9000 then return 3 end end,
+  GetMountLink = function(spell) return "[mount:" .. spell .. "]" end,
+  SummonByID = function(id) summoned = id end,
 }
 
 -- Achievements
@@ -222,7 +226,7 @@ local function titles(cat)
   return t
 end
 check(#titles("professions") == 1, "one profession guide per profession")
-check(#titles("mounts") == 4, "four mount guides")
+check(#titles("mounts") == 5, "five mount guides (with the tracked list)")
 check(#titles("achievements") == 1, "achievement guide")
 check(#titles("leveling") == 0, "no leveling guide on Retail")
 ns.Picker:Toggle()
@@ -357,6 +361,41 @@ check(stepGoals("mount")[1] and stepGoals("mount")[1].mount == 6, "quest mounts"
 
 E:LoadGuide(L.ACH_NEAR_TITLE)
 check(E.guide.steps[1].key == "ach:500", "most advanced achievement first")
+
+
+---------------------------------------------------------------------------
+-- Mount collection window
+---------------------------------------------------------------------------
+
+local Rt = ns.Retail
+SlashCmdList.FREEGOR("mounts")
+local W = Rt.Collection
+check(W:IsShown(), "/fg mounts opens the collection")
+W:Render()
+local all = Rt.AllMounts()
+check(#all == 5, "collection lists every mount of this faction (got " .. #all .. ")")
+local entry = Rt.MountEntry(1)
+check(entry.instance and entry.instance.id == 100 and entry.boss == "Seigneur Ancien" and entry.killed == false, "mount sheet: boss, instance, reset status")
+check(entry.entrance and entry.entrance.map == 2248, "mount sheet: dungeon entrance")
+local achEntry = Rt.MountEntry(3)
+check(achEntry.achievement == 500 and achEntry.achFrac == 0.5 and #achEntry.achLeft == 2, "mount sheet: achievement progress and criteria left")
+check(Rt.SourceLabel(1) == "Drop", "source label fallback")
+
+Rt.SetTracked(3, true)
+check(Rt.IsTracked(3), "track a mount")
+Rt.GuideToMount(1)
+check(E.guide and E.guide.title == L.MOUNT_TRACKED_TITLE, "guide button loads the tracked list")
+check(E:CurrentStep().key == "mount:1", "the chosen mount comes first")
+local hasFarm = false
+for _, g in ipairs(E:CurrentStep().goals) do if g.type == "farm" then hasFarm = true end end
+check(hasFarm and E.waypoint and E.waypoint.mapID == 2248, "tracked drop mount: farm goal and arrow to the entrance")
+check(#E.guide.steps == 2, "both tracked mounts listed")
+Rt.SetTracked(3, false)
+Rt.SetTracked(1, false)
+flush()
+check(E.guide.steps[1].key == nil, "empty tracked list shows a hint")
+check(ns.CategoryActions.mounts and ns.CategoryActions.mounts.label == L.COL_OPEN, "menu action for the collection")
+W:Hide()
 
 ---------------------------------------------------------------------------
 -- Midnight secret values
