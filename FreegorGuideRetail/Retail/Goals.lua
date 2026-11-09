@@ -113,6 +113,7 @@ register("mount", 1, function(a) return { mount = a[1], text = a.rest } end, {
   text = function(goal, text)
     return L.GOAL_MOUNT:format(R.MountInfo(goal.mount) or text or ("#" .. goal.mount))
   end,
+  icon = function(goal) return select(7, R.MountInfo(goal.mount)) end,
 })
 
 -- skill <skillLineID> <level> [name]: profession skill reached
@@ -187,6 +188,36 @@ register("farm", 2, function(a) return { mount = a[1], instance = a[2], boss = a
     return L.GOAL_FARM:format(goal.boss or "?", R.InstanceName(goal.instance) or "?",
       R.MountInfo(goal.mount) or ("#" .. goal.mount))
   end,
+  icon = function(goal) return select(7, R.MountInfo(goal.mount)) end,
+})
+
+-- crit <achievementID> <criteriaIndex>: one criterion of an achievement. When the
+-- criterion is itself an achievement, its name, icon and progress are shown.
+local CRITERIA_ACHIEVEMENT = 8
+function R.Criterion(achID, index)
+  if not GetAchievementCriteriaInfo then return nil end
+  local text, ctype, completed, quantity, reqQuantity, _, _, assetID = GetAchievementCriteriaInfo(achID, index)
+  local sub = (ctype == CRITERIA_ACHIEVEMENT and assetID and assetID > 0) and assetID or nil
+  return { text = text, completed = completed, quantity = quantity, req = reqQuantity, sub = sub }
+end
+
+register("crit", 2, function(a) return { achievement = a[1], index = a[2], text = a.rest } end, {
+  status = function(goal)
+    local c = R.Criterion(goal.achievement, goal.index)
+    if not c then return "info" end
+    if c.completed then return "done" end
+    if c.req and c.req > 1 then return "todo", ("%d/%d"):format(c.quantity or 0, c.req) end
+    return "todo"
+  end,
+  text = function(goal, text)
+    local c = R.Criterion(goal.achievement, goal.index)
+    if c and c.sub then return select(2, GetAchievementInfo(c.sub)) or c.text or text or "?" end
+    return (c and c.text ~= "" and c.text) or text or "?"
+  end,
+  icon = function(goal)
+    local c = R.Criterion(goal.achievement, goal.index)
+    if c and c.sub then return select(10, GetAchievementInfo(c.sub)) end
+  end,
 })
 
 -- profopen <baseSkillLineID> [name]: the profession window was read once
@@ -199,6 +230,9 @@ register("profopen", 1, function(a) return { skillLine = a[1], text = a.rest } e
 
 -- achieve <achievementID> [name]: with criteria progress on Retail
 ns.GoalTypes.achieve = {
+  icon = function(goal)
+    if GetAchievementInfo then return select(10, GetAchievementInfo(goal.achievement)) end
+  end,
   status = function(goal)
     if not GetAchievementInfo then return "info" end
     local id, _, _, completed = GetAchievementInfo(goal.achievement)
@@ -219,7 +253,8 @@ ns.GoalTypes.achieve = {
     return "todo"
   end,
   text = function(goal, text)
-    local _, name = GetAchievementInfo and GetAchievementInfo(goal.achievement)
+    local name
+    if GetAchievementInfo then name = select(2, GetAchievementInfo(goal.achievement)) end
     return L.GOAL_ACHIEVE:format(name or text or ("#" .. goal.achievement))
   end,
 }

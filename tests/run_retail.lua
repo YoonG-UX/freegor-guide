@@ -140,13 +140,14 @@ function GetCategoryNumAchievements() return 2 end
 function GetAchievementInfo(a, b)
   local id = b and ({ 500, 501 })[b] or a
   if id == 500 then
-    return 500, "Gloire", 10, false, nil, nil, nil, "desc", 0, 1, "Récompense : Proto-drake de haut fait", false, false, nil, false
+    return 500, "Gloire", 10, false, nil, nil, nil, "desc", 0, "icon-500", "Récompense : Proto-drake de haut fait", false, false, nil, false
   elseif id == 501 then
-    return 501, "Explorateur", 10, false, nil, nil, nil, "desc", 0, 1, "", false, false, nil, false
+    return 501, "Explorateur", 10, false, nil, nil, nil, "Terminer le Vieux donjon en mode héroïque.", 0, "icon-501", "", false, false, nil, false
   end
 end
 function GetAchievementNumCriteria(id) return id == 500 and #criteria or 1 end
 function GetAchievementCriteriaInfo(id, i)
+  if id == 500 and i == 3 then return criteria[i][1], 8, criteria[i][2], 0, 1, nil, 0, 501 end -- sub-achievement
   if id == 500 then return criteria[i][1], 0, criteria[i][2], 0, 1 end
   return "Explorer", 0, false, 3, 10
 end
@@ -226,7 +227,7 @@ local function titles(cat)
   return t
 end
 check(#titles("professions") == 1, "one profession guide per profession")
-check(#titles("mounts") == 5, "five mount guides (with the tracked list)")
+check(#titles("mounts") == 6, "six mount guides (tracked list and chosen mount)")
 check(#titles("achievements") == 1, "achievement guide")
 check(#titles("leveling") == 0, "no leveling guide on Retail")
 ns.Picker:Toggle()
@@ -383,17 +384,70 @@ check(Rt.SourceLabel(1) == "Drop", "source label fallback")
 
 Rt.SetTracked(3, true)
 check(Rt.IsTracked(3), "track a mount")
+E:LoadGuide(L.MOUNT_TRACKED_TITLE)
+check(E:CurrentStep().key == "mount:3", "tracked list shows the tracked mount")
+local critN = 0
+for _, g in ipairs(E:CurrentStep().goals) do if g.type == "crit" then critN = critN + 1 end end
+check(critN == 2, "tracked achievement mount lists its criteria left (got " .. critN .. ")")
+
+-- "Guide me": a guide for this one mount, with its portrait and model
+local pinned
+UiMapPoint = { CreateFromCoordinates = function(m, x, y) return { m = m, x = x, y = y } end }
+C_Map.CanSetUserWaypointOnMap = function() return true end
+C_Map.SetUserWaypoint = function(p) pinned = p end
+C_Map.ClearUserWaypoint = function() pinned = nil end
+local supertracked
+C_SuperTrack = { SetSuperTrackedUserWaypoint = function(v) supertracked = v end }
 Rt.GuideToMount(1)
-check(E.guide and E.guide.title == L.MOUNT_TRACKED_TITLE, "guide button loads the tracked list")
-check(E:CurrentStep().key == "mount:1", "the chosen mount comes first")
+check(E.guide and E.guide.title == L.MOUNT_FOCUS_TITLE and E.guide.displayTitle == "Drake du vieux donjon", "guide named after the chosen mount")
+check(E.guide.visual and E.guide.visual.icon == 1 and E.guide.visual.display == 1, "guide shows the mount portrait and model")
 local hasFarm = false
 for _, g in ipairs(E:CurrentStep().goals) do if g.type == "farm" then hasFarm = true end end
-check(hasFarm and E.waypoint and E.waypoint.mapID == 2248, "tracked drop mount: farm goal and arrow to the entrance")
-check(#E.guide.steps == 2, "both tracked mounts listed")
+check(hasFarm and E.waypoint and E.waypoint.mapID == 2248, "drop mount: farm goal and arrow to the entrance")
+check(pinned and pinned.m == 2248 and supertracked == true, "native map pin and in-world marker set")
+check(ns.GoalTypes.farm.icon(E:CurrentStep().goals[2]) == 1, "goal line uses the mount's own icon")
+
+-- inside the instance the arrow points to the boss
+function EJ_GetEncounterInfo(id) if id == 7 then return "Seigneur Ancien" end end
+C_EncounterJournal.GetEncountersOnMap = function(m) if m == 3001 then return { { encounterID = 7, mapX = 0.3, mapY = 0.7 } } end return {} end
+C_EncounterJournal.GetInstanceForGameMap = function(m) if m == 3001 then return 100 end end
+local inside = true
+IsInInstance = function() return inside, inside and "party" or "none" end
+C_Map.GetBestMapForUnit = function() return inside and 3001 or 2248 end
+local oldInfo = C_Map.GetMapInfo
+C_Map.GetMapInfo = function(id) if id == 3001 then return { name = "Vieux donjon", mapType = 4 } end return oldInfo(id) end
+fire("ZONE_CHANGED_NEW_AREA")
+check(E.waypoint and E.waypoint.custom and E.waypoint.mapID == 3001 and E.waypoint.x == 0.3, "arrow to the boss inside the instance")
+inside = false
+fire("ZONE_CHANGED_NEW_AREA")
+check(E.waypoint and not E.waypoint.custom and E.waypoint.mapID == 2248, "back outside: arrow to the entrance")
+C_Map.GetBestMapForUnit = function() return 2248 end
+IsInInstance = nil
+
+-- achievement mount: one step per criterion left, dungeon criteria lead to the entrance
+Rt.GuideToMount(3)
+local s1 = E.guide.steps[1]
+check(s1.key == "crit:500:3", "first step: first criterion left")
+check(E.waypoint and E.waypoint.mapID == 2248, "dungeon achievement criterion: arrow to the dungeon entrance")
+check(ns.GoalText(s1.goals[2]) == "Explorateur", "criterion that is an achievement shows its name")
+check(E.guide.steps[#E.guide.steps].key == "reward", "last step: the achievement and the mount")
+local rewardAch
+for _, g in ipairs(E.guide.steps[#E.guide.steps].goals) do if g.type == "achieve" then rewardAch = g end end
+check(rewardAch and ns.GoalText(rewardAch):find("Gloire"), "achievement shown by name, not number")
+check(ns.GoalTypes.achieve.icon(rewardAch) == "icon-500", "achievement icon")
 Rt.SetTracked(3, false)
 Rt.SetTracked(1, false)
 flush()
+E:LoadGuide(L.MOUNT_TRACKED_TITLE)
 check(E.guide.steps[1].key == nil, "empty tracked list shows a hint")
+
+-- difficulty: old dungeon drop is easy, achievement at 50% is medium
+check(Rt.MountDifficulty(Rt.MountEntry(1)) == 2, "dungeon of the previous expansion: medium")
+local tiers = EJ_GetNumTiers
+EJ_GetNumTiers = function() return 5 end
+check(Rt.MountDifficulty(Rt.MountEntry(1)) == 1, "dungeon of an old expansion: easy")
+EJ_GetNumTiers = tiers
+check(Rt.MountDifficulty(Rt.MountEntry(3)) == 2, "achievement half done: medium")
 check(ns.CategoryActions.mounts and ns.CategoryActions.mounts.label == L.COL_OPEN, "menu action for the collection")
 -- statistics by source
 local bySource = Rt.MountStatsBySource()

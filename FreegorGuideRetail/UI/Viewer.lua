@@ -64,6 +64,35 @@ prevBtn:SetPoint("RIGHT", nextBtn, "LEFT", -2, 0)
 local bookBtn = iconButton(V, "Interface\\Icons\\INV_Misc_Book_09", L.CHOOSE_GUIDE, function() ns.Picker:Toggle() end)
 bookBtn:SetPoint("RIGHT", prevBtn, "LEFT", -4, 0)
 
+-- Optional guide visual (e.g. a mount): portrait left of the title and a 3D
+-- model above the window. A guide sets guide.visual = { icon =, display =, onClick = }.
+local portrait = CreateFrame("Button", nil, V)
+portrait:SetSize(30, 30)
+portrait:SetPoint("TOPLEFT", 8, -6)
+portrait.tex = portrait:CreateTexture(nil, "ARTWORK")
+portrait.tex:SetAllPoints()
+portrait:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+portrait:Hide()
+
+local modelFrame = CreateFrame("PlayerModel", nil, V)
+modelFrame:SetSize(WIDTH, 150)
+modelFrame:SetPoint("BOTTOM", V, "TOP", 0, 2)
+modelFrame:Hide()
+if modelFrame.EnableMouse then
+  modelFrame:EnableMouse(true)
+  modelFrame.facing = 0
+  modelFrame:SetScript("OnMouseDown", function(self) self.dragX = GetCursorPosition() end)
+  modelFrame:SetScript("OnMouseUp", function(self) self.dragX = nil end)
+  modelFrame:SetScript("OnUpdate", function(self)
+    if self.dragX then
+      local x = GetCursorPosition()
+      self.facing = self.facing + (x - self.dragX) * 0.02
+      self.dragX = x
+      self:SetFacing(self.facing)
+    end
+  end)
+end
+
 local title = V:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 title:SetPoint("TOPLEFT", 10, -8)
 title:SetPoint("RIGHT", bookBtn, "LEFT", -6, 0)
@@ -177,13 +206,31 @@ function V:Render()
 
   local g = Engine.guide
   if not g then
+    portrait:Hide()
+    modelFrame:Hide()
     title:SetText(L.ADDON_NAME)
     stepText:SetText("")
     hint:SetText(L.NO_GUIDE)
     return layoutFooter(0)
   end
 
-  title:SetText(g.title)
+  title:SetText(g.displayTitle or g.title)
+  local vis = g.visual
+  portrait:SetShown(vis ~= nil and vis.icon ~= nil)
+  title:ClearAllPoints()
+  title:SetPoint("TOPLEFT", (vis and vis.icon) and 44 or 10, -8)
+  title:SetPoint("RIGHT", bookBtn, "LEFT", -6, 0)
+  if vis and vis.icon then
+    portrait.tex:SetTexture(vis.icon)
+    portrait:SetScript("OnClick", vis.onClick)
+  end
+  if vis and vis.display and ns.db.showModel ~= false then
+    modelFrame:SetDisplayInfo(vis.display)
+    modelFrame:SetFacing(modelFrame.facing or 0)
+    modelFrame:Show()
+  else
+    modelFrame:Hide()
+  end
   local total = #g.steps
   local step = Engine:CurrentStep()
 
@@ -208,7 +255,8 @@ function V:Render()
       b.icon:SetTexture(ICONS.done)
       b.text:SetTextColor(0.5, 0.5, 0.5)
     else
-      b.icon:SetTexture(ICONS[goal.type] or ICONS.note)
+      local reg = ns.GoalTypes and ns.GoalTypes[goal.type]
+      b.icon:SetTexture((reg and reg.icon and reg.icon(goal)) or ICONS[goal.type] or ICONS.note)
       if goal.type == "note" then b.text:SetTextColor(0.9, 0.85, 0.6) else b.text:SetTextColor(1, 1, 1) end
     end
     b:Show()

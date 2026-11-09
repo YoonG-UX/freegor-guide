@@ -357,6 +357,17 @@ function Engine:SetWaypointFromGoal(goal)
   ns.Fire("WAYPOINT", self.waypoint)
 end
 
+-- A module can point the arrow somewhere the guide text does not know (e.g. a
+-- boss inside an instance). It lasts until the step changes or it is cleared.
+function Engine:SetCustomWaypoint(mapID, x, y, title)
+  if mapID then
+    self.waypoint = { mapID = mapID, x = x, y = y, title = title, custom = true }
+  else
+    self.waypoint = nil
+  end
+  ns.Fire("WAYPOINT", self.waypoint)
+end
+
 function Engine:GoToStep(index, manual)
   local g = self.guide
   if not g then return end
@@ -466,7 +477,7 @@ function Engine:Refresh()
   end
   -- Move the arrow to the next NPC of a multi-NPC step.
   local cur = self:CurrentStep()
-  if cur and not self.manualWaypoint then
+  if cur and not self.manualWaypoint and not (self.waypoint and self.waypoint.custom) then
     local g = self:ActiveGoto(cur)
     if g and not (self.waypoint and self.waypoint.goal == g) then self:SetWaypointFromGoal(g) end
   end

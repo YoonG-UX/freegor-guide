@@ -64,7 +64,26 @@ barBg:SetColorTexture(0, 0, 0, 0.5)
 
 -- Filters ----------------------------------------------------------------------
 
-local state = { show = "missing", source = nil, search = "", offset = 0, selected = nil, stats = false }
+local state = { show = "missing", source = nil, search = "", offset = 0, selected = nil, stats = false, sort = "difficulty" }
+
+-- Difficulty and destination of each mount, cached for the session (the mount
+-- journal, achievements and vendors change rarely; refreshed on those events).
+local cache = {}
+local DIFF_COLORS = { "|cff40ff40", "|cffffff40", "|cffff9930", "|cffff4040", "|cff9999ff" }
+local function info(id)
+  local c = cache[id]
+  if not c then
+    local e = R.MountEntry(id)
+    c = e and { diff = R.MountDifficulty(e), dest = R.MountDestination(e) } or { diff = 3 }
+    cache[id] = c
+  end
+  return c
+end
+R.MountListInfo = info
+local function diffText(d) return (DIFF_COLORS[d] or "") .. (L["DIFF_LABEL_" .. d] or "?") .. "|r" end
+for _, ev in ipairs({ "NEW_MOUNT_ADDED", "ACHIEVEMENT_EARNED", "MERCHANT_SHOW" }) do
+  ns.RegisterEvent(ev, function() wipe(cache) end)
+end
 
 local search = CreateFrame("EditBox", nil, W, "InputBoxTemplate")
 search:SetSize(LIST_W - 20, 20)
@@ -111,6 +130,17 @@ local sourceButton = smallButton(L.COL_ANY_SOURCE, LIST_W - 12, function(self, b
 end)
 sourceButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 sourceButton:SetPoint("TOPLEFT", 14, -104)
+sourceButton:SetWidth(LIST_W - 12 - 116)
+
+local SORTS = { "difficulty", "distance", "name" }
+local SORT_LABEL = { difficulty = L.COL_SORT_DIFF, distance = L.COL_SORT_DIST, name = L.COL_SORT_NAME }
+local sortButton = smallButton(L.COL_SORT_DIFF, 112, function()
+  local i = 1
+  for k, v in ipairs(SORTS) do if v == state.sort then i = k end end
+  state.sort, state.offset = SORTS[i % #SORTS + 1], 0
+  W:Render()
+end)
+sortButton:SetPoint("LEFT", sourceButton, "RIGHT", 4, 0)
 
 -- List ---------------------------------------------------------------------------
 
@@ -128,7 +158,10 @@ for i = 1, ROWS do
   b.icon:SetPoint("LEFT", 2, 0)
   b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   b.text:SetPoint("LEFT", b.icon, "RIGHT", 6, 0)
-  b.text:SetPoint("RIGHT", -18, 0)
+  b.text:SetPoint("RIGHT", -96, 0)
+  b.info = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  b.info:SetPoint("RIGHT", -18, 0)
+  b.info:SetJustifyH("RIGHT")
   b.text:SetJustifyH("LEFT")
   b.text:SetWordWrap(false)
   b.track = b:CreateTexture(nil, "OVERLAY")
@@ -330,6 +363,21 @@ local function filtered()
     local okSearch = state.search == "" or m.name:lower():find(state.search, 1, true)
     if okShow and okSource and okSearch then list[#list + 1] = m end
   end
+  if state.sort ~= "name" then
+    for _, m in ipairs(list) do
+      local c = info(m.id)
+      m.diff = m.collected and 0 or c.diff
+      m.dist = R.DistanceTo(c.dest)
+    end
+    table.sort(list, function(a, b)
+      if state.sort == "distance" then
+        if (a.dist ~= nil) ~= (b.dist ~= nil) then return a.dist ~= nil end
+        if a.dist and b.dist and a.dist ~= b.dist then return a.dist < b.dist end
+      end
+      if a.diff ~= b.diff then return a.diff < b.diff end
+      return a.name < b.name
+    end)
+  end
   return list, owned, #all
 end
 
@@ -364,7 +412,9 @@ local function renderDetail(e)
   if not e then return end
   dIcon:SetTexture(e.icon)
   dName:SetText(e.name)
-  dStatus:SetText((e.collected and L.COL_COLLECTED or L.COL_NOT_COLLECTED) .. "  -  " .. sourceLabel(e.sourceType))
+  local status = (e.collected and L.COL_COLLECTED or L.COL_NOT_COLLECTED) .. "  -  " .. sourceLabel(e.sourceType)
+  if not e.collected then status = status .. "  -  " .. L.COL_DIFFICULTY:format(diffText(R.MountDifficulty(e))) end
+  dStatus:SetText(status)
   local display = e.display
   if not display and C_MountJournal.GetMountAllCreatureDisplayInfoByID then
     local all = C_MountJournal.GetMountAllCreatureDisplayInfoByID(e.id)
@@ -394,6 +444,7 @@ function W:Render()
   searchHint:SetShown(state.search == "")
   for _, b in ipairs(showButtons) do b:SetEnabled(b.mode ~= state.show) end
   sourceButton:SetText(state.source and sourceLabel(state.source) or L.COL_ANY_SOURCE)
+  sortButton:SetText(SORT_LABEL[state.sort])
 
   state.offset = math.max(0, math.min(state.offset, #list - ROWS))
   if not state.selected and list[1] then state.selected = list[1].id end
@@ -407,6 +458,13 @@ function W:Render()
       if m.collected then b.text:SetTextColor(0.6, 1, 0.6) else b.text:SetTextColor(1, 1, 1) end
       b.sel:SetShown(m.id == state.selected)
       b.track:SetShown(R.IsTracked(m.id))
+      if m.collected or state.sort == "name" then
+        b.info:SetText("")
+      else
+        local c = info(m.id)
+        local dist = m.dist and ("  " .. L.COL_DISTANCE:format(m.dist)) or ""
+        b.info:SetText(diffText(c.diff) .. dist)
+      end
       b:Show()
     else
       b:Hide()
@@ -426,6 +484,11 @@ end
 W:SetScript("OnShow", function(self) self:Render() end)
 for _, ev in ipairs({ "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "COMPANION_UPDATE" }) do
   ns.RegisterEvent(ev, function() if W:IsShown() then W:Render() end end)
+end
+
+function R.OpenCollectionAt(id)
+  state.selected, state.stats = id, false
+  if W:IsShown() then W:Render() else W:Show() end
 end
 
 function R.ToggleCollection()

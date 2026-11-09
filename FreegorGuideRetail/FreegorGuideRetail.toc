@@ -31,4 +31,5 @@ Retail\Professions.lua
 Retail\Vendors.lua
 Retail\Mounts.lua
 Retail\Collection.lua
+Retail\Navigation.lua
 Retail\Alerts.lua

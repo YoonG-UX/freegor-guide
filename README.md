@@ -33,7 +33,13 @@ chaque patch sans mise à jour du guide :
   instance avec l'entrée sur la carte et « déjà tué cette semaine » ou « disponible », haut fait
   avec sa progression et les critères restants. Le bouton **Statistiques** montre la collection
   par source (butin, vendeurs, hauts faits, quêtes...) avec une barre de progression pour chacune ;
-  cliquer sur une source affiche ses montures. Boutons : **Me guider** (flèche et étapes),
+  cliquer sur une source affiche ses montures. La liste se trie par **difficulté** (badge
+  Facile / Moyen / Difficile / Très difficile, estimé d'après la source : vendeur, ancien donjon,
+  raid récent, avancement du haut fait...), par **distance** depuis votre position ou par nom.
+  **Me guider** ouvre un guide dédié à la monture, avec son portrait et son modèle 3D au-dessus
+  de la fenêtre : flèche et épingle Blizzard (carte et marqueur à l'écran) vers l'entrée de
+  l'instance puis, à l'intérieur, vers le boss ; pour un haut fait, une étape par critère restant,
+  avec la flèche vers le donjon quand le critère en est un. Boutons : **Me guider** (flèche et étapes),
   **Suivre** (liste de suivi), **Invoquer**, **Lien** dans le chat.
 - **Montures** : toutes les montures que vous n'avez pas, d'après le journal des montures.
   - *Ma liste de suivi* : les montures que vous chassez, avec la façon d'obtenir chacune.

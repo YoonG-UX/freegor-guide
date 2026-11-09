@@ -290,27 +290,161 @@ function R.AllMounts()
   return out
 end
 
--- Guide step for one mount, from its source.
+-- Where to go -----------------------------------------------------------------
+
+-- Instance named in a text (sub-achievement name or description), with its entrance.
+function R.FindInstanceIn(text)
+  local t = lc(clean(text))
+  if t == "" then return nil end
+  for _, inst in ipairs(loadInstances()) do
+    if inst.name and #inst.name > 3 and t:find(lc(inst.name), 1, true) then
+      return inst, loadEntrances()[inst.id]
+    end
+  end
+end
+
+-- Destination of a mount: instance entrance or known vendor.
+function R.MountDestination(e)
+  if e.entrance then return e.entrance end
+  if e.vendor then return { map = e.vendor.map, x = e.vendor.x, y = e.vendor.y } end
+end
+
+-- Distance in yards from the player to a destination, nil when unknown or on another continent.
+function R.DistanceTo(dest)
+  if not dest then return nil end
+  local C = ns.Compat
+  local pc, pn, pw = C.GetPlayerWorld()
+  local tc, tn, tw = C.MapToWorld(dest.map, dest.x, dest.y)
+  if not pc or not tc or pc ~= tc then return nil end
+  return math.sqrt((tn - pn) ^ 2 + (tw - pw) ^ 2)
+end
+
+-- Difficulty -------------------------------------------------------------------
+-- 1 easy .. 4 very hard, 5 = shop / promotion. A rough guide from the source:
+-- vendors are easy, old dungeons easier than recent raids, achievements by
+-- progress, meta-achievements (many criteria) hardest.
+
+local DIFF_BY_SOURCE = { [2] = 2, [3] = 1, [4] = 2, [5] = 2, [7] = 2, [8] = 5, [9] = 5, [10] = 5, [11] = 3, [12] = 2 }
+
+function R.MountDifficulty(e)
+  if e.instance then
+    local newest = EJ_GetNumTiers and EJ_GetNumTiers() or e.instance.tier
+    local age = newest - e.instance.tier
+    if not e.instance.raid then return age >= 2 and 1 or 2 end
+    if age >= 2 then return 2 elseif age == 1 then return 3 end
+    return 4
+  end
+  if e.sourceType == SOURCE.DROP then return 3 end -- rare spawn or world drop
+  if e.achievement then
+    if e.achDone then return 1 end
+    local n = GetAchievementNumCriteria(e.achievement) or 0
+    if (e.achFrac or 0) >= 0.75 then return 1 end
+    if (e.achFrac or 0) >= 0.4 then return 2 end
+    return n > 8 and 4 or 3
+  end
+  return DIFF_BY_SOURCE[e.sourceType] or 3
+end
+
+-- Guide steps ------------------------------------------------------------------
+
+local function gotoLine(dest)
+  return (" goto %d %.1f,%.1f"):format(dest.map, dest.x * 100, dest.y * 100)
+end
+
+local function short(text, n)
+  text = clean(text)
+  if #text > n then text = text:sub(1, n - 3) .. "..." end
+  return text
+end
+
+-- Incomplete criteria of an achievement as steps; a criterion that is a dungeon
+-- or raid achievement gets an arrow to the instance entrance.
+local function criteriaSteps(e, maxSteps)
+  local parts = {}
+  local n = GetAchievementNumCriteria(e.achievement) or 0
+  for i = 1, n do
+    if #parts >= maxSteps then break end
+    local c = R.Criterion(e.achievement, i)
+    if c and not c.completed then
+      local lines = { "step", (" key crit:%d:%d"):format(e.achievement, i) }
+      local where, desc = nil, nil
+      if c.sub then
+        local _, subName, _, _, _, _, _, subDesc = GetAchievementInfo(c.sub)
+        local _, entrance = R.FindInstanceIn((subName or "") .. " " .. (subDesc or ""))
+        where, desc = entrance, subDesc
+      else
+        local _, entrance = R.FindInstanceIn(c.text)
+        where = entrance
+      end
+      if where then lines[#lines + 1] = gotoLine(where) end
+      lines[#lines + 1] = (" crit %d %d"):format(e.achievement, i)
+      if desc and desc ~= "" then lines[#lines + 1] = " note " .. short(desc, 140) end
+      parts[#parts + 1] = table.concat(lines, "\n")
+    end
+  end
+  return parts
+end
+
+-- One step for list guides (tracked list, achievement list...).
 function R.MountStep(e)
   local lines = { "step", " key mount:" .. e.id }
+  local dest = R.MountDestination(e)
   if e.instance and e.boss then
-    if e.entrance then
-      lines[#lines + 1] = (" goto %d %.1f,%.1f"):format(e.entrance.map, e.entrance.x * 100, e.entrance.y * 100)
-    end
+    if dest then lines[#lines + 1] = gotoLine(dest) end
     lines[#lines + 1] = (" farm %d %d %s"):format(e.id, e.instance.id, clean(e.boss))
   else
     if e.vendor then
-      lines[#lines + 1] = (" goto %d %.1f,%.1f"):format(e.vendor.map, e.vendor.x * 100, e.vendor.y * 100)
+      lines[#lines + 1] = gotoLine(dest)
       if e.vendor.npc then lines[#lines + 1] = (" talk %s |n %d"):format(clean(e.vendor.name or "?"), e.vendor.npc) end
     end
-    if e.achievement and not e.achDone then lines[#lines + 1] = " achieve " .. e.achievement end
+    if e.achievement and not e.achDone then
+      lines[#lines + 1] = " achieve " .. e.achievement
+      local shown = 0
+      for i = 1, (GetAchievementNumCriteria(e.achievement) or 0) do
+        local c = R.Criterion(e.achievement, i)
+        if c and not c.completed and shown < 4 then
+          lines[#lines + 1] = (" crit %d %d"):format(e.achievement, i)
+          shown = shown + 1
+        end
+      end
+    end
     lines[#lines + 1] = (" mount %d %s"):format(e.id, clean(e.name))
-  end
-  if e.achLeft and #e.achLeft > 0 and not e.achDone then
-    lines[#lines + 1] = " note " .. L.ACH_LEFT:format(table.concat(e.achLeft, ", "))
   end
   lines[#lines + 1] = " note " .. L.MOUNT_SOURCE:format(e.source)
   return table.concat(lines, "\n")
+end
+
+-- The whole guide for one chosen mount.
+function R.MountGuideBody(e)
+  if e.collected then return "step\n key owned\n mount " .. e.id .. "\n note " .. clean(L.COL_COLLECTED) .. "\n" end
+  local parts = {}
+  local dest = R.MountDestination(e)
+  local zone = dest and ns.Compat.GetMapName(dest.map)
+  if e.instance and e.boss then
+    local lines = { "step", " key farm", gotoLine(dest or { map = 0, x = 0, y = 0 }) }
+    if not dest then table.remove(lines) end
+    lines[#lines + 1] = (" farm %d %d %s"):format(e.id, e.instance.id, clean(e.boss))
+    if zone then lines[#lines + 1] = " note " .. clean(L.MOUNT_GO_INSTANCE:format(e.instance.name, zone)) end
+    lines[#lines + 1] = " note " .. clean(L.MOUNT_INSIDE)
+    lines[#lines + 1] = " note " .. L.MOUNT_SOURCE:format(e.source)
+    parts[#parts + 1] = table.concat(lines, "\n")
+  elseif e.achievement and not e.achDone then
+    for _, p in ipairs(criteriaSteps(e, 15)) do parts[#parts + 1] = p end
+    parts[#parts + 1] = ("step\n key reward\n achieve %d\n mount %d %s\n note %s"):format(
+      e.achievement, e.id, clean(e.name), L.MOUNT_SOURCE:format(e.source))
+  elseif e.vendor then
+    local lines = { "step", " key vendor", gotoLine(dest) }
+    if e.vendor.npc then lines[#lines + 1] = (" talk %s |n %d"):format(clean(e.vendor.name or "?"), e.vendor.npc) end
+    lines[#lines + 1] = (" mount %d %s"):format(e.id, clean(e.name))
+    lines[#lines + 1] = " note " .. L.MOUNT_SOURCE:format(e.source)
+    parts[#parts + 1] = table.concat(lines, "\n")
+  else
+    local lines = { "step", " key source", (" mount %d %s"):format(e.id, clean(e.name)),
+      " note " .. L.MOUNT_SOURCE:format(e.source) }
+    if e.sourceType == SOURCE.VENDOR then lines[#lines + 1] = " note " .. clean(L.COL_VENDOR_UNKNOWN) end
+    parts[#parts + 1] = table.concat(lines, "\n")
+  end
+  return table.concat(parts, "\n") .. "\n"
 end
 
 -- Tracked mounts (wish list) -----------------------------------------------------
@@ -343,12 +477,32 @@ local function buildTracked(guide)
   return table.concat(parts, "\n") .. "\n"
 end
 
--- Track a mount and start guiding to it.
+-- Guide to one mount: its own guide with its portrait and 3D model.
 function R.GuideToMount(id)
-  R.SetTracked(id, true)
   R.focusMount = id
-  ns.Engine:LoadGuide(L.MOUNT_TRACKED_TITLE)
+  ns.cdb.focusMount = id
+  ns.Engine:LoadGuide(L.MOUNT_FOCUS_TITLE)
   ns.SetShown(true)
+end
+
+local function buildFocus(guide)
+  local id = R.focusMount or (ns.cdb and ns.cdb.focusMount)
+  local e = id and R.MountEntry(id)
+  if not e then
+    guide.displayTitle, guide.visual = nil, nil
+    return nil, L.MOUNT_FOCUS_EMPTY
+  end
+  R.ScanLockouts()
+  guide.displayTitle = e.name
+  local display = e.display
+  if not display and C_MountJournal.GetMountAllCreatureDisplayInfoByID then
+    local all = C_MountJournal.GetMountAllCreatureDisplayInfoByID(e.id)
+    display = all and all[1] and all[1].creatureDisplayID
+  end
+  guide.visual = { icon = e.icon, display = display, onClick = function()
+    if R.OpenCollectionAt then R.OpenCollectionAt(e.id) end
+  end }
+  return R.MountGuideBody(e)
 end
 
 local MOUNT_EVENTS = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED" }
@@ -356,6 +510,11 @@ local MOUNT_EVENTS = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_E
 Freegor:RegisterDynamicGuide({
   title = L.MOUNT_TRACKED_TITLE, category = "mounts", description = L.MOUNT_TRACKED_DESC,
   events = MOUNT_EVENTS, build = buildTracked,
+})
+Freegor:RegisterDynamicGuide({
+  title = L.MOUNT_FOCUS_TITLE, category = "mounts", description = L.MOUNT_FOCUS_DESC,
+  events = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED", "CRITERIA_UPDATE" },
+  build = buildFocus,
 })
 
 Freegor:RegisterDynamicGuide({
