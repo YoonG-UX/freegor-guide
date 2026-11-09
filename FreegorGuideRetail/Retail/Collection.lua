@@ -64,7 +64,7 @@ barBg:SetColorTexture(0, 0, 0, 0.5)
 
 -- Filters ----------------------------------------------------------------------
 
-local state = { show = "missing", source = nil, search = "", offset = 0, selected = nil }
+local state = { show = "missing", source = nil, search = "", offset = 0, selected = nil, stats = false }
 
 local search = CreateFrame("EditBox", nil, W, "InputBoxTemplate")
 search:SetSize(LIST_W - 20, 20)
@@ -136,7 +136,7 @@ for i = 1, ROWS do
   b.track:SetPoint("RIGHT", -2, 0)
   b.track:SetTexture("Interface\\Icons\\INV_Misc_Map_01")
   b:SetScript("OnClick", function(self)
-    state.selected = self.mountID
+    state.selected, state.stats = self.mountID, false
     W:Render()
   end)
   rows[i] = b
@@ -231,6 +231,91 @@ linkBtn:SetScript("OnClick", function()
   local e = state.selected and R.MountEntry(state.selected)
   local link = e and C_MountJournal.GetMountLink and C_MountJournal.GetMountLink(e.spellID)
   if link and ChatEdit_InsertLink then ChatEdit_InsertLink(link) end
+end)
+
+-- Statistics by source ---------------------------------------------------------------
+
+-- { {source=, owned=, total=} }, most mounts first.
+function R.MountStatsBySource(all)
+  local by = {}
+  for _, m in ipairs(all or R.AllMounts()) do
+    local st = by[m.sourceType] or { source = m.sourceType, owned = 0, total = 0 }
+    by[m.sourceType] = st
+    st.total = st.total + 1
+    if m.collected then st.owned = st.owned + 1 end
+  end
+  local list = {}
+  for _, st in pairs(by) do list[#list + 1] = st end
+  table.sort(list, function(a, b)
+    if a.total ~= b.total then return a.total > b.total end
+    return (a.source or 0) < (b.source or 0)
+  end)
+  return list
+end
+
+local statsPanel = CreateFrame("Frame", nil, W)
+statsPanel:SetPoint("TOPLEFT", LIST_W + 16, -54)
+statsPanel:SetPoint("BOTTOMRIGHT", -14, 14)
+statsPanel:Hide()
+local statsTitle = statsPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+statsTitle:SetPoint("TOPLEFT")
+statsTitle:SetText(L.COL_STATS_TITLE)
+local statsHint = statsPanel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+statsHint:SetPoint("TOPLEFT", statsTitle, "BOTTOMLEFT", 0, -4)
+statsHint:SetText(L.COL_STATS_HINT)
+
+local STAT_ROWS, STAT_H = 13, 30
+local statRows = {}
+for i = 1, STAT_ROWS do
+  local b = CreateFrame("Button", nil, statsPanel)
+  b:SetSize(WIDTH - LIST_W - 30, STAT_H - 4)
+  b:SetPoint("TOPLEFT", 0, -44 - (i - 1) * STAT_H)
+  b:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+  b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+  b.label:SetPoint("LEFT", 4, 0)
+  b.label:SetWidth(150)
+  b.label:SetJustifyH("LEFT")
+  b.bar = CreateFrame("StatusBar", nil, b)
+  b.bar:SetPoint("LEFT", 160, 0)
+  b.bar:SetSize(WIDTH - LIST_W - 30 - 160 - 110, 12)
+  b.bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+  b.bar:SetMinMaxValues(0, 1)
+  local bg = b.bar:CreateTexture(nil, "BACKGROUND")
+  bg:SetAllPoints()
+  bg:SetColorTexture(0, 0, 0, 0.5)
+  b.value = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  b.value:SetPoint("RIGHT", -4, 0)
+  b:SetScript("OnClick", function(self)
+    state.source, state.offset, state.stats = self.source, 0, false
+    W:Render()
+  end)
+  statRows[i] = b
+end
+
+local function renderStats(all)
+  for i, b in ipairs(statRows) do
+    local st = all[i]
+    b.source = st and st.source
+    if st then
+      local frac = st.total > 0 and st.owned / st.total or 0
+      b.label:SetText(sourceLabel(st.source))
+      b.bar:SetValue(frac)
+      -- red to green with completion
+      b.bar:SetStatusBarColor(1 - frac, 0.35 + 0.55 * frac, 0.2)
+      b.value:SetText(L.COL_STAT_VALUE:format(st.owned, st.total, math.floor(frac * 100)))
+      b:Show()
+    else
+      b:Hide()
+    end
+  end
+end
+
+local statsBtn = CreateFrame("Button", nil, W, "UIPanelButtonTemplate")
+statsBtn:SetSize(110, 20)
+statsBtn:SetPoint("TOPRIGHT", -30, -10)
+statsBtn:SetScript("OnClick", function()
+  state.stats = not state.stats
+  W:Render()
 end)
 
 -- Rendering ------------------------------------------------------------------------
@@ -328,7 +413,14 @@ function W:Render()
     end
   end
   count:SetText(#list > 0 and L.COL_COUNT:format(state.offset + 1, math.min(state.offset + ROWS, #list), #list) or "")
-  renderDetail(state.selected and R.MountEntry(state.selected))
+  statsBtn:SetText(state.stats and L.COL_BACK or L.COL_STATS_BUTTON)
+  statsPanel:SetShown(state.stats)
+  if state.stats then
+    detail:Hide()
+    renderStats(R.MountStatsBySource())
+  else
+    renderDetail(state.selected and R.MountEntry(state.selected))
+  end
 end
 
 W:SetScript("OnShow", function(self) self:Render() end)

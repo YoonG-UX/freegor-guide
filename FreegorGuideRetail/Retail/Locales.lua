@@ -75,6 +75,12 @@ L.ALERT_ON         = "Instance mount alert: |cff00ff00on|r"
 L.ALERT_OFF        = "Instance mount alert: |cffff4040off|r"
 L.HELP_ALERT       = "/freegor alert - alert on or off when an instance drops a mount you are missing"
 
+L.COL_STATS_BUTTON = "Statistics"
+L.COL_BACK         = "Back"
+L.COL_STATS_TITLE  = "Collection by source"
+L.COL_STATS_HINT   = "Click a source to list its mounts."
+L.COL_STAT_VALUE   = "%d / %d (%d%%)"
+
 if GetLocale() ~= "frFR" then return end
 
 L.GOAL_MOUNT       = "Obtenir |cffffd100%s|r"
@@ -146,3 +152,8 @@ L.ALERT_LINE       = "%s (boss : %s)%s"
 L.ALERT_ON         = "Alerte de montures en instance : |cff00ff00activée|r"
 L.ALERT_OFF        = "Alerte de montures en instance : |cffff4040désactivée|r"
 L.HELP_ALERT       = "/freegor alert - activer ou non l'alerte quand une instance contient une monture qui vous manque"
+L.COL_STATS_BUTTON = "Statistiques"
+L.COL_BACK         = "Retour"
+L.COL_STATS_TITLE  = "Collection par source"
+L.COL_STATS_HINT   = "Cliquez sur une source pour afficher ses montures."
+L.COL_STAT_VALUE   = "%d / %d (%d %%)"

@@ -395,6 +395,17 @@ Rt.SetTracked(1, false)
 flush()
 check(E.guide.steps[1].key == nil, "empty tracked list shows a hint")
 check(ns.CategoryActions.mounts and ns.CategoryActions.mounts.label == L.COL_OPEN, "menu action for the collection")
+-- statistics by source
+local bySource = Rt.MountStatsBySource()
+local counts = {}
+for _, st in ipairs(bySource) do counts[st.source] = st end
+check(counts[1] and counts[1].total == 2 and counts[1].owned == 1, "drop stats: 1 of 2 (got " .. tostring(counts[1] and counts[1].owned) .. "/" .. tostring(counts[1] and counts[1].total) .. ")")
+check(counts[3] and counts[3].total == 1 and counts[6] and counts[2], "one line per source")
+check(bySource[1].source == 1, "largest source first")
+W:Show()
+local statsVisible = false
+W:Render()
+
 W:Hide()
 
 

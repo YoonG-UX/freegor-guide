@@ -31,7 +31,9 @@ chaque patch sans mise à jour du guide :
   (manquantes / obtenues / toutes, par source). Pour chaque monture : son modèle 3D (à faire
   tourner à la souris), sa description et comment l'obtenir — source donnée par le jeu, boss et
   instance avec l'entrée sur la carte et « déjà tué cette semaine » ou « disponible », haut fait
-  avec sa progression et les critères restants. Boutons : **Me guider** (flèche et étapes),
+  avec sa progression et les critères restants. Le bouton **Statistiques** montre la collection
+  par source (butin, vendeurs, hauts faits, quêtes...) avec une barre de progression pour chacune ;
+  cliquer sur une source affiche ses montures. Boutons : **Me guider** (flèche et étapes),
   **Suivre** (liste de suivi), **Invoquer**, **Lien** dans le chat.
 - **Montures** : toutes les montures que vous n'avez pas, d'après le journal des montures.
   - *Ma liste de suivi* : les montures que vous chassez, avec la façon d'obtenir chacune.
