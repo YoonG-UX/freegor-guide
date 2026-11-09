@@ -41,12 +41,18 @@ chaque patch sans mise à jour du guide :
   - *Hauts faits* : la monture, son haut fait, la progression et les critères restants, les plus
     avancés d'abord.
   - *Vendeurs* et *Quêtes, événements et découvertes* : la source indiquée par le jeu.
+- **Positions des vendeurs de montures** : le jeu ne les fournit pas, l'addon les apprend.
+  Quand vous ouvrez la fenêtre d'un vendeur qui vend une monture, sa position est enregistrée
+  (pour tout le compte) : la flèche, les guides et la fiche de collection y mènent ensuite.
+- **Alerte en instance** : en entrant dans un donjon ou un raid qui contient une monture qui
+  vous manque, un message s'affiche à l'écran et dans le chat, avec le boss et l'état de la
+  semaine (« déjà tué cette semaine »). `/fg alert` l'active ou la désactive.
 - **Hauts faits presque terminés** : vos hauts faits les plus avancés et ce qu'il leur manque.
 
 Une étape ne vous intéresse pas ? « Suivant » la masque (`/fg unskip` pour tout réafficher).
 
-Limites : le jeu ne donne pas la position des vendeurs ni des ressources à récolter ; les guides
-de vendeurs et de métiers de récolte n'ont donc pas de flèche.
+Limites : le jeu ne donne ni la position des vendeurs (l'addon les apprend quand vous ouvrez
+leur fenêtre) ni celle des ressources à récolter, ni les taux de butin.
 
 Guide de leveling pas à pas pour World of Warcraft (client WoW Forever), **gratuit et communautaire**.
 Fenêtre d'étapes, validation automatique des objectifs, flèche de navigation, compatible TomTom.

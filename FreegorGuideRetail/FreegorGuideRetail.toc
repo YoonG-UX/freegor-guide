@@ -28,5 +28,7 @@ Retail\Locales.lua
 Retail\Goals.lua
 Retail\Data\Professions.lua
 Retail\Professions.lua
+Retail\Vendors.lua
 Retail\Mounts.lua
 Retail\Collection.lua
+Retail\Alerts.lua

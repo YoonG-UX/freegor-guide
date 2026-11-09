@@ -94,6 +94,16 @@ local function dropInfo(m)
   return nil, boss
 end
 
+-- Missing drop mounts of one instance: { {id, name, boss} }
+function R.MissingDropMounts(journalInstanceID)
+  local out = {}
+  for _, m in ipairs(missingMounts({ [SOURCE.DROP] = true })) do
+    local inst, boss = dropInfo(m)
+    if inst and inst.id == journalInstanceID then out[#out + 1] = { id = m.id, name = m.name, boss = boss } end
+  end
+  return out
+end
+
 local function noneLeft() return "step\n key none\n note " .. L.MOUNT_NONE .. "\n" end
 
 -- Drops ----------------------------------------------------------------------
@@ -227,7 +237,9 @@ local function buildBySource(types)
     for _, m in ipairs(missingMounts(types)) do
       local key = "mount:" .. m.id
       if #parts < 40 and not Freegor:IsSkipped(guide.title, key) then
-        parts[#parts + 1] = ("step\n key %s\n mount %d %s\n note %s"):format(key, m.id, clean(m.name),
+        local v = R.VendorFor and R.VendorFor(m.id)
+        local where = v and (" goto %d %.1f,%.1f\n"):format(v.map, v.x * 100, v.y * 100) or ""
+        parts[#parts + 1] = ("step\n key %s\n%s mount %d %s\n note %s"):format(key, where, m.id, clean(m.name),
           L.MOUNT_SOURCE:format(m.source))
       end
     end
@@ -254,6 +266,7 @@ function R.MountEntry(id)
     if e.instance then e.entrance = loadEntrances()[e.instance.id] end
     if e.instance and e.boss then e.killed = R.IsBossKilled(e.instance.id, e.boss) end
   end
+  e.vendor = R.VendorFor and R.VendorFor(id)
   e.achievement = R.AchievementMountMap()[id]
   if e.achievement then
     e.achDone = select(4, GetAchievementInfo(e.achievement))
@@ -286,6 +299,10 @@ function R.MountStep(e)
     end
     lines[#lines + 1] = (" farm %d %d %s"):format(e.id, e.instance.id, clean(e.boss))
   else
+    if e.vendor then
+      lines[#lines + 1] = (" goto %d %.1f,%.1f"):format(e.vendor.map, e.vendor.x * 100, e.vendor.y * 100)
+      if e.vendor.npc then lines[#lines + 1] = (" talk %s |n %d"):format(clean(e.vendor.name or "?"), e.vendor.npc) end
+    end
     if e.achievement and not e.achDone then lines[#lines + 1] = " achieve " .. e.achievement end
     lines[#lines + 1] = (" mount %d %s"):format(e.id, clean(e.name))
   end

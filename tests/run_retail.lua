@@ -397,6 +397,59 @@ check(E.guide.steps[1].key == nil, "empty tracked list shows a hint")
 check(ns.CategoryActions.mounts and ns.CategoryActions.mounts.label == L.COL_OPEN, "menu action for the collection")
 W:Hide()
 
+
+---------------------------------------------------------------------------
+-- Vendor positions and instance alerts
+---------------------------------------------------------------------------
+
+mounts[2].collected = false
+local merchantItems = { 111, 9002 }
+function GetMerchantNumItems() return #merchantItems end
+function GetMerchantItemID(i) return merchantItems[i] end
+local oldFromItem = C_MountJournal.GetMountFromItem
+C_MountJournal.GetMountFromItem = function(item) if item == 9002 then return 2 end return oldFromItem(item) end
+function UnitName() return "Marchand de béliers" end
+npcGUID, secret = "Creature-0-1-0-1-777-0000", false
+fire("MERCHANT_SHOW")
+local v = Rt.VendorFor(2)
+check(v and v.map == 2248 and math.abs(v.x - 0.5) < 1e-6 and v.npc == 777 and v.name == "Marchand de béliers", "mount vendor position saved when its window opens")
+check(Rt.VendorFor(1) == nil, "other merchant items are not mounts")
+E:LoadGuide(L.MOUNT_VEN_TITLE)
+check(E.waypoint and E.waypoint.mapID == 2248, "vendor guide: arrow to the saved vendor")
+local ve = Rt.MountEntry(2)
+check(ve.vendor and Rt.MountStep(ve):find("talk Marchand de béliers |n 777", 1, true), "tracked step goes to the vendor")
+npcGUID = nil
+
+-- alert
+local warned, inInst = nil, true
+RaidWarningFrame = {}
+function RaidNotice_AddMessage(_, msg) warned = msg end
+function IsInInstance() return inInst, inInst and "party" or "none" end
+C_EncounterJournal.GetInstanceForGameMap = function() return 100 end
+printed = {}
+fire("PLAYER_ENTERING_WORLD")
+check(warned and warned:find("1 monture"), "raid warning when entering an instance with a missing mount")
+local chat = table.concat(printed, "\n")
+check(chat:find("Drake du vieux donjon") and chat:find("Seigneur Ancien"), "chat lists the mount and its boss")
+warned = nil
+fire("ZONE_CHANGED_NEW_AREA")
+check(warned == nil, "only one alert per instance visit")
+inInst = false
+fire("ZONE_CHANGED_NEW_AREA")
+inInst = true
+saved[1] = { name = "Vieux donjon", bosses = { { name = "Seigneur Ancien", killed = true } } }
+printed = {}
+fire("PLAYER_ENTERING_WORLD")
+check(table.concat(printed, "\n"):find("tué cette semaine"), "alert says when the boss is already killed this reset")
+saved[1] = nil
+SlashCmdList.FREEGOR("alert")
+check(FreegorDB.instanceAlert == false, "/fg alert turns the alert off")
+inInst = false
+fire("ZONE_CHANGED_NEW_AREA")
+inInst, warned = true, nil
+fire("PLAYER_ENTERING_WORLD")
+check(warned == nil, "no alert when turned off")
+inInst = false
 ---------------------------------------------------------------------------
 -- Midnight secret values
 ---------------------------------------------------------------------------

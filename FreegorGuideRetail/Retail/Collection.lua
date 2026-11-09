@@ -258,6 +258,12 @@ local function howText(e)
     local zone = ns.Compat.GetMapName(e.entrance.map) or ""
     lines[#lines + 1] = L.COL_ENTRANCE:format(zone, e.entrance.x * 100, e.entrance.y * 100)
   end
+  if e.vendor then
+    lines[#lines + 1] = L.COL_VENDOR:format(e.vendor.name or "?", ns.Compat.GetMapName(e.vendor.map) or "",
+      e.vendor.x * 100, e.vendor.y * 100)
+  elseif e.sourceType == 3 then
+    lines[#lines + 1] = L.COL_VENDOR_UNKNOWN
+  end
   if e.achievement then
     local _, name = GetAchievementInfo(e.achievement)
     lines[#lines + 1] = L.COL_ACH:format(name or "?", math.floor((e.achDone and 1 or e.achFrac or 0) * 100))
