@@ -284,6 +284,44 @@ child.skillLevel = 100
 fire("TRADE_SKILL_LIST_UPDATE")
 check(E.guide.steps[1].key == "maxed", "maxed expansion tab")
 
+
+-- Full path from recipe thresholds -----------------------------------------------
+local R = ns.Retail
+check(R.DataBuild and R.Recipes[1230858] and R.Recipes[1230858][2] == 25, "real threshold data loaded (Midnight Alchemy)")
+recipeInfo[11].relativeDifficulty = 0
+child.skillLevel = 10
+R.Recipes[11] = { 2871, 30, 60, 1 } -- 2 reagents
+R.Recipes[12] = { 2871, 50, 90, 1 } -- 8 reagents
+R.Recipes[13] = { 2871, 5, 40, 1 }  -- 1 reagent
+R.Recipes[14] = { 2871, 80, 100, 1 } -- not learned
+fire("TRADE_SKILL_LIST_UPDATE")
+local steps = E.guide.steps
+check(steps[1].key and steps[1].key:match("^path:"), "path mode when thresholds are known")
+local last, ok, covered = 10, true, 10
+for _, st in ipairs(steps) do
+  for _, g in ipairs(st.goals) do
+    if g.type == "skill" then
+      if g.level <= last then ok = false end
+      last, covered = g.level, g.level
+    end
+  end
+end
+check(ok, "path steps go up in skill")
+check(covered == 90, "path reaches the last skill known recipes allow (got " .. covered .. ")")
+check(steps[#steps].key == "learn" or steps[#steps].key == "first", "learn step when known recipes stop early")
+local learnText = ""
+for _, st in ipairs(steps) do if st.key == "learn" then for _, g in ipairs(st.goals) do learnText = learnText .. (g.text or "") end end end
+check(learnText:find("Recette à apprendre"), "suggests the unknown recipe that still gives skill")
+-- chance rule: orange below yellow, linear to grey
+check(R.ChanceAt({ 0, 30, 60, 1 }, 10) == 1 and R.ChanceAt({ 0, 30, 60, 1 }, 45) == 0.5 and R.ChanceAt({ 0, 30, 60, 1 }, 60) == 0, "skill-up chance rule")
+-- the first step's crafts and reagents
+local rc, rgs = nil, {}
+for _, g in ipairs(steps[1].goals) do
+  if g.type == "recipe" then rc = g end
+  if g.type == "reagent" then rgs[#rgs + 1] = g end
+end
+check(rc and rc.count and rc.count >= 1 and #rgs >= 1 and rgs[1].count == rc.count * schematics[rc.recipe][1].qty, "reagents sized for the whole step")
+for id = 11, 14 do R.Recipes[id] = nil end
 ---------------------------------------------------------------------------
 -- Mount guides
 ---------------------------------------------------------------------------

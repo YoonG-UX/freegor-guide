@@ -126,6 +126,100 @@ local function rank(p)
   return out
 end
 
+-- Full leveling path from the recipe thresholds (Retail/Data/Professions.lua) ---
+--
+-- Each recipe is orange below its "yellow" skill, then its chance to give a
+-- point drops linearly to 0 at its "grey" skill (the game's classic rule).
+-- From the current skill to the maximum, every level uses the known recipe
+-- with the most expected points per reagent; consecutive levels using the
+-- same recipe make one step.
+
+local function chanceAt(t, s)
+  local low, high = t[2], t[3]
+  if s < low then return 1 end
+  if s >= high then return 0 end
+  return (high - s) / math.max(high - low, 1)
+end
+R.ChanceAt = chanceAt
+
+local MAX_SEGMENTS = 12
+
+function R.PlanPath(p, title)
+  local data = R.Recipes or {}
+  local cands = {}
+  for _, r in ipairs(p.recipes) do
+    local t = data[r.id]
+    if r.learned and t and t[1] == p.skillLine and not Freegor:IsSkipped(title, "path:" .. r.id) then
+      local reagents, cost, units = reagentsOf(r.id)
+      cands[#cands + 1] = { r = r, t = t, reagents = reagents, cost = cost, price = cost or math.max(units, 1) * 1000 }
+    end
+  end
+  if #cands == 0 then return nil end
+
+  local function best(level)
+    local b, bs
+    for _, c in ipairs(cands) do
+      local e = c.t[4] * chanceAt(c.t, level)
+      if e > 0 then
+        local score = e / c.price
+        if not bs or score > bs then b, bs = c, score end
+      end
+    end
+    return b
+  end
+
+  local segs, s = {}, p.level
+  while s < p.max and #segs < MAX_SEGMENTS do
+    local c = best(s)
+    if not c then break end
+    local seg = { c = c, from = s, crafts = 0 }
+    while s < p.max and best(s) == c do
+      seg.crafts = seg.crafts + 1 / (c.t[4] * chanceAt(c.t, s)) -- average crafts for one point
+      s = s + 1
+    end
+    seg.to, seg.crafts = s, math.max(1, math.ceil(seg.crafts))
+    segs[#segs + 1] = seg
+  end
+  return segs, s
+end
+
+local function pathStep(p, seg, first)
+  local c = seg.c
+  local lines = { "step", " key path:" .. c.r.id }
+  if first then lines[#lines + 1] = " note " .. clean(L.PROF_STATUS:format(p.name, p.level, p.max)) end
+  for _, l in ipairs({
+    " note " .. clean(L.PROF_SEG:format(seg.from, seg.to, seg.crafts, c.r.name)),
+    (" recipe %d %d %s"):format(c.r.id, seg.crafts, clean(c.r.name)) }) do lines[#lines + 1] = l end
+  for i, rg in ipairs(c.reagents) do
+    if i > 6 then break end
+    lines[#lines + 1] = (" reagent %d %d"):format(rg.item, rg.qty * seg.crafts)
+  end
+  lines[#lines + 1] = (" skill %d %d %s"):format(p.skillLine, seg.to, clean(p.name))
+  if c.cost then lines[#lines + 1] = " note " .. L.PROF_COST_AH:format(money(c.cost * seg.crafts)) end
+  return table.concat(lines, "\n")
+end
+
+-- Unknown recipes that still give skill at `level`, for when the path stops early.
+local function learnAfter(p, level)
+  local TS, data = T(), R.Recipes or {}
+  local lines = { "step", " key learn", " note " .. clean(L.PROF_PATH_END:format(level)) }
+  local n = 0
+  for _, r in ipairs(p.recipes) do
+    local t = data[r.id]
+    if not r.learned and t and t[1] == p.skillLine and chanceAt(t, level) > 0 and n < 6 then
+      n = n + 1
+      local src
+      if TS.GetRecipeSourceText then
+        local ok, text = pcall(TS.GetRecipeSourceText, r.id)
+        src = ok and text or nil
+      end
+      lines[#lines + 1] = " note " .. clean(L.PROF_LEARN:format(r.name, src and clean(src) or "?"))
+    end
+  end
+  if n == 0 then lines[#lines + 1] = " note " .. L.PROF_NO_RECIPE end
+  return table.concat(lines, "\n")
+end
+
 -- Guide text -------------------------------------------------------------------
 
 local function craftStep(p, c, alt)
@@ -194,8 +288,12 @@ function R.BuildProfessionGuide(baseSkillLine, baseName)
   end
 
   local parts = {}
+  local planned, reached = R.PlanPath(p, title)
   if p.level >= p.max and p.max > 0 then
     parts[#parts + 1] = "step\n key maxed\n note " .. clean(L.PROF_MAXED:format(p.name))
+  elseif planned then
+    for i, seg in ipairs(planned) do parts[#parts + 1] = pathStep(p, seg, i == 1) end
+    if reached < p.max then parts[#parts + 1] = learnAfter(p, reached) end
   else
     local ranked, shown = rank(p), 0
     for _, c in ipairs(ranked) do

@@ -73,3 +73,14 @@ sh tools/sync_retail.sh
 
 `tests/run_retail.lua` vérifie que les copies sont identiques. Le code propre à Retail est dans
 `FreegorGuideRetail/Retail/` : il ne contient aucune donnée de jeu, tout est lu dans le client.
+
+### Données de métiers (Retail)
+
+`FreegorGuideRetail/Retail/Data/Professions.lua` contient, pour chaque recette de métier, la
+ligne de compétence de son extension, le niveau où elle devient jaune, celui où elle devient grise
+et les points qu'elle rapporte. Ces faits viennent des tables du client de jeu (SkillLineAbility,
+SkillLine) publiées par wago.tools. Pour les régénérer après un patch :
+
+```bash
+python3 -I tools/build_retail_data.py 12.1.5.70783
+```

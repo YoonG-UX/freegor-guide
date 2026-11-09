@@ -15,7 +15,12 @@ Les guides Retail sont **générés en jeu** à partir des données du client, i
 chaque patch sans mise à jour du guide :
 
 - **Métiers** (un guide par métier du personnage) : ouvrez une fois la fenêtre du métier sur
-  l'onglet de l'extension à monter. Le guide indique la prochaine recette à fabriquer (celle qui
+  l'onglet de l'extension à monter. Le guide donne **le parcours complet jusqu'au maximum** :
+  « niveaux 12 à 25 : fabriquez environ 18 x Recette », avec les composants de chaque étape.
+  Il s'appuie sur les seuils de couleur exacts de chaque recette (orange, jaune, verte, grise),
+  extraits des tables du client de jeu (10 723 recettes, toutes extensions), et sur les recettes
+  que votre personnage connaît. Si vos recettes ne suffisent pas pour atteindre le maximum, il
+  liste celles à apprendre. Sans seuils connus, il indique la prochaine recette à fabriquer (celle qui
   rapporte le plus de points pour le moins de composants ; avec Auctionator, selon les prix de
   l'hôtel des ventes), combien en faire, les composants avec ce que vous possédez déjà (sacs,
   banque, banque de composants, banque de bataillon), le niveau visé, un second choix et les
