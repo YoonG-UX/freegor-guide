@@ -39,7 +39,10 @@ chaque patch sans mise à jour du guide :
   **Me guider** ouvre un guide dédié à la monture, avec son portrait et son modèle 3D au-dessus
   de la fenêtre : flèche et épingle Blizzard (carte et marqueur à l'écran) vers l'entrée de
   l'instance puis, à l'intérieur, vers le boss ; pour un haut fait, une étape par critère restant,
-  avec la flèche vers le donjon quand le critère en est un. Boutons : **Me guider** (flèche et étapes),
+  avec la flèche vers le donjon quand le critère en est un. Si la destination est sur un autre
+  continent, le guide commence par **les portails à prendre** depuis votre position (réseau de
+  portails du jeu lui-même, sans ceux de l'autre faction ni ceux que votre personnage n'a pas
+  débloqués), puis se recalcule à chaque changement de zone. Boutons : **Me guider** (flèche et étapes),
   **Suivre** (liste de suivi), **Invoquer**, **Lien** dans le chat.
 - **Montures** : toutes les montures que vous n'avez pas, d'après le journal des montures.
   - *Ma liste de suivi* : les montures que vous chassez, avec la façon d'obtenir chacune.

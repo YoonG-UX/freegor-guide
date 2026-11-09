@@ -84,3 +84,14 @@ SkillLine) publiées par wago.tools. Pour les régénérer après un patch :
 ```bash
 python3 -I tools/build_retail_data.py 12.1.5.70783
 ```
+
+### Réseau de portails (Retail)
+
+`FreegorGuideRetail/Retail/Data/Travel.lua` contient le réseau de déplacement que le jeu utilise
+pour sa propre navigation de quêtes (« Emprunter le portail de ... vers ... ») : positions des
+portails, liaisons, et la partie vérifiable de leurs conditions (faction, niveau, quêtes, hauts
+faits). Source : tables WaypointNode, WaypointEdge, WaypointSafeLocs, PlayerCondition, ChrRaces.
+
+```bash
+python3 -I tools/build_retail_travel.py 12.1.5.70783
+```

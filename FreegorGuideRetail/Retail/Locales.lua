@@ -91,6 +91,10 @@ L.COL_SORT_DIFF, L.COL_SORT_DIST, L.COL_SORT_NAME = "Sort: difficulty", "Sort: d
 L.COL_DIFFICULTY   = "Difficulty: %s"
 L.COL_DISTANCE     = "%d yd"
 
+L.TRAVEL_TAKE      = "%s."
+L.TRAVEL_LAST      = "After this portal, follow the arrow to the destination."
+L.GOAL_REACH       = "Arrive at |cff00ff96%s|r"
+
 if GetLocale() ~= "frFR" then return end
 
 L.GOAL_MOUNT       = "Obtenir |cffffd100%s|r"
@@ -176,3 +180,6 @@ L.DIFF_LABEL_1, L.DIFF_LABEL_2, L.DIFF_LABEL_3, L.DIFF_LABEL_4, L.DIFF_LABEL_5 =
 L.COL_SORT_DIFF, L.COL_SORT_DIST, L.COL_SORT_NAME = "Tri : difficulté", "Tri : distance", "Tri : nom"
 L.COL_DIFFICULTY   = "Difficulté : %s"
 L.COL_DISTANCE     = "%d m"
+L.TRAVEL_TAKE      = "%s."
+L.TRAVEL_LAST      = "Après ce portail, suivez la flèche jusqu'à la destination."
+L.GOAL_REACH       = "Arriver à |cff00ff96%s|r"

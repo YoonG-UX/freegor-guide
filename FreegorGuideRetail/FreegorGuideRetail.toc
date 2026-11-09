@@ -28,6 +28,8 @@ Retail\Locales.lua
 Retail\Goals.lua
 Retail\Data\Professions.lua
 Retail\Professions.lua
+Retail\Data\Travel.lua
+Retail\Travel.lua
 Retail\Vendors.lua
 Retail\Mounts.lua
 Retail\Collection.lua

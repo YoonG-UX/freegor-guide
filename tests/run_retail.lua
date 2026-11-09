@@ -515,6 +515,64 @@ inInst, warned = true, nil
 fire("PLAYER_ENTERING_WORLD")
 check(warned == nil, "no alert when turned off")
 inInst = false
+
+---------------------------------------------------------------------------
+-- Portal steps between continents (real travel network data)
+---------------------------------------------------------------------------
+
+local Rt2 = ns.Retail
+check(Rt2.TravelNodes and Rt2.TravelNodes[6] and Rt2.TravelNodes[6][1] == 0, "travel network loaded (Stormwind portal room)")
+-- map 9000 is a zone of Pandaria (continent 870), near the Jade Forest portal arrival
+local oldW2M, oldInfo2 = C_Map.GetWorldPosFromMapPos, C_Map.GetMapInfo
+C_Map.GetWorldPosFromMapPos = function(id, v)
+  if id == 9000 then return 870, newVec(-300 + v.y, -1700 + v.x) end
+  return oldW2M(id, v)
+end
+C_Map.GetMapInfo = function(id) if id == 9000 then return { name = "Forêt de Jade", mapType = 3 } end return oldInfo2(id) end
+C_Map.GetMapPosFromWorldPos = function(cont, v) return cont == 870 and 9000 or 2248, newVec(0.5, 0.5) end
+
+local route = Rt2.FindRoute(870, -300, -1700)
+check(route and #route >= 1, "a route to Pandaria exists")
+local okFaction, lastCont = true, nil
+for _, hop in ipairs(route or {}) do
+  for _, id in ipairs({ hop.from, hop.to }) do
+    local c = Rt2.TravelConds[Rt2.TravelNodes[id][5] or -1]
+    if c and c.f == "H" then okFaction = false end
+  end
+  lastCont = Rt2.TravelNodes[hop.to][1]
+end
+check(okFaction, "Alliance route uses no Horde portal")
+check(lastCont == 870, "route ends in Pandaria")
+check(#Rt2.FindRoute(0, 500, 500) == 0, "same continent: no portal")
+
+-- Horde character: no Alliance portal
+UnitFactionGroup = function() return "Horde" end
+local hroute = Rt2.FindRoute(870, -300, -1700)
+local hok = hroute ~= nil
+for _, hop in ipairs(hroute or {}) do
+  for _, id in ipairs({ hop.from, hop.to }) do
+    local c = Rt2.TravelConds[Rt2.TravelNodes[id][5] or -1]
+    if c and c.f == "A" then hok = false end
+  end
+end
+check(hok, "Horde route uses no Alliance portal")
+UnitFactionGroup = function() return "Alliance" end
+
+-- in the mount guide: portal steps first, gone once on the right continent
+mounts[2].collected = false
+FreegorDB.mountVendors[2] = { map = 9000, x = 0.4, y = 0.6, npc = 777, name = "Marchand de béliers" }
+Rt2.GuideToMount(2)
+local s1 = E.guide.steps[1]
+check(s1.key and s1.key:match("^travel:"), "first step: take a portal (got " .. tostring(s1.key) .. ")")
+local reach
+for _, st in ipairs(E.guide.steps) do for _, g in ipairs(st.goals) do if g.type == "reach" then reach = g end end end
+check(reach and reach.continent == 870 and ns.GoalText(reach):find("Arriver"), "portal step completes on arrival in Pandaria")
+check(E.guide.steps[#E.guide.steps].key == "vendor", "then the vendor")
+C_Map.GetBestMapForUnit = function() return 9000 end
+fire("ZONE_CHANGED_NEW_AREA")
+check(E.guide.steps[1].key == "vendor", "on the right continent the portal steps are gone")
+C_Map.GetBestMapForUnit = function() return 2248 end
+C_Map.GetWorldPosFromMapPos, C_Map.GetMapInfo = oldW2M, oldInfo2
 ---------------------------------------------------------------------------
 -- Midnight secret values
 ---------------------------------------------------------------------------

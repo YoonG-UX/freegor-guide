@@ -502,7 +502,14 @@ local function buildFocus(guide)
   guide.visual = { icon = e.icon, display = display, onClick = function()
     if R.OpenCollectionAt then R.OpenCollectionAt(e.id) end
   end }
-  return R.MountGuideBody(e)
+  local body = R.MountGuideBody(e)
+  -- Another continent: portal steps first, from where the player stands now.
+  local m, x, y = body:match("goto (%d+) ([%d%.]+),([%d%.]+)")
+  if m and R.TravelSteps then
+    local travel = R.TravelSteps(tonumber(m), tonumber(x) / 100, tonumber(y) / 100)
+    if #travel > 0 then body = table.concat(travel, "\n") .. "\n" .. body end
+  end
+  return body
 end
 
 local MOUNT_EVENTS = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED" }
@@ -513,7 +520,8 @@ Freegor:RegisterDynamicGuide({
 })
 Freegor:RegisterDynamicGuide({
   title = L.MOUNT_FOCUS_TITLE, category = "mounts", description = L.MOUNT_FOCUS_DESC,
-  events = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED", "CRITERIA_UPDATE" },
+  events = { "NEW_MOUNT_ADDED", "UPDATE_INSTANCE_INFO", "ACHIEVEMENT_EARNED", "CRITERIA_UPDATE",
+    "ZONE_CHANGED_NEW_AREA" },
   build = buildFocus,
 })
 
